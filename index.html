@@ -710,8 +710,17 @@ input:focus-visible,
   padding: 18px;
 }
 
+.intelligence-grid-duo {
+  align-items: start;
+}
 .intelligence-grid-duo .intel-panel {
   height: 452px;
+}
+/* 交易结构卡内容更多（四段拆解 6 年 + 图例 + 读图说明），放开固定高度按内容自适应，避免被裁切 */
+.intelligence-grid-duo .intel-panel.dimension-structure {
+  height: auto;
+  min-height: 452px;
+  overflow: visible;
 }
 
 .panel-heading {
@@ -989,6 +998,13 @@ input:focus-visible,
   gap: 6px;
   margin-top: 12px;
 }
+/* 在固定高度的 duo 卡片里，条形列表超出时内部滚动，避免被 panel 的 overflow:hidden 硬裁 */
+.dimension-structure .structure-pulse {
+  gap: 5px;
+}
+.dimension-structure .structure-pulse .structure-year {
+  min-height: 44px;
+}
 
 .structure-legend {
   display: flex;
@@ -1014,6 +1030,68 @@ input:focus-visible,
 .structure-legend .lg-upfront { background: var(--cyan); }
 .structure-legend .lg-contingent { background: var(--amber); opacity: 0.78; }
 .structure-legend .lg-magnitude { background: color-mix(in srgb, var(--blue) 60%, transparent); }
+
+.structure-legend-4 .lg-seg.lg-upfront { background: var(--cyan); opacity: 1; }
+.structure-legend-4 .lg-seg.lg-noncontingent { background: var(--blue); opacity: 0.72; }
+.structure-legend-4 .lg-seg.lg-contingent { background: var(--amber); opacity: 0.82; }
+.structure-legend-4 .lg-royalty {
+  width: auto;
+  height: auto;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--green);
+  border: 1px dashed color-mix(in srgb, var(--green) 55%, transparent);
+  background: color-mix(in srgb, var(--green) 10%, transparent);
+}
+.structure-legend-4 .lg-royalty::before { content: "R"; }
+
+.structure-bar-4 { background: var(--line); }
+.structure-bar-4 .seg-upfront { background: var(--cyan); }
+.structure-bar-4 .seg-noncontingent { background: var(--blue); opacity: 0.72; }
+.structure-bar-4 .seg-contingent { background: var(--amber); opacity: 0.82; }
+.structure-bar-4 > span { transition: width 0.2s ease; }
+.structure-bar-4.is-empty {
+  background: transparent;
+  border: 1px dashed var(--line-strong);
+  height: 8px;
+}
+.structure-note {
+  margin: 6px 0 2px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.structure-note > summary {
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--muted);
+  list-style: none;
+}
+.structure-note > summary::-webkit-details-marker { display: none; }
+.structure-note > summary::before { content: "＋ "; color: var(--blue); font-weight: 700; }
+.structure-note[open] > summary::before { content: "－ "; }
+.structure-note > summary:hover { color: var(--text-strong); }
+.structure-note > p { margin: 0; padding: 0 10px 9px; }
+.structure-note b { color: var(--text-strong); font-weight: 700; }
+
+.structure-royalty {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 12%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--green) 45%, transparent);
+  font-variant-numeric: tabular-nums;
+}
 
 .structure-trend {
   display: flex;
@@ -2081,6 +2159,87 @@ input:focus-visible,
   color: var(--muted);
   font-size: 11px;
 }
+
+.buyer-shortlist {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+  margin-top: 14px;
+}
+.buyer-shortlist header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.buyer-shortlist header h2 { margin: 4px 0 4px; font-size: 15px; }
+.buyer-shortlist header p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; max-width: 640px; }
+.buyer-shortlist header p b { color: var(--text-strong); font-weight: 700; }
+.buyer-shortlist .panel-scope { white-space: nowrap; }
+.shortlist-body { display: flex; flex-direction: column; gap: 6px; }
+.shortlist-row {
+  display: grid;
+  grid-template-columns: 26px minmax(160px, 1fr) 74px 74px 118px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+.shortlist-row:hover { border-color: var(--line-strong); background: var(--surface); }
+.shortlist-rank {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue);
+  background: color-mix(in srgb, var(--blue) 12%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+.shortlist-main { min-width: 0; }
+.shortlist-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  color: var(--text-strong);
+  font-size: 13px;
+}
+.shortlist-hot {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 14%, transparent);
+}
+.shortlist-reasons { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.shortlist-reason {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.shortlist-metric { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
+.shortlist-metric b { font-size: 15px; font-weight: 700; color: var(--text-strong); font-variant-numeric: tabular-nums; }
+.shortlist-metric small { font-size: 11px; color: var(--muted); }
+.shortlist-stage b { font-size: 12px; line-height: 1.3; }
 
 .private-context-lock {
   display: flex;
@@ -5022,7 +5181,7 @@ input:focus-visible,
     <aside class="sidebar" aria-label="主导航">
       <nav class="nav-list">
         <div class="nav-group nav-group-overview">
-          <button type="button" class="nav-button nav-button-overview active" data-view="overview"><span>00</span>平台总览</button>
+          <button type="button" class="nav-button nav-button-overview active" data-view="overview"><span>00</span>设计思路</button>
         </div>
         <div class="nav-group">
           <div class="nav-group-label">洞察能力 · 用外部数据</div>
@@ -5273,6 +5432,21 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       });
       const excluded = cohort.filter(deal => !included.includes(deal));
       const rows = included.map(deal => economics.get(deal.deal_id));
+      // 四段结构拆解：对每笔交易先算三段占比（upfront / 非或有 / 或有里程碑），再取年度中位。
+      // Royalty 因公告普遍只披露"存在"不披露金额，只做存在性统计（诚实留白，不编造金额段）。
+      const segRatios = rows.filter(row => row.total > 0).map(row => ({
+        upfront: row.upfront / row.total,
+        noncontingent_only: row.other_noncontingent / row.total,
+        contingent: row.contingent / row.total,
+      }));
+      // Royalty 存在性：条款表标记，或交易自由文本 notes 明确提及销售分成（如 tiered royalty）。
+      const royaltyIds = new Set();
+      included.forEach(deal => {
+        const econ = economics.get(deal.deal_id);
+        const inTerms = econ && econ.royalty_presence;
+        const inNotes = /royalt/i.test(String(deal.notes || ''));
+        if (inTerms || inNotes) royaltyIds.add(deal.deal_id);
+      });
       return {
         year,
         count: cohort.length,
@@ -5280,6 +5454,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         median_upfront: median(rows.filter(row => row.has_upfront_disclosure).map(row => row.upfront)),
         median_total: median(rows.map(row => row.total)),
         median_upfront_ratio: median(rows.filter(row => row.has_upfront_disclosure).map(row => row.upfront_ratio)),
+        median_upfront_seg: median(segRatios.map(s => s.upfront)),
+        median_noncontingent_seg: median(segRatios.map(s => s.noncontingent_only)),
+        median_contingent_seg: median(segRatios.map(s => s.contingent)),
+        royalty_deal_count: royaltyIds.size,
         disclosure_rate: cohort.length ? included.length / cohort.length : 0,
         included_ids: included.map(deal => deal.deal_id),
         excluded_ids: excluded.map(deal => deal.deal_id),
@@ -5682,8 +5860,83 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       adjacent_comparable_ids: adjacentIds,
       comparable_summary: comp,
       potential_strategic_buyers: null,
+      buyer_shortlist: explainableBuyerShortlist(comparableIds, directIds, deals, economics),
       next_verification: ['补齐独立来源', '复核相同阶段与 Rights Scope', '接入私有 Pipeline / CRM 后重算 Buyer Whitespace'],
     };
+  }
+
+  function explainableBuyerShortlist(comparableIds, directIds, deals, economics) {
+    // 可解释买方候选：完全基于公开披露的历史出手行为推断"谁可能是下一手买方"，
+    // 每条附可回溯证据交易（deal_id 可下钻），明确不给黑箱成交概率、不做无私有数据的战略匹配。
+    const cohort = deals.filter(deal => comparableIds.includes(deal.deal_id));
+    if (!cohort.length) return [];
+    const byBuyer = new Map();
+    cohort.forEach(deal => {
+      const buyer = deal.buyer_or_partner || 'Undisclosed';
+      if (!byBuyer.has(buyer)) byBuyer.set(buyer, {
+        buyer,
+        cohort_deals: 0,
+        direct_deals: 0,
+        deal_ids: [],
+        stages: {},
+        modalities: {},
+        latest_year: '',
+        disclosed_upfront: null,
+      });
+      const row = byBuyer.get(buyer);
+      row.cohort_deals += 1;
+      if (directIds.includes(deal.deal_id)) row.direct_deals += 1;
+      row.deal_ids.push(deal.deal_id);
+      const stage = deal.stage_at_announcement || 'Undisclosed';
+      row.stages[stage] = (row.stages[stage] || 0) + 1;
+      const modality = deal.modality || 'Undisclosed';
+      row.modalities[modality] = (row.modalities[modality] || 0) + 1;
+      const year = String(deal.announced_date || '').slice(0, 4);
+      if (year && year > row.latest_year) row.latest_year = year;
+      const econ = economics.get(deal.deal_id);
+      if (econ && econ.has_upfront_disclosure) {
+        row.disclosed_upfront = (row.disclosed_upfront || 0) + econ.upfront;
+      }
+    });
+    // 全库总活跃度（跨主题），用来区分"高频扫货型"与"本主题偶发出手"
+    const globalCounts = new Map();
+    deals.forEach(deal => {
+      const b = deal.buyer_or_partner || 'Undisclosed';
+      globalCounts.set(b, (globalCounts.get(b) || 0) + 1);
+    });
+    const topStage = obj => Object.entries(obj).sort((a, b) => b[1] - a[1])[0];
+    return [...byBuyer.values()]
+      .filter(row => row.buyer && row.buyer !== 'Undisclosed')
+      .map(row => {
+        const stageTop = topStage(row.stages);
+        const modTop = topStage(row.modalities);
+        const globalDeals = globalCounts.get(row.buyer) || row.cohort_deals;
+        // 可解释理由：只陈述可回溯的历史事实，不做概率外推
+        const reasons = [];
+        if (row.direct_deals) reasons.push(`本主题 Direct Comp 出手 ${row.direct_deals} 次`);
+        else reasons.push(`本主题相邻可比出手 ${row.cohort_deals} 次`);
+        if (stageTop) reasons.push(`偏好阶段：${stageTop[0]}`);
+        if (globalDeals >= 3) reasons.push(`全库累计 ${globalDeals} 笔（高频活跃买方）`);
+        if (row.latest_year) reasons.push(`最近一次 ${row.latest_year}`);
+        return {
+          buyer: row.buyer,
+          cohort_deals: row.cohort_deals,
+          direct_deals: row.direct_deals,
+          global_deals: globalDeals,
+          latest_year: row.latest_year,
+          top_stage: stageTop ? stageTop[0] : 'Undisclosed',
+          top_modality: modTop ? modTop[0] : 'Undisclosed',
+          disclosed_upfront: row.disclosed_upfront,
+          evidence_ids: row.deal_ids,
+          reasons,
+        };
+      })
+      .sort((a, b) =>
+        b.direct_deals - a.direct_deals ||
+        b.cohort_deals - a.cohort_deals ||
+        b.global_deals - a.global_deals ||
+        String(b.latest_year).localeCompare(String(a.latest_year)))
+      .slice(0, 5);
   }
 
   function structureRows(deals, economics) {
@@ -5955,6 +6208,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     referencedMarketContext,
     buildSignalInbox,
     buildThesisWorkspace,
+    explainableBuyerShortlist,
     structureRows,
     comparatorSummary,
     datasetSummary,
@@ -6173,26 +6427,49 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 
     const items = rows.map(row => {
       const hasRatio = Number.isFinite(row.median_upfront_ratio);
-      const ratio = hasRatio ? Math.max(0, Math.min(1, row.median_upfront_ratio)) : 0;
       const evidenceIds = (row.included_ids || []).join('|');
       const coverage = row.count ? row.comparable_count / row.count : 0;
+      // 四段结构拆解：Upfront / 非或有周年付款 / 或有里程碑；三段归一化到 100%，Royalty 单独做存在性标记
+      const up = Math.max(0, row.median_upfront_seg || 0);
+      const nc = Math.max(0, row.median_noncontingent_seg || 0);
+      const ct = Math.max(0, row.median_contingent_seg || 0);
+      const sum = up + nc + ct;
+      const hasSeg = sum > 0;
+      const seg = hasSeg
+        ? { up: up / sum * 100, nc: nc / sum * 100, ct: ct / sum * 100 }
+        : { up: 0, nc: 0, ct: 0 };
+      const royaltyN = row.royalty_deal_count || 0;
+      const royaltyBadge = royaltyN
+        ? `<span class="structure-royalty" title="${escapeHtml(`${royaltyN} 笔含销售分成 Royalty（多数仅披露存在、未披露费率）`)}">+Royalty ×${royaltyN}</span>`
+        : '';
+      const segTitle = escapeHtml(`${row.year} 结构中位：首付 ${seg.up.toFixed(0)}% · 非或有周年 ${seg.nc.toFixed(0)}% · 或有里程碑 ${seg.ct.toFixed(0)}%`);
       return `
         <button class="structure-year" type="button" data-open-evidence="${escapeHtml(evidenceIds)}"
-          aria-label="${escapeHtml(`${row.year} 年，${row.comparable_count} / ${row.count} 笔可比，Upfront 中位占比 ${hasRatio ? `${(ratio * 100).toFixed(1)}%` : '未披露'}，Upfront 中位金额 ${formatMoney(row.median_upfront)}`)}">
+          aria-label="${escapeHtml(`${row.year} 年，${row.comparable_count} / ${row.count} 笔可比，结构中位：首付 ${seg.up.toFixed(0)}%、非或有周年 ${seg.nc.toFixed(0)}%、或有里程碑 ${seg.ct.toFixed(0)}%，${royaltyN} 笔含 Royalty`)}">
           <span class="structure-year-label">${escapeHtml(row.year)}</span>
-          <span class="structure-bar" aria-hidden="true">
-            <span class="structure-upfront" style="width:${(ratio * 100).toFixed(1)}%"></span>
-            <span class="structure-contingent" style="width:${((1 - ratio) * 100).toFixed(1)}%"></span>
+          <span class="structure-bar structure-bar-4${hasSeg ? '' : ' is-empty'}" aria-hidden="true" title="${segTitle}">
+            <span class="seg-upfront" style="width:${seg.up.toFixed(1)}%"></span>
+            <span class="seg-noncontingent" style="width:${seg.nc.toFixed(1)}%"></span>
+            <span class="seg-contingent" style="width:${seg.ct.toFixed(1)}%"></span>
           </span>
-          <span class="structure-ratio">${hasRatio ? `${(ratio * 100).toFixed(1)}%` : '未披露'}</span>
-          <span class="structure-meta"><span class="coverage-dot" data-coverage="${coverage >= 0.75 ? 'high' : coverage >= 0.4 ? 'mid' : 'low'}"></span>${row.comparable_count} / ${row.count} 可比 · 中位 ${formatMoney(row.median_upfront)}</span>
+          <span class="structure-ratio">${hasSeg ? (hasRatio ? `${(row.median_upfront_ratio * 100).toFixed(0)}%` : '未披露') : '无可比'}</span>
+          <span class="structure-meta"><span class="coverage-dot" data-coverage="${coverage >= 0.75 ? 'high' : coverage >= 0.4 ? 'mid' : 'low'}"></span>${row.comparable_count} / ${row.count} 可比 · 中位 ${formatMoney(row.median_total)}${royaltyBadge}</span>
         </button>`;
     }).join('');
     return `
-      <div class="structure-pulse" role="group" aria-label="年度披露可比交易结构">
+      <div class="structure-pulse" role="group" aria-label="年度披露可比交易结构四段拆解">
         ${trendBanner}
-        <div class="structure-legend"><span><i class="lg-upfront"></i>Upfront 占比</span><span><i class="lg-contingent"></i>其余 headline（里程碑/或有）</span></div>
+        <div class="structure-legend structure-legend-4">
+          <span><i class="lg-seg lg-upfront"></i>首付</span>
+          <span><i class="lg-seg lg-noncontingent"></i>非或有周年</span>
+          <span><i class="lg-seg lg-contingent"></i>或有里程碑</span>
+          <span><i class="lg-royalty"></i>Royalty（仅标记）</span>
+        </div>
         ${items || '<p class="empty-state">当前筛选下没有可比较的 Licensing 条款。</p>'}
+        <details class="structure-note">
+          <summary>读图说明：三段归一化占比 + Royalty 为何只标记不入段</summary>
+          <p>headline 金额只拆到披露粒度：首付 / 非或有周年付款 / 或有里程碑三段归一化占比。<b>销售分成（Royalty）是按销售额浮动的百分比，不构成一次性 headline 金额</b>，公告普遍只披露"有 tiered royalty"而不披露费率，故仅在命中时以角标标记存在，不编造金额段 —— 刻意的诚实留白，避免把未披露项虚构成可比数字。</p>
+        </details>
       </div>`;
   }
 
@@ -6410,16 +6687,26 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     return 'US_PHARMA';
   }
 
-  // 结构脉冲（年度 Upfront 中位占比，套用管线 charts.renderStructurePulse 的字段）
+  // 结构脉冲（年度 Upfront 中位占比，套用管线 charts.renderStructurePulse 的四段字段）
+  // 外部盘点口径只区分「首付 vs 里程碑/或有尾款」两段——没有一手条款才有的
+  // 「非或有周年付款」细分，故 noncontingent 段置 0，其余=1-upfront，诚实反映粒度差异。
   function structurePulse() {
-    return annual.map(a => ({
-      year: a.year,
-      count: a.china_lic_count,
-      comparable_count: a.china_lic_count,
-      median_upfront: a.china_lic_value * 1000 / a.china_lic_count * a.upfront_ratio_median,
-      median_upfront_ratio: a.upfront_ratio_median,
-      included_ids: [],
-    }));
+    return annual.map(a => {
+      const up = a.upfront_ratio_median;
+      return {
+        year: a.year,
+        count: a.china_lic_count,
+        comparable_count: a.china_lic_count,
+        median_total: a.china_lic_value * 1000 / a.china_lic_count,
+        median_upfront: a.china_lic_value * 1000 / a.china_lic_count * up,
+        median_upfront_ratio: up,
+        median_upfront_seg: up,
+        median_noncontingent_seg: 0,
+        median_contingent_seg: 1 - up,
+        royalty_deal_count: 0,
+        included_ids: [],
+      };
+    });
   }
 
   // 模态矩阵转换成 charts.renderModalityMatrix 期望的 cells 结构（deal_count = 相对热度）
@@ -6511,8 +6798,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 
   const viewMeta = {
     overview: {
-      eyebrow: '平台总览 · PLATFORM OVERVIEW · 从看见到相信',
-      title: '平台总览',
+      eyebrow: '设计思路 · DESIGN RATIONALE · 从看见到相信',
+      title: '设计思路',
       description: '一屏看懂七个页面怎么按能力叙事组织：先看清市场、再学会推理，最后验证凭什么相信。点击卡片直达。',
     },
     landscape: {
@@ -6924,7 +7211,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         kicker: '数据能力 · 自建管线',
         note: '自建采集→治理→建模→分析基础设施 · 展示数据工程与可信度',
         cards: [
-          { view: 'landscape', icon: 'trust', tone: 'data', no: '03', title: '自建管线分析', q: '一手核实的严谨版？', tags: '78 笔 · 四维 · 可审计' },
+          { view: 'landscape', icon: 'trust', tone: 'data', no: '03', title: '自建管线分析', q: '每笔怎么核到一手？', tags: '78 笔 · 四维 · 可审计' },
           { view: 'pipeline', icon: 'pipeline', tone: 'data', no: '04', title: '数据工作流', q: '数据怎么变可信？', tags: '采集 · 治理 · 建模' },
           { view: 'foundation', icon: 'model', tone: 'data', no: '05', title: '数据模型', q: '底层结构长什么样？', tags: `${glossary('本体')} · ${glossary('reconciliation')}` },
           { view: 'methods', icon: 'methods', tone: 'data', no: '06', title: '来源与方法', q: '数据凭什么可发布？', tags: `分级 · ${glossary('release gate')}` },
@@ -6945,7 +7232,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     </section>`;
     return `
       <section class="overview-lead">
-        <span class="guide-eyebrow">平台总览 · HOW THIS PLATFORM IS ORGANIZED</span>
+        <span class="guide-eyebrow">设计思路 · HOW THIS PLATFORM IS ORGANIZED</span>
         <h2>一屏看懂这个系统怎么组织</h2>
         <p>平台刻意用两组能力对照，来回答同一个问题的两个层面：</p>
         <ul class="overview-thesis">
@@ -6956,7 +7243,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         <p class="overview-lead-note">之所以分成两条线，也是为了在 demo 阶段合理控制资源投入：洞察能力用公开数据快速铺出全景广度，数据能力则把有限的时间与算力集中投到少量交易的自建管线上，做到逐笔可回溯——先看广度、再看深度，而不是在全部数据上都做重核实。</p>
       </section>
       ${groups.map(groupBlock).join('')}
-      <p class="sr-only" id="app-live-region" aria-live="polite">已显示平台总览，七个页面按洞察能力与数据能力两组组织。</p>`;
+      <p class="sr-only" id="app-live-region" aria-live="polite">已显示设计思路，七个页面按洞察能力与数据能力两组组织。</p>`;
   }
 
   function renderSystemGuide() {
@@ -7060,7 +7347,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
           </div>
         </article>
         <section class="intelligence-grid intelligence-grid-duo" aria-label="交易结构与资产地域">
-          <article class="intel-panel" id="mw-structure-panel">
+          <article class="intel-panel dimension-structure" id="mw-structure-panel">
             ${renderPanelHeading('02', '交易结构演变', `中国出海 ${glossary('Upfront')} 中位占比逐年走低（14%→6.5%），买方越来越 milestone-heavy、风险共担。`, 'Licensing')}
             ${C.renderStructurePulse(pulse)}
           </article>
@@ -7161,6 +7448,43 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     </footer>`;
   }
 
+  function renderBuyerShortlist(result) {
+    const list = result.buyer_shortlist || [];
+    if (!list.length) return '';
+    const stageLabel = s => {
+      const t = String(s || 'Undisclosed');
+      return t.length > 22 ? `${t.slice(0, 21)}…` : t;
+    };
+    const rows = list.map((b, i) => {
+      const evidenceIds = (b.evidence_ids || []).join('|');
+      const upfront = Number.isFinite(b.disclosed_upfront) && b.disclosed_upfront
+        ? C.formatMoney(b.disclosed_upfront) : '未披露';
+      const hot = b.global_deals >= 3;
+      const reasonTags = (b.reasons || []).map(r => `<span class="shortlist-reason">${C.escapeHtml(r)}</span>`).join('');
+      return `
+        <button type="button" class="shortlist-row" data-open-evidence="${C.escapeHtml(evidenceIds)}"
+          aria-label="${C.escapeHtml(`候选买方 ${b.buyer}，本主题出手 ${b.cohort_deals} 次（Direct ${b.direct_deals}），全库 ${b.global_deals} 笔，点击查看证据交易`)}">
+          <span class="shortlist-rank">${i + 1}</span>
+          <span class="shortlist-main">
+            <span class="shortlist-name">${C.escapeHtml(b.buyer)}${hot ? '<i class="shortlist-hot" title="全库高频活跃买方">高频</i>' : ''}</span>
+            <span class="shortlist-reasons">${reasonTags}</span>
+          </span>
+          <span class="shortlist-metric"><b>${b.direct_deals}</b><small>Direct Comp</small></span>
+          <span class="shortlist-metric"><b>${b.global_deals}</b><small>全库出手</small></span>
+          <span class="shortlist-metric shortlist-stage"><b>${C.escapeHtml(stageLabel(b.top_stage))}</b><small>偏好阶段</small></span>
+        </button>`;
+    }).join('');
+    return `
+      <section class="buyer-shortlist" aria-label="可解释买方候选名单">
+        <header>
+          <div><span class="eyebrow">可解释买方候选 · EXPLAINABLE BUYER SHORTLIST</span><h2>基于历史披露行为的候选买方，非成交概率预测</h2>
+          <p>AI 从当前主题的可比交易里，反向找出<b>历史上在同靶点 / 同模态 / 同阶段真金白银出过手</b>的买方，按可回溯证据排序。这不是黑箱成交概率——每条都能点开看支撑它的具体交易。真正的成交概率与战略匹配需要基金私有 Pipeline / Mandate，见下方 Private 区。</p></div>
+          <span class="panel-scope">Top ${list.length} · 点击行查看证据交易</span>
+        </header>
+        <div class="shortlist-body">${rows}</div>
+      </section>`;
+  }
+
   function renderThesis() {
     const result = M.buildThesisWorkspace(state.thesisQuery, T);
     const blocked = result.status === 'BLOCKED_NO_VERIFIED_COHORT';
@@ -7189,6 +7513,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         <article class="reasoning-card action"><span>Action / 建议行动</span><ol>${result.actions.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></article>
       </section>
       ${result.scenarios.length ? `<section class="scenario-section"><header><span class="eyebrow">12–36 MONTHS · CONDITIONAL, NOT FORECAST</span><h2>Bull / Base / Bear 条件情景</h2></header><div class="scenario-grid">${result.scenarios.map(scenario => `<article><strong>${scenario.name}</strong><p>${C.escapeHtml(scenario.condition)}</p><span>领先指标 · ${C.escapeHtml(scenario.indicator)}</span><small>失效条件 · ${C.escapeHtml(scenario.invalidation)}</small></article>`).join('')}</div></section>` : ''}
+      ${renderBuyerShortlist(result)}
       <section class="private-context-lock"><div><span class="scope-badge scope-private">Private</span><h2>基金私有上下文（Private Fund Context）未解锁</h2><p>接入基金 Pipeline、CRM、Mandate 与关系数据后，才显示 Potential Strategic Buyers、Portfolio Fit 和 Buyer Whitespace。</p></div><span>受数据范围限制 · LOCKED BY DATA SCOPE</span></section>
       ${renderThesisComparables(result)}
       ${blocked ? `<section class="verification-queue"><h2>下一步核验 · Next verification</h2><ol>${result.next_verification.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></section>` : ''}
