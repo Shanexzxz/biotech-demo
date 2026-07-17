@@ -10271,5 +10271,180 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 })();
 
   </script>
+
+  <script>
+/* ============================================================
+ * MobileNavFab · 移动端 FAB + 底部弹出导航面板
+ * - 仅 ≤760px 显示；桌面端完全不渲染
+ * - 面板数据从现有 .nav-button DOM 动态生成，与原导航实时同步
+ * - 初始化成功后才隐藏原底部栏（body.fab-nav-on）——JS 失败自动回退
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  var CSS = ''
+    /* FAB 浮动按钮 */
+    + '.fab-nav{position:fixed;z-index:215;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));'
+    + 'display:none;align-items:center;gap:8px;padding:11px 16px;border-radius:999px;'
+    + 'background:var(--text-strong);color:var(--bg);border:none;'
+    + 'box-shadow:0 6px 24px rgba(0,0,0,.26);font-size:13px;font-weight:700;cursor:pointer;}'
+    + '.fab-nav .fab-label{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}'
+    /* 遮罩 */
+    + '.fab-mask{position:fixed;inset:0;z-index:220;background:rgba(15,18,24,.42);'
+    + 'opacity:0;pointer-events:none;transition:opacity .25s ease;}'
+    + '.fab-mask.on{opacity:1;pointer-events:auto;}'
+    /* 底部弹出面板 */
+    + '.fab-sheet{position:fixed;z-index:230;left:0;right:0;bottom:0;max-height:72vh;overflow-y:auto;'
+    + 'background:var(--bg-raised);border-top:1px solid var(--line);border-radius:16px 16px 0 0;'
+    + 'padding:8px 14px calc(18px + env(safe-area-inset-bottom));'
+    + 'transform:translateY(105%);transition:transform .3s cubic-bezier(.32,.72,.35,1);}'
+    + '.fab-sheet.on{transform:translateY(0);}'
+    + '.fab-grab{width:40px;height:4px;border-radius:99px;background:var(--line-strong);margin:2px auto 10px;}'
+    + '.fab-sheet-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 4px;}'
+    + '.fab-sheet-h strong{font-size:14px;color:var(--text-strong);}'
+    + '.fab-close{border:1px solid var(--line-strong);background:var(--surface);color:var(--muted);'
+    + 'border-radius:99px;padding:4px 12px;font-size:12px;cursor:pointer;}'
+    + '.fab-group-t{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin:12px 2px 5px;}'
+    + '.fab-item{display:flex;align-items:center;gap:12px;width:100%;padding:13px 12px;border:0;border-radius:10px;'
+    + 'background:transparent;color:var(--text);font-size:14.5px;font-weight:600;text-align:left;cursor:pointer;}'
+    + '.fab-item:active{background:var(--surface-2);}'
+    + '.fab-item .no{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;width:22px;flex-shrink:0;}'
+    + '.fab-item .tick{margin-left:auto;font-size:12px;color:var(--cyan);}'
+    + '.fab-item.cur{background:color-mix(in srgb, var(--cyan) 12%, var(--surface));color:var(--cyan);}'
+    + '.fab-item.cur .no{color:var(--cyan);}'
+    /* 显示规则：仅移动端；JS 就绪后才隐藏原底栏并回收占位 */
+    + '@media (max-width: 760px){'
+    + '.fab-nav{display:inline-flex;}'
+    + 'body.fab-nav-on .sidebar{display:none !important;}'
+    + 'body.fab-nav-on .main{padding-bottom:48px !important;}'
+    + 'body.fab-nav-on .back-to-top{bottom:84px !important;right:20px !important;}'
+    + '}'
+    + '@media (min-width: 761px){.fab-nav,.fab-mask,.fab-sheet{display:none !important;}}';
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $all(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  var fab, mask, sheet, groupsHost, labelEl;
+
+  function btnName(b) {
+    return Array.prototype.reduce.call(b.childNodes, function (acc, n) {
+      return n.nodeType === 3 ? acc + n.textContent : acc;
+    }, '').trim();
+  }
+  function btnNo(b) {
+    var sp = b.querySelector('span');
+    return sp ? sp.textContent.trim() : '';
+  }
+  function currentView() {
+    var b = $('.nav-button.active') || $('.nav-button[aria-current="true"]');
+    return b ? b.getAttribute('data-view') : null;
+  }
+
+  function buildItems() {
+    groupsHost.innerHTML = '';
+    $all('.nav-group').forEach(function (g) {
+      var btns = $all('.nav-button', g);
+      if (!btns.length) return;
+      var label = $('.nav-group-label', g);
+      if (label && label.textContent.trim()) {
+        var t = document.createElement('div');
+        t.className = 'fab-group-t';
+        t.textContent = label.textContent.trim();
+        groupsHost.appendChild(t);
+      }
+      btns.forEach(function (b) {
+        var it = document.createElement('button');
+        it.type = 'button';
+        it.className = 'fab-item';
+        it.setAttribute('data-view', b.getAttribute('data-view'));
+        it.innerHTML = '<span class="no">' + btnNo(b) + '</span><span>' + btnName(b) + '</span><span class="tick"></span>';
+        it.addEventListener('click', function () {
+          b.click();
+          closeSheet();
+        });
+        groupsHost.appendChild(it);
+      });
+    });
+  }
+
+  function syncState() {
+    var cur = currentView();
+    var name = '页面';
+    $all('.nav-button').forEach(function (b) {
+      if (b.getAttribute('data-view') === cur) name = btnName(b) || name;
+    });
+    if (labelEl) labelEl.textContent = name;
+    $all('.fab-item', groupsHost).forEach(function (it) {
+      var on = it.getAttribute('data-view') === cur;
+      it.classList.toggle('cur', on);
+      var tick = it.querySelector('.tick');
+      if (tick) tick.textContent = on ? '● 当前' : '';
+    });
+  }
+
+  function openSheet() {
+    buildItems();
+    syncState();
+    mask.classList.add('on');
+    sheet.classList.add('on');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSheet() {
+    mask.classList.remove('on');
+    sheet.classList.remove('on');
+    document.body.style.overflow = '';
+  }
+
+  function init() {
+    if (!$('.nav-button') || $('.fab-nav')) return;
+    var st = document.createElement('style');
+    st.textContent = CSS;
+    document.head.appendChild(st);
+
+    fab = document.createElement('button');
+    fab.type = 'button';
+    fab.className = 'fab-nav';
+    fab.setAttribute('aria-label', '打开页面导航');
+    fab.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+      + '<span class="fab-label">页面</span>';
+    labelEl = fab.querySelector('.fab-label');
+    fab.addEventListener('click', openSheet);
+
+    mask = document.createElement('div');
+    mask.className = 'fab-mask';
+    mask.addEventListener('click', closeSheet);
+
+    sheet = document.createElement('div');
+    sheet.className = 'fab-sheet';
+    sheet.setAttribute('role', 'dialog');
+    sheet.setAttribute('aria-label', '页面导航');
+    sheet.innerHTML = '<div class="fab-grab"></div>'
+      + '<div class="fab-sheet-h"><strong>页面导航</strong><button type="button" class="fab-close">收起</button></div>'
+      + '<div id="fabGroups"></div>';
+    sheet.querySelector('.fab-close').addEventListener('click', closeSheet);
+    groupsHost = sheet.querySelector('#fabGroups');
+
+    document.body.appendChild(fab);
+    document.body.appendChild(mask);
+    document.body.appendChild(sheet);
+    document.body.classList.add('fab-nav-on');
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeSheet();
+    });
+    // 视图切换后同步 FAB 页名与面板高亮（viewTitle 文本变化即视图已切换）
+    var vt = $('#viewTitle');
+    if (vt && window.MutationObserver) {
+      new MutationObserver(syncState).observe(vt, { childList: true, characterData: true, subtree: true });
+    }
+    buildItems();
+    syncState();
+  }
+
+  window.MobileNavFab = { open: openSheet, close: closeSheet };
+  init();
+})();
+
+  </script>
 </body>
 </html>
