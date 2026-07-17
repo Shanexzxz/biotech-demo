@@ -8824,6 +8824,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     var cMax = 700, aMax = 800;
     var slot = iw / MACRO.length, bw = slot * 0.5;
     var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    s += '<text x="' + mL + '" y="10" style="' + TICK + '">左轴 · 交易数量（笔/年）</text>';
+    s += '<text x="' + (W - mR) + '" y="10" text-anchor="end" style="' + TICK + '">右轴 · 平均单笔（$M/笔）</text>';
     [0, 200, 400, 600].forEach(function (t) {
       var y = mT + ih - (t / cMax) * ih;
       s += '<line x1="' + mL + '" y1="' + y + '" x2="' + (W - mR) + '" y2="' + y + '" style="' + GRID + '"/>';
@@ -8941,9 +8943,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     var med = IQR.map(function (d, i) { return (i ? 'L' : 'M') + X(i) + ' ' + Y(d.med); }).join(' ');
     s += '<path d="' + med + '" fill="none" stroke="var(--violet)" stroke-width="2.2"/>';
     IQR.forEach(function (d, i) {
+      var anchor = i === 0 ? 'start' : (i === IQR.length - 1 ? 'end' : 'middle');
       s += '<circle cx="' + X(i) + '" cy="' + Y(d.med) + '" r="3" fill="var(--violet)"><title>' + d.y + '：中位 ' + d.med + '%（P25–P75：' + d.p25 + '–' + d.p75 + '%）</title></circle>';
-      s += '<text x="' + X(i) + '" y="' + (Y(d.med) - 7) + '" text-anchor="middle" style="font-size:9.5px;font-weight:700;fill:var(--violet);">' + d.med + '</text>';
-      s += '<text x="' + X(i) + '" y="' + (H - mB + 14) + '" text-anchor="middle" style="' + TICK + '">' + d.y + '</text>';
+      s += '<text x="' + X(i) + '" y="' + (Y(d.med) - 7) + '" text-anchor="' + (i === IQR.length - 1 ? 'end' : 'middle') + '" style="font-size:9.5px;font-weight:700;fill:var(--violet);">' + d.med + '</text>';
+      s += '<text x="' + X(i) + '" y="' + (H - mB + 14) + '" text-anchor="' + anchor + '" style="' + TICK + '">' + d.y + '</text>';
     });
     s += '</svg>';
     return s;
@@ -9339,6 +9342,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 
   var CSS = ''
     + '.da-section{margin-top:12px;}'
+    + '.intel-panel.da-section{height:auto;overflow:visible;}'
     + '.da-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;}'
     + '.da-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:600;'
     + 'background:color-mix(in srgb, var(--violet) 14%, var(--surface));color:var(--violet);border:1px solid color-mix(in srgb, var(--violet) 32%, transparent);}'
@@ -9844,6 +9848,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     var x = function (i) { return mL + (i / (YEARS.length - 1)) * (W - mL - mR); };
     var y = function (v) { return mT + (1 - v / top) * (H - mT - mB); };
     var g = '';
+    if (opts && opts.unitL) g += '<text x="' + mL + '" y="9" style="font-size:9.5px;fill:var(--muted)">' + opts.unitL + '</text>';
     ticks.forEach(function (t) {
       g += '<line x1="' + mL + '" y1="' + y(t) + '" x2="' + (W - mR) + '" y2="' + y(t) + '" style="stroke:var(--line-strong)" stroke-dasharray="3 3"/>'
         + '<text x="' + (mL - 6) + '" y="' + (y(t) + 3) + '" text-anchor="end" style="font-size:10px;fill:var(--muted)">' + fmt(t) + '</text>';
@@ -9883,6 +9888,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     var yB = function (v) { return mT + (1 - v / bt[bt.length - 1]) * (H - mT - mB); };
     var yL = function (v) { return mT + (1 - v / lt[lt.length - 1]) * (H - mT - mB); };
     var g = '';
+    if (opts && opts.unitL) g += '<text x="' + mL + '" y="9" style="font-size:9.5px;fill:var(--muted)">' + opts.unitL + '</text>';
+    if (opts && opts.unitR) g += '<text x="' + (W - mR) + '" y="9" text-anchor="end" style="font-size:9.5px;fill:var(--muted)">' + opts.unitR + '</text>';
     bt.forEach(function (t) {
       g += '<line x1="' + mL + '" y1="' + yB(t) + '" x2="' + (W - mR) + '" y2="' + yB(t) + '" style="stroke:var(--line-strong)" stroke-dasharray="3 3"/>'
         + '<text x="' + (mL - 6) + '" y="' + (yB(t) + 3) + '" text-anchor="end" style="font-size:10px;fill:var(--muted)">' + fmt(t) + '</text>';
@@ -9930,7 +9937,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       var el = $('lpChartMacro');
       if (el) barLineChart(el,
         { values: gl.map(function (v) { return v || 0; }), color: 'var(--blue)' },
-        { values: fda.map(function (v) { return v || 0; }), color: 'var(--amber)' });
+        { values: fda.map(function (v) { return v || 0; }), color: 'var(--amber)' },
+        { unitL: '左轴 · 试验启动（项/年）', unitR: '右轴 · 批准（件/年）' });
       var k1 = $('lpKpiGlobal');
       if (k1 && gl[4]) {
         k1.querySelector('.v').textContent = fmt(gl[4]);
@@ -9956,7 +9964,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       });
       store.modality = series;
       var el = $('lpChartModality');
-      if (el) lineChart(el, series, { h: 260 });
+      if (el) lineChart(el, series, { h: 260, unitL: '试验启动（项/年）' });
       /* 洞察注脚 */
       var note = $('lpModalityInsight');
       if (note) {
@@ -9994,9 +10002,9 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       if (el) barLineChart(el,
         { values: cn.map(function (v) { return v || 0; }), color: 'var(--cyan)' },
         { values: share.map(function (v) { return v || 0; }), color: 'var(--violet)' },
-        { h: 240 });
+        { h: 240, unitL: '左轴 · 试验（项/年）', unitR: '右轴 · %' });
       var lg = $('lpChinaLegend');
-      if (lg) lg.innerHTML = '<span><i style="background:var(--cyan)"></i>含中国中心的行业试验</span><span><i style="background:var(--violet)"></i>占全球比例 %（右轴）</span>';
+      if (lg) lg.innerHTML = '<span><i style="background:var(--cyan)"></i>含中国中心的行业试验（左轴 · 项/年）</span><span><i style="background:var(--violet)"></i>占全球比例（右轴 · %）</span>';
       var k2 = $('lpKpiChina');
       if (k2 && share[4] != null) {
         k2.querySelector('.v').textContent = share[4].toFixed(1) + '%';
@@ -10164,7 +10172,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="lp-grid">'
       + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">宏观脉冲</span><span class="lp-src">CT.gov · countTotal</span></div>'
       + '<h2>研发供给双引擎：全球行业试验启动 × FDA 批准节奏</h2></div></div>'
-      + '<div class="lp-legend"><span><i style="background:var(--blue)"></i>全球行业申办试验启动（左轴）</span><span><i style="background:var(--amber)"></i>FDA 原始申请批准（右轴，ORIG 口径）</span></div>'
+      + '<div class="lp-legend"><span><i style="background:var(--blue)"></i>全球行业申办试验启动（左轴 · 项/年）</span><span><i style="background:var(--amber)"></i>FDA 原始申请批准（右轴 · 件/年 · ORIG 口径）</span></div>'
       + '<div id="lpChartMacro" style="max-width:760px;margin:0 auto">' + skeleton(250) + '</div>'
       + '<p class="lp-note">2026▲ = 截至 2026-07-17 的年内数据（半透明柱）。试验启动衡量「管线供给」，批准数衡量「兑现出口」——两者的剪刀差即 BD 买方市场的资产库存。</p></section>'
 
