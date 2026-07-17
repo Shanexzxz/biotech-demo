@@ -3930,6 +3930,29 @@ input:focus-visible,
     display: contents;
   }
 
+  /* 移动端修复④：grid item 的 min-content 会撑破视口（元凶：boundary-note 的 flex 行） */
+  .landscape-layout > * {
+    min-width: 0;
+  }
+
+  .landscape-boundary-note {
+    flex-wrap: wrap;
+  }
+
+  /* 移动端修复⑤：glossary 气泡是 width:max-content 的绝对定位盒，
+     visibility:hidden 仍计入可滚动溢出，会把 ICB 撑宽（455px 元凶）。
+     改为 fixed 底部浮层：不参与文档流溢出，且不会被挤出视口。 */
+  body .glossary-term::after {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    top: auto;
+    bottom: 96px;
+    width: auto;
+    max-width: none;
+    z-index: 300;
+  }
+
   .nav-button {
     display: flex;
     flex-direction: column;
