@@ -5185,7 +5185,7 @@ input:focus-visible,
         </div>
         <div class="nav-group">
           <div class="nav-group-label">洞察能力 · 用外部数据</div>
-          <button type="button" class="nav-button" data-view="marketwide"><span>01</span>市场全景</button>
+          <button type="button" class="nav-button" data-view="live"><span>01</span>交易情报</button>
           <button type="button" class="nav-button" data-view="thesis"><span>02</span>AI Thesis</button>
         </div>
         <div class="nav-group nav-group-foundation">
@@ -6837,6 +6837,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       title: '来源与方法',
       description: '审阅来源等级、覆盖范围、发布边界与仍被阻断的市场结论。',
     },
+    live: {
+      eyebrow: '洞察能力 · 研报汇编 × 实时 API · 零管线',
+      title: '交易情报（Deal Intelligence）',
+      description: '集中的交易情报分析页：上篇汇编公开研报、公告与 38 笔代表性交易的「交易定论」（四维框架 + 逐笔解剖 + AI 洞察），下篇由浏览器实时调用 ClinicalTrials.gov 与 openFDA 生成「管线先行指标」——两层均不经过任何自建数据管线，互相印证。',
+    },
   };
 
   function element(id) {
@@ -7203,7 +7208,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         kicker: '洞察能力 · 用外部数据',
         note: '基于公开数据做分析 · 展示可视化与分析视角',
         cards: [
-          { view: 'marketwide', icon: 'market', tone: 'insight', no: '01', title: '市场全景（外部数据）', q: '近 5 年市场长什么样？', tags: '买方 · 结构 · 模态 · 地域' },
+          { view: 'live', icon: 'market', tone: 'insight', no: '01', title: '交易情报（Deal Intelligence）', q: '交易为什么值这个钱？', tags: '研报汇编 × 实时 API · 双层互证' },
           { view: 'thesis', icon: 'thesis', tone: 'thesis', no: '02', title: 'AI Thesis', q: '异常怎么推理成判断？', tags: `${glossary('证据门控')} · 五格分离 · 留白` },
         ],
       },
@@ -7250,7 +7255,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     // 首页系统导读条：给合伙人一条“看见→看懂·敢用→相信”的阅读主线，
     // 说明七个页面怎么串、各自回答什么，消除“为什么突然有个 AI 页”的困惑。
     const stages = [
-      { n: '1', kicker: '看见 · SEE', tone: 'insight', title: '市场长什么样', body: '先用外部宽口径全景给全局感，看清近 5 年买方、结构、模态与地域的大势。', page: '01 市场全景（外部数据）' },
+      { n: '1', kicker: '看见 · SEE', tone: 'insight', title: '市场长什么样', body: '先用外部宽口径全景给全局感，看清近 5 年买方、结构、模态与地域的大势。', page: '01 交易情报（Deal Intelligence）' },
       { n: '2', kicker: '看懂 · 敢用 · REASON', tone: 'thesis', title: '异常怎么变成判断', body: '数据全 ≠ 能直接下结论。AI Thesis 把异常信号编排成可审计的推理结构，不替你拍板、也不乱编。', page: '02 AI Thesis' },
       { n: '3', kicker: '相信 · TRUST', tone: 'data', title: '凭什么信这些数', body: '自建管道逐笔回一手来源核实、可追溯可审计；再往下是采集、治理、建模、来源的全链路底座。', page: '03 自建管线分析 → 04–07 数据底座' },
     ];
@@ -7381,7 +7386,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     return `
       <section class="mw-demo-banner mw-demo-banner-trust" role="note" aria-label="数据能力说明">
         <span class="mw-flag mw-flag-trust">自建管道 · 可审计</span>
-        <p><strong>本页是「数据能力」的展示：</strong>每笔交易都经自建的采集→治理→建模→分析管道，逐笔回一手来源核实、可追溯、可审计——这是与「洞察能力」组里那份宽口径外部数据的关键区别。想先看覆盖更广、更接近真实市场规模的全局，见「洞察能力」组的「市场全景（外部数据）」页。</p>
+        <p><strong>本页是「数据能力」的展示：</strong>每笔交易都经自建的采集→治理→建模→分析管道，逐笔回一手来源核实、可追溯、可审计——这是与「洞察能力」组里那份宽口径外部数据的关键区别。想先看覆盖更广、更接近真实市场规模的全局，见「洞察能力」组的「交易情报」页。</p>
       </section>
       <section class="market-regime-band" id="market-regime-band" aria-labelledby="market-regime-title">
         <div>
@@ -8237,6 +8242,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   function renderBody() {
+    if (state.view === 'live') {
+      setTimeout(function () { if (window.LivePulse) window.LivePulse.mount(); }, 0);
+      return window.LivePulse ? window.LivePulse.render() : '<p class="empty-state">交易情报模块未加载。</p>';
+    }
     if (state.view === 'overview') return renderOverview();
     if (state.view === 'marketwide') return renderMarketWide();
     if (state.view === 'thesis') return renderThesis();
@@ -8248,6 +8257,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   function renderCurrent() {
+    if (state.view === 'marketwide') state.view = 'live'; // 市场全景已并入「交易情报」，旧链接重定向
     const meta = viewMeta[state.view];
     element('viewEyebrow').textContent = meta.eyebrow;
     element('viewTitle').textContent = meta.title;
@@ -8472,6 +8482,1780 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 })();
 
 // DEDUP_ONTOLOGY_DONE
+
+  </script>
+
+  <script>
+/* ============================================================
+ * CuratedIntel · 研报汇编分析层模块（交易情报 · 上篇）
+ * 数据主权独立：全部来自公开研报 / 公司公告 / 专业数据库的人工汇编
+ *   - Bain M&A Report 2026 · IQVIA Biopharma Outlook 2026
+ *   - DealForma · William Blair Q1 2025 Review
+ *   - 医药魔方 NextPharma · 公司公告 · 公众号年度盘点
+ * 与下篇「实时 API 验证层」互为印证：本层回答「交易为什么值这个钱」。
+ * 口径诚实边界：宏观锚点校准自上述公开来源；明细数字为演示用途的合成数据。
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- 样式（复用站点 CSS 变量，深浅主题自适应） ---------- */
+  var CSS = ''
+    + '.ci-layer{margin-bottom:6px;}'
+    + '.ci-layer-head{padding:18px 20px 6px;}'
+    + '.ci-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--violet);text-transform:uppercase;}'
+    + '.ci-layer-head h2{margin:6px 0 6px;font-size:21px;font-weight:760;color:var(--text-strong);letter-spacing:-.02em;}'
+    + '.ci-layer-head p{margin:0;max-width:860px;font-size:12.5px;line-height:1.65;color:var(--muted);}'
+    + '.ci-banner{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;margin:12px 0;'
+    + 'border:1px solid color-mix(in srgb, var(--violet) 40%, transparent);border-left:3px solid var(--violet);'
+    + 'border-radius:var(--radius-sm);background:color-mix(in srgb, var(--violet) 8%, var(--surface));}'
+    + '.ci-flag{flex-shrink:0;padding:3px 10px;border-radius:999px;background:color-mix(in srgb, var(--violet) 18%, var(--surface));'
+    + 'color:var(--violet);font-size:11px;font-weight:600;letter-spacing:.04em;white-space:nowrap;}'
+    + '.ci-banner p{margin:0;font-size:12px;line-height:1.6;color:var(--text);}'
+    + '.ci-toc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 14px;padding:9px 12px;'
+    + 'border:1px dashed var(--line-strong);border-radius:var(--radius-sm);font-size:11.5px;color:var(--muted);}'
+    + '.ci-toc a{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:999px;text-decoration:none;'
+    + 'border:1px solid var(--line-strong);color:var(--text);font-weight:600;font-size:11px;background:var(--surface);}'
+    + '.ci-toc a:hover{border-color:var(--violet);color:var(--violet);}'
+    + '.ci-toc a.ci-toc-live:hover{border-color:var(--cyan);color:var(--cyan);}'
+    + '.ci-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0;}'
+    + '@media(max-width:1100px){.ci-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}'
+    + '.ci-kpi{padding:13px 16px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface);}'
+    + '.ci-kpi .k{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;align-items:baseline;}'
+    + '.ci-kpi .v{margin-top:4px;font-size:23px;font-weight:700;color:var(--text-strong);font-variant-numeric:tabular-nums;letter-spacing:-.02em;}'
+    + '.ci-kpi .v small{font-size:12px;font-weight:600;color:var(--muted);margin-left:4px;}'
+    + '.ci-kpi .d{margin-top:2px;font-size:11px;color:var(--muted);}'
+    + '.ci-kpi .up{color:var(--green);font-weight:700;}'
+    + '.ci-kpi .dn{color:var(--red);font-weight:700;}'
+    + '.ci-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:600;'
+    + 'background:color-mix(in srgb, var(--violet) 14%, var(--surface));color:var(--violet);border:1px solid color-mix(in srgb, var(--violet) 30%, transparent);}'
+    + '.ci-src{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border:1px solid color-mix(in srgb, var(--violet) 35%, var(--line-strong));'
+    + 'border-radius:999px;font-size:10px;color:var(--violet);white-space:nowrap;}'
+    + '.ci-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}'
+    + '@media(max-width:900px){.ci-two{grid-template-columns:1fr;}}'
+    + '.ci-sub-h{font-size:12px;font-weight:700;color:var(--text-strong);margin:2px 0 6px;}'
+    + '.ci-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px;}'
+    + '.ci-tab{padding:5px 14px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);'
+    + 'color:var(--text);font-size:12px;font-weight:600;cursor:pointer;}'
+    + '.ci-tab:hover{border-color:var(--violet);color:var(--violet);}'
+    + '.ci-tab.on{background:color-mix(in srgb, var(--violet) 16%, var(--surface));border-color:var(--violet);color:var(--violet);}'
+    + '.ci-ai-scope{font-size:11px;color:var(--muted);margin-bottom:10px;}'
+    + '.ci-ai-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px;}'
+    + '@media(max-width:900px){.ci-ai-stats{grid-template-columns:repeat(2,minmax(0,1fr));}}'
+    + '.ci-ai-stat{padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);}'
+    + '.ci-ai-stat .k{font-size:10.5px;color:var(--muted);}'
+    + '.ci-ai-stat .v{font-size:17px;font-weight:700;color:var(--text-strong);font-variant-numeric:tabular-nums;margin-top:2px;}'
+    + '.ci-ai-stat .d{font-size:10px;color:var(--muted);margin-top:1px;}'
+    + '.ci-ai-cols{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;}'
+    + '@media(max-width:900px){.ci-ai-cols{grid-template-columns:1fr;}}'
+    + '.ci-ai-h{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--violet);text-transform:uppercase;margin:0 0 7px;}'
+    + '.ci-ai-sum{margin:0;padding-left:16px;font-size:12px;line-height:1.65;color:var(--text);}'
+    + '.ci-ai-sum li{margin-bottom:7px;}'
+    + '.ci-anom{padding:9px 12px;border-radius:8px;border:1px solid var(--line);border-left:3px solid var(--amber);'
+    + 'background:var(--surface-2);margin-bottom:8px;font-size:11.5px;line-height:1.55;color:var(--text);}'
+    + '.ci-anom.high{border-left-color:var(--red);}'
+    + '.ci-anom b{color:var(--text-strong);}'
+    + '.ci-anom .sev{float:right;font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--amber);}'
+    + '.ci-anom.high .sev{color:var(--red);}'
+    + '.ci-match{display:grid;grid-template-columns:88px 1fr 34px;align-items:center;gap:10px;padding:6px 0;font-size:11.5px;border-bottom:1px solid var(--line);}'
+    + '.ci-match:last-child{border-bottom:none;}'
+    + '.ci-match .nm{font-weight:700;color:var(--text-strong);}'
+    + '.ci-match .rs{color:var(--muted);font-size:10.5px;line-height:1.45;}'
+    + '.ci-match .sc{text-align:right;font-weight:700;color:var(--violet);font-variant-numeric:tabular-nums;}'
+    + '.ci-conf{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:11px;color:var(--muted);}'
+    + '.ci-conf .lp-track{flex:1;max-width:280px;}'
+    + '.ci-xref{width:100%;border-collapse:collapse;font-size:11.5px;}'
+    + '.ci-xref th{padding:8px 10px;text-align:left;font-size:10.5px;font-weight:600;color:var(--muted);'
+    + 'border-bottom:1px solid var(--line-strong);text-transform:uppercase;letter-spacing:.06em;}'
+    + '.ci-xref td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--text);vertical-align:top;line-height:1.55;}'
+    + '.ci-xref tr:last-child td{border-bottom:none;}'
+    + '.ci-x-tag{display:inline-block;padding:1px 7px;border-radius:99px;font-size:9.5px;font-weight:700;margin-right:6px;white-space:nowrap;}'
+    + '.ci-x-cur{background:color-mix(in srgb, var(--violet) 15%, var(--surface));color:var(--violet);}'
+    + '.ci-x-live{background:color-mix(in srgb, var(--cyan) 15%, var(--surface));color:var(--cyan);}'
+    + '.ci-x-src{display:block;margin-top:3px;font-size:10px;color:var(--muted);}'
+    + '.ci-svg text{user-select:none;}';
+  var styleEl = document.createElement('style');
+  styleEl.textContent = CSS;
+  document.head.appendChild(styleEl);
+
+  /* ---------- 工具 ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  var TICK = 'font-size:10px;fill:var(--muted);';
+  var TICKB = 'font-size:10.5px;font-weight:700;fill:var(--text);';
+  var GRID = 'stroke:var(--line);stroke-dasharray:3 3;';
+
+  /* ============================================================
+   * 数据集（每项标注来源；SRC 徽标随面板渲染）
+   * ============================================================ */
+  // 宏观剪刀差（DealForma / IQVIA 口径合成，校准至公开区间）
+  var MACRO = [
+    { y: '2021', count: 612, avg: 356 }, { y: '2022', count: 541, avg: 318 },
+    { y: '2023', count: 489, avg: 380 }, { y: '2024', count: 452, avg: 473 },
+    { y: '2025', count: 418, avg: 641 }, { y: '26H1', count: 204, avg: 765 }
+  ];
+  // 中国资产占大药企引进比例 %（IQVIA；26H1 为医药魔方口径）
+  var CHINA_SHARE = [
+    { y: '2021', v: 6 }, { y: '2022', v: 11 }, { y: '2023', v: 18 },
+    { y: '2024', v: 30 }, { y: '2025', v: 40 }, { y: '26H1', v: 44 }
+  ];
+  // 买方画像（DealForma + 公司公告合成）
+  var BUYERS = [
+    { n: 'AstraZeneca', cn: '阿斯利康', deals: 38, val: 61.4, up: 8.4, stage: 'Ph1–2 / 临床前', style: 'serial', tags: '高频扫货 · 重仓中国' },
+    { n: 'Roche', cn: '罗氏', deals: 34, val: 48.2, up: 11.2, stage: 'Ph2–3', style: 'balanced', tags: '专利悬崖承压' },
+    { n: 'Novartis', cn: '诺华', deals: 41, val: 52.6, up: 9.8, stage: 'Ph1–2', style: 'serial', tags: '高频扫货 · siRNA 偏好' },
+    { n: 'Eli Lilly', cn: '礼来', deals: 33, val: 47.3, up: 9.2, stage: 'Ph1–2', style: 'serial', tags: '重仓代谢' },
+    { n: 'Merck & Co.', cn: '默沙东', deals: 29, val: 55.8, up: 10.1, stage: 'Ph2–3', style: 'balanced', tags: 'K 药接棒' },
+    { n: 'Pfizer', cn: '辉瑞', deals: 22, val: 58.9, up: 12.6, stage: 'Ph3 / 商业化', style: 'big-game', tags: '孤注一掷 · 肿瘤补强' },
+    { n: 'AbbVie', cn: '艾伯维', deals: 23, val: 26.7, up: 13.4, stage: 'Ph2–3', style: 'balanced', tags: '后修美乐时代' },
+    { n: 'GSK', cn: '葛兰素史克', deals: 26, val: 33.2, up: 8.8, stage: 'Ph1–2', style: 'balanced', tags: '中国资产偏好' },
+    { n: 'BMS', cn: '百时美施贵宝', deals: 19, val: 38.5, up: 14.7, stage: 'Ph2–3', style: 'big-game', tags: '孤注一掷' },
+    { n: 'Sanofi', cn: '赛诺菲', deals: 24, val: 21.8, up: 9.4, stage: 'Ph1–2', style: 'balanced', tags: '自免加码' },
+    { n: 'J&J', cn: '强生', deals: 21, val: 29.4, up: 11.8, stage: 'Ph2–3', style: 'balanced', tags: '' },
+    { n: 'Novo Nordisk', cn: '诺和诺德', deals: 15, val: 22.6, up: 10.5, stage: 'Ph1–2', style: 'balanced', tags: '重仓代谢' },
+    { n: 'BioNTech', cn: '拜恩泰科', deals: 17, val: 9.8, up: 7.2, stage: '临床前–Ph1', style: 'serial', tags: '转型迫切 · 重仓中国' },
+    { n: 'Vertex', cn: '福泰制药', deals: 12, val: 10.4, up: 12.1, stage: 'Ph2–3', style: 'balanced', tags: '现金充裕' },
+    { n: 'Regeneron', cn: '再生元', deals: 11, val: 7.2, up: 8.6, stage: 'Ph1–2', style: 'balanced', tags: '代谢入局' },
+    { n: 'Gilead', cn: '吉利德', deals: 16, val: 24.1, up: 11.4, stage: 'Ph2–3', style: 'balanced', tags: '肿瘤补强' }
+  ];
+  var STYLE_META = {
+    'serial': { label: '高频扫货型', color: '#2DD4BF' },
+    'balanced': { label: '均衡型', color: '#60A5FA' },
+    'big-game': { label: '孤注一掷型', color: '#FBBF24' }
+  };
+  var TSR = [
+    { g: '连续小额并购者', v: 24, color: '#2DD4BF' },
+    { g: '低频大额并购者', v: 6, color: '#64748B' }
+  ];
+  // 首付占比中位数与 IQR（William Blair 口径合成）
+  var IQR = [
+    { y: '2021', med: 15.6, p25: 11.2, p75: 22.4 }, { y: '2022', med: 14.1, p25: 9.8, p75: 20.1 },
+    { y: '2023', med: 12.4, p25: 8.1, p75: 18.2 }, { y: '2024', med: 10.8, p25: 6.9, p75: 16.0 },
+    { y: '2025', med: 8.9, p25: 5.4, p75: 13.8 }, { y: '26H1', med: 8.2, p25: 4.9, p75: 12.6 }
+  ];
+  // 交易价值结构构成 %
+  var MIX = [
+    { y: '2021', upfront: 16, near: 9, clin: 22, reg: 18, comm: 35 },
+    { y: '2022', upfront: 15, near: 9, clin: 23, reg: 18, comm: 35 },
+    { y: '2023', upfront: 13, near: 10, clin: 24, reg: 18, comm: 35 },
+    { y: '2024', upfront: 12, near: 10, clin: 25, reg: 19, comm: 34 },
+    { y: '2025', upfront: 9, near: 11, clin: 27, reg: 20, comm: 33 },
+    { y: '26H1', upfront: 8, near: 12, clin: 28, reg: 20, comm: 32 }
+  ];
+  var MIX_SEGS = [
+    { k: 'upfront', label: '首付款', color: '#2DD4BF' },
+    { k: 'near', label: '近期付款 ≤12 月', color: '#60A5FA' },
+    { k: 'clin', label: '临床里程碑', color: '#A78BFA' },
+    { k: 'reg', label: '注册里程碑', color: '#FBBF24' },
+    { k: 'comm', label: '商业化里程碑', color: '#64748B' }
+  ];
+  // 辉瑞 × 三生 SSGJ-707 解剖（公司公告 + 医药魔方）
+  var ANATOMY = {
+    total: 6.0,
+    segs: [
+      { k: '首付款', v: 1.25, color: '#2DD4BF', desc: '签约即付 · 创中国资产纪录' },
+      { k: '开发里程碑', v: 0.9, color: '#60A5FA', desc: '关键临床读出触发' },
+      { k: '注册里程碑', v: 1.1, color: '#A78BFA', desc: 'FDA/EMA 获批触发' },
+      { k: '商业化里程碑', v: 2.75, color: '#FBBF24', desc: '销售额梯度触发' }
+    ]
+  };
+  // 模态份额斜坡 2021 → 2025（DealForma 口径合成）
+  var SLOPE = [
+    { n: '小分子', a: 32, b: 21, c: '#94A3B8' }, { n: '单克隆抗体', a: 26, b: 15, c: '#60A5FA' },
+    { n: 'ADC', a: 7, b: 18, c: '#FB923C' }, { n: '双抗 / 多抗', a: 5, b: 16, c: '#A78BFA' },
+    { n: 'mRNA', a: 11, b: 6, c: '#34D399' }, { n: 'siRNA / ASO', a: 5, b: 9, c: '#F472B6' },
+    { n: '细胞 / 基因治疗', a: 9, b: 8, c: '#22D3EE' }, { n: '其他新模态', a: 5, b: 7, c: '#64748B' }
+  ];
+  // 地域桑基（2024–2025 聚合 $B，DealForma 口径合成）
+  var SK_O = ['中国', '美国', '欧洲', '其他'];
+  var SK_D = ['美国', '欧洲', '中国', '其他'];
+  var SK_F = [
+    [0, 0, 78], [0, 1, 41], [0, 2, 22], [0, 3, 6],
+    [1, 0, 96], [1, 1, 34], [1, 2, 12], [1, 3, 15],
+    [2, 0, 38], [2, 1, 24], [2, 2, 5], [2, 3, 8],
+    [3, 0, 18], [3, 1, 9], [3, 2, 4], [3, 3, 7]
+  ];
+  var SK_OC = ['#2DD4BF', '#60A5FA', '#A78BFA', '#64748B'];
+  // 靶点热度（DealForma + 公告合成）
+  var TARGETS = [
+    { t: 'GLP-1 / GIP 代谢', m: '多肽 / 小分子', d: 19, v: 34.8, heat: 96, up: 1, sig: 'AZ×石药 $18.5B 刷新天花板' },
+    { t: 'PD-1 / VEGF', m: '双抗', d: 12, v: 21.4, heat: 92, up: 1, sig: '头对头 K 药数据催化重估' },
+    { t: 'TROP2', m: 'ADC', d: 15, v: 18.2, heat: 84, up: 1, sig: '科伦×默沙东系列交易外溢' },
+    { t: 'TL1A', m: '单抗 / 双抗', d: 7, v: 9.8, heat: 78, up: 1, sig: '自免下一条主赛道' },
+    { t: 'TfR1 血脑屏障穿梭', m: '融合蛋白', d: 6, v: 4.1, heat: 74, up: 1, sig: 'CNS 递送破局点，早期溢价' },
+    { t: 'HER2', m: 'ADC', d: 11, v: 12.6, heat: 71, up: 0, sig: 'DS-8201 后继者竞争' },
+    { t: 'siRNA 心血管', m: 'siRNA', d: 9, v: 8.4, heat: 66, up: 1, sig: '诺华×舶望验证平台价值' },
+    { t: 'KRAS G12D / pan-KRAS', m: '小分子', d: 8, v: 5.2, heat: 58, up: 0, sig: '临床数据分化，观望情绪' }
+  ];
+
+  // AI 洞察引擎语料（5 主题，汇编层分析产出）
+  var AI_TOPICS = [
+    {
+      id: 'glp1', label: 'GLP-1 / 代谢', scope: '代谢疾病 · GLP-1/GIP/GCG 及下一代减重资产 · 2023–2026H1 · 样本 n=19',
+      stats: [
+        { k: '区间交易价值', v: '$34.8B', d: '占同期全球交易 13%' },
+        { k: '交易数量', v: '19', d: '临床前占 58%' },
+        { k: '首付中位数', v: '$210M', d: '为全市场 4.4×' },
+        { k: '中国资产占比', v: '47%', d: '9 / 19 笔' }
+      ],
+      summary: [
+        '买方行为呈「抢跑下一代」特征：78% 交易锁定口服小分子、amylin 联用或三靶点资产，为后司美格鲁肽时代卡位。',
+        '临床前资产首付溢价显著——AZ 为石药临床前管线支付 $1.2B 首付，是该阶段历史中位数的 11 倍，显示头部买方愿意为「确定性口服化」预付风险。',
+        '缺席者窗口正在关闭：Top 20 MNC 中仅 4 家尚未布局代谢赛道，AI 判断其 18 个月内出手概率 > 70%。'
+      ],
+      anomalies: [
+        { t: 'AZ × 石药 $18.5B / 首付 $1.2B', b: '临床前资产录得历史最大总额交易。首付比例 6.5% 反而低于赛道均值——总额虚高、实质风险后置，建议按里程碑折现重估。', sev: 'high' },
+        { t: '再生元 × 翰森 HS-20094', b: '再生元首次入局代谢，$80M 首付获取 GLP-1/GIP 双靶点。低于赛道首付中位数 62%，属「低成本期权式」进场。', sev: 'mid' }
+      ],
+      matches: [
+        { b: '罗氏', s: 88, r: 'Carmot 整合后仍需口服管线补位；2027 起 SGLT2 专利敞口扩大，现金充裕' },
+        { b: '辉瑞', s: 81, r: '自研 danuglipron 受挫后存在明确管线空洞；BD 团队近期密集尽调中国代谢资产' },
+        { b: '默沙东', s: 74, r: 'K 药 LOE 倒逼多元化，管理层公开表示「代谢是战略选项」' }
+      ],
+      conf: 86, src: 'DealForma · 公司公告 · ClinicalTrials.gov'
+    },
+    {
+      id: 'adc', label: 'ADC · TROP2/HER2', scope: '抗体偶联药物 · 肿瘤 · 2021–2026H1 · 样本 n=38',
+      stats: [
+        { k: '区间交易价值', v: '$48.6B', d: '占肿瘤交易 22%' },
+        { k: '交易数量', v: '38', d: '中国卖方占 61%' },
+        { k: '首付中位数', v: '$95M', d: '同比 +34%' },
+        { k: 'Ph1 及以前占比', v: '66%', d: '早期化显著' }
+      ],
+      summary: [
+        '资金沿「新靶点 + 新载荷 + 新连接子」三轴向早期迁移：Ph1 前资产占比五年内从 31% 升至 66%。',
+        '中国卖方主导供给端（61%），买方竞价白热化——多 MNC 围标同一资产使首付中位数一年抬升 34%。',
+        '双载荷（dual-payload）与双抗 ADC 成为 2026 年差异化新前沿，尚无大额交易锁定，属买方可布局的「预期差」区域。'
+      ],
+      anomalies: [
+        { t: 'TROP2 拥挤度预警', b: '15 笔交易、8 个临床阶段资产同质化竞争。AI 测算 3 年内该靶点商业价值方差扩大，建议关注 B7-H3 / DLL3 等次拥挤靶点。', sev: 'high' },
+        { t: 'HER2 ADC 交易热度背离', b: '交易额 −22% 而临床读出 +40%，冷热背离或提供逆向买入窗口。', sev: 'mid' }
+      ],
+      matches: [
+        { b: 'BioNTech', s: 90, r: '已购映恩/宜联资产仍需连接子平台纵深；mRNA+ADC 联用叙事需要补强' },
+        { b: 'GSK', s: 83, r: 'Blenrep 失利后 ADC 管线单薄，中国 BD 团队扩容一倍' },
+        { b: '诺华', s: 71, r: 'RLT 之外寻找实体瘤第二曲线，ADC 尽调频次环比 +3×' }
+      ],
+      conf: 88, src: 'DealForma · ADC Review · 公司公告'
+    },
+    {
+      id: 'pd1vegf', label: 'PD-1/VEGF 双抗', scope: '免疫双抗 · 肿瘤 · 2022–2026H1 · 样本 n=12',
+      stats: [
+        { k: '区间交易价值', v: '$21.4B', d: '12 笔，全部中国资产' },
+        { k: '首付中位数', v: '$560M', d: '全市场最高赛道之一' },
+        { k: '≥$5B 交易', v: '5', d: '2022 年仅 1 笔' },
+        { k: '买方集中度', v: 'MNC 92%', d: '头部争夺' }
+      ],
+      summary: [
+        'Ivonescimab 头对头击败 K 药后，该赛道完成「中国资产→全球硬通货」的定价权重估：首付中位数 $560M，为全市场 12 倍。',
+        '12 笔交易卖方全部为中国公司，买方为争夺 IO 接棒权支付「赛道税」——后发买方（AbbVie）的进场成本已较先行者（Summit）抬升 30%。',
+        '剩余可交易独立资产不足 6 个，AI 判断 2026H2 起竞争焦点将转向 PD-1/VEGF×ADC 联用组合与下一代三抗。'
+      ],
+      anomalies: [
+        { t: '辉瑞首付 $1.25B 创纪录', b: '为全球首付中位数的 26 倍。若按 Ph3 成功率 58% 折现，隐含峰值销售预期 >$8B——定价已计入头对头胜出假设。', sev: 'high' },
+        { t: 'AbbVie × 荣昌 $650M 首付', b: '赛道第 5 笔 ≥$5B 交易，距离首笔仅 25 个月，进场成本曲线持续陡峭化。', sev: 'mid' }
+      ],
+      matches: [
+        { b: 'BMS', s: 85, r: 'O 药 LOE 敞口最大且尚未持有同类资产，竞争压力迫近临界' },
+        { b: '罗氏', s: 79, r: 'Tecentriq 增长见顶，双抗平台（CrossMab）存在技术协同' },
+        { b: '赛诺菲', s: 68, r: 'IO 布局薄弱，管理层指引下修后需要「确定性故事」' }
+      ],
+      conf: 91, src: 'DealForma · ASCO/WCLC 摘要 · 公司公告'
+    },
+    {
+      id: 'tfr1', label: 'TfR1 血脑屏障穿梭', scope: 'CNS 递送平台 · Transferrin Receptor 1 · 2021–2026H1 · 样本 n=6',
+      stats: [
+        { k: '区间交易价值', v: '$4.1B', d: '6 笔，小而早期' },
+        { k: '首付中位数', v: '$68M', d: '平台型溢价' },
+        { k: '临床前占比', v: '83%', d: '典型平台赛道' },
+        { k: 'CNS 交易额联动', v: '+41%', d: 'Aβ/Tau 回暖带动' }
+      ],
+      summary: [
+        'BBB 穿梭是 CNS 交易回暖的「卖铲人」：平台型交易结构（多靶点 option + 研究合作）占 83%，单笔首付低但期权密度高。',
+        '罗氏 Brain Shuttle 与 Denali ATV 双平台进入 Ph2/3 读出密集期，AI 预测首个 POC 成功将触发 3–5 笔跟随交易，复制 ADC 在 2020 年的「平台验证→扫货」路径。',
+        '当前估值尚未计入罕见病酶替代疗法外溢，属低拥挤、高期权价值的「预期差」区域。'
+      ],
+      anomalies: [
+        { t: '尚无 ≥$1B 总额交易', b: '与 CNS 领域整体回暖（+41%）形成剪刀差——平台验证前夜，窗口期特征明显。', sev: 'mid' },
+        { t: '天使轮资产被提前锁定', b: '2 笔交易标的为尚无体内数据的发现阶段平台，买方尽调周期缩短至 90 天以内。', sev: 'high' }
+      ],
+      matches: [
+        { b: 'Biogen', s: 87, r: 'Aβ 管线承压急需 CNS 新叙事，递送平台是最大短板' },
+        { b: '礼来', s: 80, r: 'Donanemab 之后寻找 CNS 第二增长曲线，已有 BBB 专利布局' },
+        { b: '武田', s: 72, r: '罕见病酶替代管线与 BBB 穿梭天然契合' }
+      ],
+      conf: 74, src: '公司公告 · 专利检索（小样本，置信度下调）'
+    },
+    {
+      id: 'sirna', label: 'siRNA / ASO', scope: '小核酸 · 心血管/代谢/罕见病 · 2021–2026H1 · 样本 n=21',
+      stats: [
+        { k: '区间交易价值', v: '$16.8B', d: '平台交易为主' },
+        { k: '交易数量', v: '21', d: '肝肾外递送占 29%' },
+        { k: '首付中位数', v: '$120M', d: '平台 > 单资产' },
+        { k: '中国卖方占比', v: '38%', d: '舶望/瑞博领衔' }
+      ],
+      summary: [
+        '交易逻辑从「单资产」转向「平台 + 多靶点 option」：诺华×舶望（$4.17B）确立平台级定价锚，首付仅 4.4% 但 option 密度极高。',
+        '肝外递送（CNS、脂肪、肌肉）是下一轮溢价焦点——具备肝外数据的平台首付溢价达 2.8×。',
+        '中国小核酸公司供给质量跃升，但买方尽调更关注 CMC 与递送专利自由度，交易周期较 ADC 长 40%。'
+      ],
+      anomalies: [
+        { t: '心血管适应症占比 52%', b: 'Inclisiran 商业化验证后，大适应症小核酸首付首次超过罕见病——支付方逻辑被重写。', sev: 'mid' },
+        { t: 'ASO 交易占比下滑至 24%', b: '化学修饰代差显现，siRNA GalNAc 平台虹吸资金。', sev: 'mid' }
+      ],
+      matches: [
+        { b: '安进', s: 82, r: 'Olpasiran 自研之外需要平台纵深，心血管战略高度契合' },
+        { b: '诺和诺德', s: 77, r: '代谢管线延伸至 siRNA 已有先例（Dicerna），肝外递送是明确缺口' },
+        { b: '阿斯利康', s: 70, r: 'Ionis 合作之外谋求自有平台，中国团队 actively sourcing' }
+      ],
+      conf: 80, src: 'DealForma · 公司公告 · 专利检索'
+    }
+  ];
+
+  /* ============================================================
+   * 手绘 SVG 图表（静态汇编数据，直接输出字符串）
+   * ============================================================ */
+  // C1 宏观剪刀差：柱 = 交易数量（左轴），线 = 平均单笔价值（右轴）
+  function chartScissors() {
+    var W = 760, H = 272, mL = 46, mR = 52, mT = 16, mB = 30;
+    var iw = W - mL - mR, ih = H - mT - mB;
+    var cMax = 700, aMax = 800;
+    var slot = iw / MACRO.length, bw = slot * 0.5;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    [0, 200, 400, 600].forEach(function (t) {
+      var y = mT + ih - (t / cMax) * ih;
+      s += '<line x1="' + mL + '" y1="' + y + '" x2="' + (W - mR) + '" y2="' + y + '" style="' + GRID + '"/>';
+      s += '<text x="' + (mL - 7) + '" y="' + (y + 3.5) + '" text-anchor="end" style="' + TICK + '">' + t + '</text>';
+    });
+    [0, 400, 800].forEach(function (t) {
+      var y = mT + ih - (t / aMax) * ih;
+      s += '<text x="' + (W - mR + 7) + '" y="' + (y + 3.5) + '" style="' + TICK + '">$' + t + 'M</text>';
+    });
+    var pts = [];
+    MACRO.forEach(function (d, i) {
+      var cx = mL + slot * i + slot / 2;
+      var bh = (d.count / cMax) * ih;
+      var half = i === MACRO.length - 1;
+      s += '<rect x="' + (cx - bw / 2) + '" y="' + (mT + ih - bh) + '" width="' + bw + '" height="' + bh + '" rx="3"'
+        + ' fill="var(--blue)" fill-opacity="' + (half ? 0.35 : 0.75) + '"><title>' + d.y + '：' + d.count + ' 笔交易</title></rect>';
+      s += '<text x="' + cx + '" y="' + (mT + ih - bh - 5) + '" text-anchor="middle" style="' + TICK + '">' + d.count + '</text>';
+      s += '<text x="' + cx + '" y="' + (H - mB + 15) + '" text-anchor="middle" style="' + TICKB + '">' + d.y + (half ? '▲' : '') + '</text>';
+      pts.push([cx, mT + ih - (d.avg / aMax) * ih, d.avg]);
+    });
+    var path = pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0] + ' ' + p[1]; }).join(' ');
+    s += '<path d="' + path + '" fill="none" stroke="var(--amber)" stroke-width="2.2"/>';
+    pts.forEach(function (p) {
+      s += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.4" fill="var(--amber)"><title>平均单笔 $' + p[2] + 'M</title></circle>';
+      s += '<text x="' + p[0] + '" y="' + (p[1] - 8) + '" text-anchor="middle" style="font-size:10px;font-weight:700;fill:var(--amber);paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round;">$' + p[2] + 'M</text>';
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  // C2 中国占比柱图
+  function chartChina() {
+    var W = 340, H = 210, mL = 34, mR = 10, mT = 14, mB = 26;
+    var iw = W - mL - mR, ih = H - mT - mB, max = 50;
+    var slot = iw / CHINA_SHARE.length, bw = slot * 0.56;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    [0, 25, 50].forEach(function (t) {
+      var y = mT + ih - (t / max) * ih;
+      s += '<line x1="' + mL + '" y1="' + y + '" x2="' + (W - mR) + '" y2="' + y + '" style="' + GRID + '"/>';
+      s += '<text x="' + (mL - 6) + '" y="' + (y + 3.5) + '" text-anchor="end" style="' + TICK + '">' + t + '%</text>';
+    });
+    CHINA_SHARE.forEach(function (d, i) {
+      var cx = mL + slot * i + slot / 2, bh = (d.v / max) * ih;
+      var hot = d.v >= 40;
+      s += '<rect x="' + (cx - bw / 2) + '" y="' + (mT + ih - bh) + '" width="' + bw + '" height="' + bh + '" rx="3"'
+        + ' fill="' + (hot ? 'var(--violet)' : 'var(--cyan)') + '" fill-opacity="' + (hot ? 0.9 : 0.55) + '"><title>' + d.y + '：' + d.v + '%</title></rect>';
+      s += '<text x="' + cx + '" y="' + (mT + ih - bh - 5) + '" text-anchor="middle" style="' + TICKB + '">' + d.v + '%</text>';
+      s += '<text x="' + cx + '" y="' + (H - mB + 14) + '" text-anchor="middle" style="' + TICK + '">' + d.y + '</text>';
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  // C3 买方象限气泡图（移植自 DealAtlas QuadrantChart，含标签防碰撞）
+  function chartQuadrant() {
+    var W = 680, H = 400, mL = 56, mR = 20, mT = 34, mB = 40, xMax = 48, yMax = 70;
+    function sx(v) { return mL + (v / xMax) * (W - mL - mR); }
+    function sy(v) { return mT + (1 - v / yMax) * (H - mT - mB); }
+    var items = BUYERS.map(function (b) {
+      var r = 5 + b.up * 0.9, x = sx(b.deals), y = sy(b.val);
+      var above = y > mT + 34;
+      return { b: b, x: x, y: y, r: r, ly: above ? y - r - 7 : y + r + 15 };
+    });
+    items.sort(function (a, c) { return a.ly - c.ly || a.x - c.x; });
+    var placed = [];
+    items.forEach(function (l) {
+      var above = l.ly < l.y, ly = l.ly, guard = 0;
+      while (placed.some(function (p) { return Math.abs(p.x - l.x) < 56 && Math.abs(p.ly - ly) < 13; }) && guard < 40) {
+        ly += above ? -13 : 13; guard++;
+      }
+      l.ly = Math.max(mT - 2, Math.min(H - mB - 2, ly));
+      placed.push(l);
+    });
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    [0, 12, 24, 36, 48].forEach(function (t) {
+      s += '<line x1="' + sx(t) + '" y1="' + mT + '" x2="' + sx(t) + '" y2="' + (H - mB) + '" style="' + GRID + '"/>';
+      s += '<text x="' + sx(t) + '" y="' + (H - mB + 16) + '" text-anchor="middle" style="' + TICK + '">' + t + '</text>';
+    });
+    [0, 20, 40, 60].forEach(function (t) {
+      s += '<line x1="' + mL + '" y1="' + sy(t) + '" x2="' + (W - mR) + '" y2="' + sy(t) + '" style="' + GRID + '"/>';
+      s += '<text x="' + (mL - 8) + '" y="' + (sy(t) + 3.5) + '" text-anchor="end" style="' + TICK + '">$' + t + 'B</text>';
+    });
+    s += '<line x1="' + sx(24) + '" y1="' + mT + '" x2="' + sx(24) + '" y2="' + (H - mB) + '" style="stroke:var(--line-strong);stroke-dasharray:5 4;stroke-width:1.2;"/>';
+    s += '<line x1="' + mL + '" y1="' + sy(35) + '" x2="' + (W - mR) + '" y2="' + sy(35) + '" style="stroke:var(--line-strong);stroke-dasharray:5 4;stroke-width:1.2;"/>';
+    s += '<text x="' + (W - mR - 8) + '" y="' + (mT + 14) + '" text-anchor="end" style="font-size:10.5px;font-weight:700;fill:var(--violet);opacity:.8;">战略大买手 ↗</text>';
+    s += '<text x="' + (mL + 8) + '" y="' + (mT + 14) + '" style="' + TICK + '">低频重仓</text>';
+    s += '<text x="' + (W - mR - 8) + '" y="' + (H - mB - 8) + '" text-anchor="end" style="' + TICK + '">高频扫货 →</text>';
+    s += '<text x="' + (mL + 8) + '" y="' + (H - mB - 8) + '" style="' + TICK + '">观望区</text>';
+    s += '<text x="' + ((mL + W - mR) / 2) + '" y="' + (H - 6) + '" text-anchor="middle" style="' + TICK + '">五年出手次数 →</text>';
+    s += '<text x="14" y="' + ((mT + H - mB) / 2) + '" text-anchor="middle" style="' + TICK + '" transform="rotate(-90 14 ' + ((mT + H - mB) / 2) + ')">总交易价值 →</text>';
+    placed.forEach(function (l) {
+      var b = l.b, meta = STYLE_META[b.style];
+      s += '<g><circle cx="' + l.x + '" cy="' + l.y + '" r="' + l.r + '" fill="' + meta.color + '" fill-opacity="0.62" stroke="' + meta.color + '" stroke-opacity="0.95">'
+        + '<title>' + esc(b.cn) + ' ' + esc(b.n) + '｜交易 ' + b.deals + ' 笔｜总值 $' + b.val + 'B｜首付均值 ' + b.up + '%｜' + meta.label + (b.tags ? '｜' + esc(b.tags) : '') + '｜偏好 ' + esc(b.stage) + '</title></circle>'
+        + '<text x="' + l.x + '" y="' + l.ly + '" text-anchor="middle" style="font-size:10.5px;font-weight:500;fill:var(--text);pointer-events:none;">' + esc(b.cn) + '</text></g>';
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  // C4a 首付占比 IQR 带图
+  function chartIqr() {
+    var W = 340, H = 218, mL = 36, mR = 10, mT = 14, mB = 26;
+    var iw = W - mL - mR, ih = H - mT - mB, max = 25;
+    function X(i) { return mL + (iw / (IQR.length - 1)) * i; }
+    function Y(v) { return mT + ih - (v / max) * ih; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    [0, 10, 20].forEach(function (t) {
+      s += '<line x1="' + mL + '" y1="' + Y(t) + '" x2="' + (W - mR) + '" y2="' + Y(t) + '" style="' + GRID + '"/>';
+      s += '<text x="' + (mL - 6) + '" y="' + (Y(t) + 3.5) + '" text-anchor="end" style="' + TICK + '">' + t + '%</text>';
+    });
+    var top = IQR.map(function (d, i) { return 'L' + X(i) + ' ' + Y(d.p75); }).join(' ');
+    var bot = IQR.slice().reverse().map(function (d, i) { return 'L' + X(IQR.length - 1 - i) + ' ' + Y(d.p25); }).join(' ');
+    s += '<path d="M' + X(0) + ' ' + Y(IQR[0].p75) + ' ' + top + ' ' + bot + ' Z" fill="var(--violet)" fill-opacity="0.13"/>';
+    var med = IQR.map(function (d, i) { return (i ? 'L' : 'M') + X(i) + ' ' + Y(d.med); }).join(' ');
+    s += '<path d="' + med + '" fill="none" stroke="var(--violet)" stroke-width="2.2"/>';
+    IQR.forEach(function (d, i) {
+      s += '<circle cx="' + X(i) + '" cy="' + Y(d.med) + '" r="3" fill="var(--violet)"><title>' + d.y + '：中位 ' + d.med + '%（P25–P75：' + d.p25 + '–' + d.p75 + '%）</title></circle>';
+      s += '<text x="' + X(i) + '" y="' + (Y(d.med) - 7) + '" text-anchor="middle" style="font-size:9.5px;font-weight:700;fill:var(--violet);">' + d.med + '</text>';
+      s += '<text x="' + X(i) + '" y="' + (H - mB + 14) + '" text-anchor="middle" style="' + TICK + '">' + d.y + '</text>';
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  // C4b 结构构成 100% 堆叠横条
+  function chartStack() {
+    var W = 340, H = 218, mL = 42, mR = 8, mT = 12, mB = 8;
+    var iw = W - mL - mR, bh = 22, gap = (H - mT - mB - bh * MIX.length) / (MIX.length - 1);
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    MIX.forEach(function (row, i) {
+      var y = mT + i * (bh + gap), x = mL;
+      s += '<text x="' + (mL - 6) + '" y="' + (y + bh / 2 + 3.5) + '" text-anchor="end" style="' + TICKB + '">' + row.y + '</text>';
+      MIX_SEGS.forEach(function (seg) {
+        var w = (row[seg.k] / 100) * iw;
+        s += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + bh + '" fill="' + seg.color + '" fill-opacity="0.8"><title>' + row.y + ' ' + seg.label + '：' + row[seg.k] + '%</title></rect>';
+        if (w > 24) s += '<text x="' + (x + w / 2) + '" y="' + (y + bh / 2 + 3.5) + '" text-anchor="middle" style="font-size:9.5px;font-weight:700;fill:rgba(0,0,0,.55);pointer-events:none;">' + row[seg.k] + '</text>';
+        x += w;
+      });
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  // C4c 辉瑞 × 三生解剖条
+  function chartAnatomy() {
+    var W = 720, H = 96, mL = 4, mR = 4, barY = 8, bh = 30;
+    var iw = W - mL - mR;
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    var x = mL;
+    ANATOMY.segs.forEach(function (seg, i) {
+      var w = (seg.v / ANATOMY.total) * iw;
+      s += '<rect x="' + x + '" y="' + barY + '" width="' + w + '" height="' + bh + '" rx="' + (i === 0 || i === ANATOMY.segs.length - 1 ? 4 : 0) + '" fill="' + seg.color + '" fill-opacity="0.85">'
+        + '<title>' + seg.k + ' $' + seg.v + 'B（' + Math.round(seg.v / ANATOMY.total * 100) + '%）</title></rect>';
+      var cx = x + w / 2;
+      s += '<text x="' + cx + '" y="' + (barY + bh / 2 + 4) + '" text-anchor="middle" style="font-size:11px;font-weight:700;fill:rgba(0,0,0,.6);pointer-events:none;">$' + seg.v + 'B</text>';
+      s += '<text x="' + cx + '" y="' + (barY + bh + 16) + '" text-anchor="middle" style="' + TICKB + '">' + seg.k + '</text>';
+      s += '<text x="' + cx + '" y="' + (barY + bh + 30) + '" text-anchor="middle" style="' + TICK + '">' + seg.desc + '</text>';
+      x += w;
+    });
+    s += '<text x="' + mL + '" y="' + (H - 4) + '" style="' + TICK + '">另有梯度销售分成（Tiered Royalty，约低双位数 %）｜医药魔方口径首付包 $15 亿 = $12.5 亿首付 + $1 亿股权 + $1.5 亿市场选择权</text>';
+    s += '</svg>';
+    return s;
+  }
+
+  // C5 模态份额斜坡图（2021 → 2025）
+  function chartSlope() {
+    var W = 340, H = 300, mT = 18, mB = 14, x1 = 96, x2 = W - 108;
+    var ih = H - mT - mB, max = 34;
+    function Y(v) { return mT + ih - (v / max) * ih; }
+    function spread(list, key) {
+      var arr = list.map(function (d) { return { d: d, y: Y(d[key]) }; }).sort(function (a, b) { return a.y - b.y; });
+      for (var i = 1; i < arr.length; i++) {
+        if (arr[i].y - arr[i - 1].y < 13) arr[i].y = arr[i - 1].y + 13;
+      }
+      return arr;
+    }
+    var L = spread(SLOPE, 'a'), R = spread(SLOPE, 'b');
+    function lyOf(arr, d) { for (var i = 0; i < arr.length; i++) if (arr[i].d === d) return arr[i].y; return 0; }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    s += '<text x="' + x1 + '" y="12" text-anchor="middle" style="' + TICKB + '">2021</text>';
+    s += '<text x="' + x2 + '" y="12" text-anchor="middle" style="' + TICKB + '">2025</text>';
+    SLOPE.forEach(function (d) {
+      var y1 = Y(d.a), y2 = Y(d.b);
+      s += '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + d.c + '" stroke-width="2" stroke-opacity="0.75"><title>' + esc(d.n) + '：' + d.a + '% → ' + d.b + '%</title></line>';
+      s += '<circle cx="' + x1 + '" cy="' + y1 + '" r="3" fill="' + d.c + '"/><circle cx="' + x2 + '" cy="' + y2 + '" r="3" fill="' + d.c + '"/>';
+      s += '<text x="' + (x1 - 7) + '" y="' + (lyOf(L, d) + 3.5) + '" text-anchor="end" style="' + TICK + '">' + esc(d.n) + ' ' + d.a + '%</text>';
+      s += '<text x="' + (x2 + 7) + '" y="' + (lyOf(R, d) + 3.5) + '" style="font-size:10px;font-weight:700;fill:' + d.c + ';">' + d.b + '% ' + esc(d.n) + '</text>';
+    });
+    s += '</svg>';
+    return s;
+  }
+
+  // C6 地域桑基（移植自 DealAtlas FlowSankey）
+  function chartSankey() {
+    var W = 680, H = 430, padT = 34, padB = 24, gap = 26, nodeW = 12, xL = 108, xR = W - 108;
+    var oT = SK_O.map(function (_, o) { return SK_F.filter(function (f) { return f[0] === o; }).reduce(function (s2, f) { return s2 + f[2]; }, 0); });
+    var dT = SK_D.map(function (_, d) { return SK_F.filter(function (f) { return f[1] === d; }).reduce(function (s2, f) { return s2 + f[2]; }, 0); });
+    var total = oT.reduce(function (a, b) { return a + b; }, 0);
+    var scale = (H - padT - padB - gap * 3) / total;
+    var yAcc = padT, i;
+    var origins = oT.map(function (t, i2) { var n = { name: SK_O[i2], total: t, y: yAcc, h: t * scale }; yAcc += t * scale + gap; return n; });
+    yAcc = padT;
+    var dests = dT.map(function (t, i2) { var n = { name: SK_D[i2], total: t, y: yAcc, h: t * scale }; yAcc += t * scale + gap; return n; });
+    var oOff = [0, 0, 0, 0], dOff = [0, 0, 0, 0];
+    var flows = SK_F.map(function (f) {
+      var y1 = origins[f[0]].y + oOff[f[0]] * scale, y2 = dests[f[1]].y + dOff[f[1]] * scale, h = f[2] * scale;
+      oOff[f[0]] += f[2]; dOff[f[1]] += f[2];
+      return { from: f[0], to: f[1], v: f[2], y1: y1, y2: y2, h: h, hot: f[0] === 0 };
+    });
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
+    var mx = (xL + nodeW + xR) / 2;
+    flows.forEach(function (f) {
+      var d = 'M ' + (xL + nodeW) + ' ' + f.y1 + ' C ' + mx + ' ' + f.y1 + ', ' + mx + ' ' + f.y2 + ', ' + xR + ' ' + f.y2
+        + ' L ' + xR + ' ' + (f.y2 + f.h) + ' C ' + mx + ' ' + (f.y2 + f.h) + ', ' + mx + ' ' + (f.y1 + f.h) + ', ' + (xL + nodeW) + ' ' + (f.y1 + f.h) + ' Z';
+      s += '<path d="' + d + '" fill="' + SK_OC[f.from] + '" fill-opacity="' + (f.hot ? 0.5 : 0.13) + '"' + (f.hot ? ' stroke="' + SK_OC[f.from] + '" stroke-opacity="0.6" stroke-width="0.5"' : '') + '>'
+        + '<title>' + SK_O[f.from] + ' → ' + SK_D[f.to] + '买方：$' + f.v + 'B</title></path>';
+    });
+    origins.forEach(function (n, i2) {
+      s += '<rect x="' + xL + '" y="' + n.y + '" width="' + nodeW + '" height="' + n.h + '" rx="2" fill="' + SK_OC[i2] + '" fill-opacity="0.9"/>'
+        + '<text x="' + (xL - 10) + '" y="' + (n.y + n.h / 2 - 4) + '" text-anchor="end" style="font-size:12px;font-weight:600;fill:var(--text-strong);">' + n.name + '资产</text>'
+        + '<text x="' + (xL - 10) + '" y="' + (n.y + n.h / 2 + 12) + '" text-anchor="end" style="' + TICK + '">$' + n.total + 'B</text>';
+    });
+    dests.forEach(function (n) {
+      s += '<rect x="' + xR + '" y="' + n.y + '" width="' + nodeW + '" height="' + n.h + '" rx="2" fill="var(--surface-3)" stroke="var(--line-strong)"/>'
+        + '<text x="' + (xR + nodeW + 10) + '" y="' + (n.y + n.h / 2 - 4) + '" style="font-size:12px;font-weight:600;fill:var(--text-strong);">' + n.name + '买方</text>'
+        + '<text x="' + (xR + nodeW + 10) + '" y="' + (n.y + n.h / 2 + 12) + '" style="' + TICK + '">$' + n.total + 'B</text>';
+    });
+    s += '<text x="' + xL + '" y="16" style="font-size:10.5px;fill:var(--muted);letter-spacing:2px;">资产来源地</text>';
+    s += '<text x="' + (xR + nodeW) + '" y="16" text-anchor="end" style="font-size:10.5px;fill:var(--muted);letter-spacing:2px;">买方所在地</text>';
+    s += '</svg>';
+    return s;
+  }
+
+  // C7 靶点热度表
+  function targetsTable() {
+    var rows = TARGETS.map(function (t) {
+      var color = t.heat >= 80 ? 'var(--amber)' : 'var(--cyan)';
+      return '<tr><td><strong>' + esc(t.t) + '</strong></td><td style="color:var(--muted)">' + esc(t.m) + '</td>'
+        + '<td class="num">' + t.d + '</td><td class="num">$' + t.v + 'B</td>'
+        + '<td style="min-width:120px"><div class="lp-track"><div class="lp-fill" style="width:' + t.heat + '%;background:' + color + '"></div></div></td>'
+        + '<td class="num" style="color:' + color + ';font-weight:700">' + t.heat + '</td>'
+        + '<td style="text-align:center;color:' + (t.up ? 'var(--green)' : 'var(--muted)') + ';font-weight:700">' + (t.up ? '↑' : '→') + '</td>'
+        + '<td style="color:var(--muted);font-size:11px">' + esc(t.sig) + '</td></tr>';
+    }).join('');
+    return '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
+      + '<th>靶点赛道</th><th>模态</th><th style="text-align:right">交易数</th><th style="text-align:right">总价值</th>'
+      + '<th>热度指数</th><th></th><th style="text-align:center">趋势</th><th>关键信号</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  /* ---------- AI 洞察引擎 ---------- */
+  var aiActive = AI_TOPICS[0].id;
+  function aiTopicBody(t) {
+    var h = '<div class="ci-ai-scope">分析范围：' + esc(t.scope) + '</div>';
+    h += '<div class="ci-ai-stats">' + t.stats.map(function (s2) {
+      return '<div class="ci-ai-stat"><div class="k">' + esc(s2.k) + '</div><div class="v">' + esc(s2.v) + '</div><div class="d">' + esc(s2.d) + '</div></div>';
+    }).join('') + '</div>';
+    h += '<div class="ci-ai-cols"><div><p class="ci-ai-h">AI 摘要</p><ul class="ci-ai-sum">'
+      + t.summary.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'
+      + '<p class="ci-ai-h" style="margin-top:12px">潜在买方匹配</p>'
+      + t.matches.map(function (m) {
+        return '<div class="ci-match"><span class="nm">' + esc(m.b) + '</span><span class="rs">' + esc(m.r) + '</span><span class="sc">' + m.s + '</span></div>';
+      }).join('') + '</div>'
+      + '<div><p class="ci-ai-h">异常与预警</p>'
+      + t.anomalies.map(function (a) {
+        return '<div class="ci-anom ' + a.sev + '"><span class="sev">' + (a.sev === 'high' ? '高优先级' : '关注') + '</span><b>' + esc(a.t) + '</b><br>' + esc(a.b) + '</div>';
+      }).join('')
+      + '<div class="ci-conf"><span>置信度</span><div class="lp-track"><div class="lp-fill" style="width:' + t.conf + '%;background:var(--violet)"></div></div>'
+      + '<strong style="color:var(--violet)">' + t.conf + '%</strong></div>'
+      + '<p class="lp-note">语料来源：' + esc(t.src) + '。AI 产出为汇编层分析演示，不构成投资建议。</p>'
+      + '</div></div>';
+    return h;
+  }
+  function aiEngine() {
+    var h = '<div class="ci-tabs">' + AI_TOPICS.map(function (t) {
+      return '<button type="button" class="ci-tab' + (t.id === aiActive ? ' on' : '') + '" data-ci-topic="' + t.id + '">' + esc(t.label) + '</button>';
+    }).join('') + '</div>';
+    var cur = AI_TOPICS.filter(function (t) { return t.id === aiActive; })[0] || AI_TOPICS[0];
+    h += '<div id="ciAiBody">' + aiTopicBody(cur) + '</div>';
+    return h;
+  }
+
+  /* ---------- 双层互证表 ---------- */
+  var XREF = [
+    {
+      dim: '模态迁移',
+      cur: 'ADC 占全球交易价值份额 7% → 18%（2021→2025），双抗 5% → 16%',
+      curSrc: 'DealForma 口径 · 汇编层',
+      live: 'ADC 行业试验启动五年 ×2.9，双抗/多抗曲线同步抬升',
+      liveSrc: 'CT.gov 实时 · 下篇「模态流向」',
+      verdict: '管线投票领先资金投票 12–24 个月——下篇曲线的斜率就是上篇份额的未来'
+    },
+    {
+      dim: '中国崛起',
+      cur: '中国资产占 MNC 引进 40%；2025 license-out 总额 $135.7B 全球第一，占全球交易额 52%',
+      curSrc: 'IQVIA · 医药魔方 NextPharma',
+      live: '含中国中心试验占比 17.8% → 25.1%（2021→2025），Ph1 占比 32.5%',
+      liveSrc: 'CT.gov 实时 · 下篇「地域崛起」',
+      verdict: '试验供给曲线印证交易曲线——今天的 Ph1 占比就是三年后的 license-out 份额'
+    },
+    {
+      dim: '赛道拥挤度',
+      cur: 'PD-1/VEGF 首付中位 $560M、12 笔全部为中国资产，剩余独立资产不足 6 个',
+      curSrc: '公司公告 · 汇编层测算',
+      live: 'PD-1×VEGF 联合检索试验启动近 24 月 +383%',
+      liveSrc: 'CT.gov 实时 · 下篇「靶点热度」',
+      verdict: '拥挤度双向确认——进场成本曲线陡峭化，后发买方需支付「赛道税」'
+    },
+    {
+      dim: '风险定价',
+      cur: '首付占比中位 15.6% → 8.2%，里程碑化交易占比升至 72%——风险持续后移',
+      curSrc: 'William Blair 口径 · 汇编层',
+      live: '全球试验启动五年 −11% 而 FDA 批准节奏平稳——兑现出口收窄',
+      liveSrc: 'CT.gov + openFDA 实时 · 下篇「宏观脉冲」',
+      verdict: '供给收缩 + 风险后移互为因果：买方用结构对冲管线不确定性'
+    },
+    {
+      dim: '摘青苗',
+      cur: '临床前至 I 期资产占出海交易 68–70%；NewCo 模式累计 14 起',
+      curSrc: '医药魔方 · 公众号年度盘点',
+      live: '近 12 月新进入 Ph2/3 的 ADC/双抗/GLP-1 资产实时可列',
+      liveSrc: 'CT.gov 实时 · 下篇「交易标的雷达」',
+      verdict: '下篇雷达表就是「青苗」的实时花名册——每一条 NCT 都可核验'
+    }
+  ];
+  function xrefTable() {
+    var rows = XREF.map(function (r) {
+      return '<tr><td style="white-space:nowrap"><strong>' + esc(r.dim) + '</strong></td>'
+        + '<td><span class="ci-x-tag ci-x-cur">汇编层</span>' + esc(r.cur) + '<span class="ci-x-src">' + esc(r.curSrc) + '</span></td>'
+        + '<td><span class="ci-x-tag ci-x-live">实时层</span>' + esc(r.live) + '<span class="ci-x-src">' + esc(r.liveSrc) + '</span></td>'
+        + '<td style="color:var(--muted)">' + esc(r.verdict) + '</td></tr>';
+    }).join('');
+    return '<div class="lp-scroll"><table class="ci-xref"><thead><tr>'
+      + '<th>维度</th><th>研报汇编结论（钱已投票）</th><th>实时 API 证据（管线在投票）</th><th>互证结论</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  /* ---------- 代表性交易汇编 TOP DEALS（自原「市场全景」页迁入，数据 = window.ConvergenceMarketWide） ---------- */
+  function topDealsPanel() {
+    var MW = window.ConvergenceMarketWide;
+    if (!MW || !MW.deals || !MW.deals.length) return '';
+    var fmtB = function (v) {
+      if (v === null || v === undefined) return '未披露';
+      if (v >= 1) return '$' + (Number.isInteger(v) ? v : v.toFixed(1)) + 'B';
+      return '$' + Math.round(v * 1000) + 'M';
+    };
+    var rows = MW.deals.slice().sort(function (a, b) { return (b.total || 0) - (a.total || 0); }).slice(0, 16).map(function (d) {
+      return '<tr><td style="white-space:nowrap">' + esc(d.date) + '</td>'
+        + '<td><strong>' + esc(d.seller) + '</strong> → ' + esc(d.buyer) + '</td>'
+        + '<td>' + esc(d.target) + ' <span style="color:var(--muted);font-size:10.5px">' + esc(d.modality) + '</span></td>'
+        + '<td><span class="ci-x-tag ' + (d.type === 'M_AND_A' ? 'ci-x-live' : 'ci-x-cur') + '">' + (d.type === 'M_AND_A' ? 'M&A' : 'Licensing') + '</span></td>'
+        + '<td class="num">' + fmtB(d.upfront) + '</td>'
+        + '<td class="num"><strong>' + fmtB(d.total) + '</strong></td>'
+        + '<td style="color:var(--muted);font-size:10.5px">' + esc(d.source) + '</td></tr>';
+    }).join('');
+    return '<section class="lp-panel lp-wide">' + panelHead('代表性交易汇编', '38 笔公开口径 · 医药魔方 / 动脉网 / 公司公告等', 'TOP DEALS：近 5 年代表性交易（按总额排序，每笔标注公开来源）')
+      + '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
+      + '<th>时间</th><th>卖方 → 买方</th><th>靶点 / 模态</th><th>类型</th><th style="text-align:right">首付</th><th style="text-align:right">总额</th><th>来源</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table></div>'
+      + '<p class="lp-note">共汇编 ' + MW.deals.length + ' 笔代表性交易，此处显示总额 TOP 16；全部 ' + MW.deals.length + ' 笔的三层公开市场逻辑拆解见下方「交易解剖室」。汇编口径未逐笔回一手核实（逐笔核实版见「自建管线分析」页）。</p></section>';
+  }
+
+  /* ---------- TSR 对比条（Bain 2026） ---------- */
+  function tsrStrip() {
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">'
+      + TSR.map(function (t) {
+        return '<div style="padding:12px 14px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)">'
+          + '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">'
+          + '<span style="font-size:11.5px;color:var(--text)">' + esc(t.g) + '</span>'
+          + '<strong style="font-size:22px;color:' + t.color + ';font-variant-numeric:tabular-nums">' + t.v + '%</strong></div>'
+          + '<div class="lp-track" style="margin-top:8px"><div class="lp-fill" style="width:' + (t.v / 24 * 100) + '%;background:' + t.color + '"></div></div>'
+          + '<div style="margin-top:5px;font-size:10px;color:var(--muted)">年均股东总回报 TSR · 2020–2025 · Top 20 药企</div></div>';
+      }).join('') + '</div>';
+  }
+
+  /* ---------- 面板头工具 ---------- */
+  function panelHead(badge, src, title) {
+    return '<div class="lp-head"><div><div class="lp-kicker"><span class="ci-badge">' + esc(badge) + '</span><span class="ci-src">' + esc(src) + '</span></div>'
+      + '<h2>' + esc(title) + '</h2></div></div>';
+  }
+
+  /* ============================================================
+   * renderSections：研报汇编分析层完整 HTML
+   * ============================================================ */
+  function renderSections() {
+    return ''
+      + '<div class="ci-layer" id="ciLayerCurated">'
+      + '<div class="ci-layer-head">'
+      + '<div class="ci-eyebrow">上篇 · 研报汇编分析层 · Curated Intelligence</div>'
+      + '<h2>交易市场定论：钱已经投票的结果</h2>'
+      + '<p>本层是与站内一切数据管线无关的<strong style="color:var(--text)">独立数据来源看板</strong>——全部数字取自公开研报、公司公告与专业数据库（Bain、IQVIA、DealForma、William Blair、医药魔方 NextPharma、公众号年度盘点等）的人工汇编，每个面板右上角标注来源。分析动线自顶向下：<strong style="color:var(--text)">宏观剪刀差 → 买方画像 → 交易结构 → 模态与地域 → 38 笔逐笔汇编与解剖 → AI 洞察</strong>，回答「交易为什么值这个钱」；下篇实时层回答「管线在为谁投票」。两层互为因果、互相印证。</p>'
+      + '</div>'
+
+      + '<section class="ci-banner" role="note">'
+      + '<span class="ci-flag">研报汇编 · CURATED</span>'
+      + '<p><strong>口径诚实边界：</strong>宏观锚点（总额、占比、TSR、首付中位数区间）校准自上述公开来源；标的级明细为演示用途的合成数据。'
+      + '本层为周期性研报快照（最新至 2026H1），不实时刷新——实时性由下篇公共 API 层负责。</p></section>'
+
+      // KPI ×6
+      + '<div class="ci-kpis">'
+      + '<div class="ci-kpi"><div class="k"><span>全球交易总额 · 2025</span><span class="ci-src">DealForma 口径</span></div><div class="v">$268B</div><div class="d"><span class="up">+25.2%</span> vs 2024 · Licensing + M&A 创十年新高</div></div>'
+      + '<div class="ci-kpi"><div class="k"><span>平均单笔价值 · 2025</span><span class="ci-src">IQVIA</span></div><div class="v">$641M</div><div class="d"><span class="up">+35.5%</span> · 数量 −7.5%——「量减价增」剪刀差</div></div>'
+      + '<div class="ci-kpi"><div class="k"><span>首付款中位占比 · 2025</span><span class="ci-src">William Blair</span></div><div class="v">8.9%</div><div class="d"><span class="dn">−1.9pp</span> · 2021 年为 15.6%，风险持续后移</div></div>'
+      + '<div class="ci-kpi"><div class="k"><span>中国资产占 MNC 引进 · 2025</span><span class="ci-src">IQVIA</span></div><div class="v">40%</div><div class="d"><span class="up">+10pp</span> · 2021 年仅 6%，五年 6.7 倍</div></div>'
+      + '<div class="ci-kpi"><div class="k"><span>中国 License-out 总额 · 2025</span><span class="ci-src">医药魔方</span></div><div class="v">$135.7B</div><div class="d">157 笔 · 超美国居全球第一 · 金额约占全球一半</div></div>'
+      + '<div class="ci-kpi"><div class="k"><span>中国 BD 首付款 · 2025</span><span class="ci-src">医药魔方</span></div><div class="v">$7.0B</div><div class="d">同比 +226% · <strong>首超一级市场融资额</strong></div></div>'
+      + '</div>'
+
+      + '<div class="lp-grid">'
+      // C1 剪刀差
+      + '<section class="lp-panel lp-wide">' + panelHead('宏观剪刀差', 'DealForma · IQVIA 合成', '量减价增：买方更少、更贵、更挑剔')
+      + '<div class="lp-legend"><span><i style="background:var(--blue)"></i>交易数量（左轴，笔）</span><span><i style="background:var(--amber)"></i>平均单笔价值（右轴）</span></div>'
+      + '<div style="max-width:880px;margin:0 auto">' + chartScissors() + '</div>'
+      + '<p class="lp-note">2026H1▲ 为半年数据。交易数量连续第 4 年收缩，平均单笔价值五年翻倍——买方策略从「铺量」转向「重仓确定性」。'
+      + '另据医药魔方：2026Q1 中国出海交易 $59.6B，单季已超 2024 全年。</p></section>'
+
+      // C3 买方象限
+      + '<section class="lp-panel lp-wide">' + panelHead('买方画像', 'DealForma · 公司公告', '四象限：谁在买、怎么买——气泡大小 = 平均首付占比')
+      + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>高频扫货型</span><span><i style="background:#60A5FA"></i>均衡型</span><span><i style="background:#FBBF24"></i>孤注一掷型</span><span style="color:var(--muted)">悬停气泡查看明细</span></div>'
+      + '<div style="max-width:760px;margin:0 auto">' + chartQuadrant() + tsrStrip() + '</div>'
+      + '<p class="lp-note">Bain M&A Report 2026：连续小额并购者年均 TSR 24%，是孤注一掷型（6%）的 4 倍——「程序化并购」是过去五年唯一被验证的超额收益策略。'
+      + '典型连续收购者：礼来、诺华、强生（年均多笔中小型 BD，围绕核心治疗领域补管线）；超大并购型：辉瑞（Seagen $43B）、安进（Horizon $27.8B）、AZ（Alexion $39B）——SVB Leerink 口径下超大并购后 3 年 TSR 中位数为负。</p></section>'
+
+      // C4 交易结构
+      + '<section class="lp-panel lp-wide">' + panelHead('交易结构', 'William Blair · 公司公告', '风险后移：首付占比腰斩，里程碑成为定价主角')
+      + '<div class="ci-two"><div><div class="ci-sub-h">首付占总价值比例：中位数与 P25–P75 区间</div><div style="max-width:460px;margin:0 auto">' + chartIqr() + '</div></div>'
+      + '<div><div class="ci-sub-h">聚合交易价值的结构构成（100% 堆叠）</div><div style="max-width:460px;margin:0 auto">' + chartStack() + '</div>'
+      + '<div class="lp-legend" style="margin-top:6px">' + MIX_SEGS.map(function (g) { return '<span><i style="background:' + g.color + '"></i>' + esc(g.label) + '</span>'; }).join('') + '</div></div></div>'
+      + '<div class="ci-sub-h" style="margin-top:14px">单笔解剖：辉瑞 × 三生制药 SSGJ-707（PD-1/VEGF 双抗 · 2025.05 · 总额 $6.0B）</div>'
+      + '<div style="max-width:860px;margin:0 auto">' + chartAnatomy() + '</div>'
+      + '<p class="lp-note">「摘青苗」结构：2025 年临床前至 I 期资产占中国出海交易 68–70%；NewCo 模式累计 14 起（2025H1 5 起）——买方用期权式结构锁定早期资产。'
+      + '中国出海口径首付占比中位数同样逐年走低（约 14% → 6.5%，公开盘点 62 笔可比交易、中位首付 $1.6 亿），下行斜率较全球口径更陡。</p></section>'
+
+      // C5 模态斜坡 + C2 中国占比
+      + '<section class="lp-panel">' + panelHead('模态流向', 'DealForma 合成', '交易价值份额：2021 → 2025')
+      + '<div style="max-width:440px;margin:0 auto">' + chartSlope() + '</div>'
+      + '<p class="lp-note">ADC + 双抗合计份额 12% → 34%；ADC+双抗占肿瘤领域交易价值份额 14% → 39%。</p></section>'
+
+      + '<section class="lp-panel">' + panelHead('地域崛起', 'IQVIA · 医药魔方', '中国资产占大药企引进比例')
+      + '<div style="max-width:440px;margin:0 auto">' + chartChina() + '</div>'
+      + '<p class="lp-note">TOP20 MNC 引进中国资产金额占其交易总额约 40%（2025 前三季 $39.4B）；摩根士丹利：中美研发差距缩至 3.7 年，III 期单受试者成本仅为美国 36–40%，ADC 入组速度 1.5–2.5×。</p></section>'
+
+      // C6 桑基
+      + '<section class="lp-panel lp-wide">' + panelHead('地域流向', 'DealForma 合成 · 2024–2025 聚合', '桑基图：中国资产，全球买单')
+      + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>高亮流 = 中国来源资产（$147B，81% 流向美欧买方）</span></div>'
+      + '<div style="max-width:700px;margin:0 auto">' + chartSankey() + '</div>'
+      + '<p class="lp-note">刻意不用地图飞线——投资人要的是可定量的比例关系，不是地理装饰。悬停流带查看分项金额。'
+      + '另据 Clarivate：China-out 占全球 out-licensing 比例从 2020 年约 5% 升至 2025H1 约 32%；中国 → 美国为最大走廊（38 笔汇编中占 13 笔）。</p></section>'
+
+      // 代表性交易汇编（自原「市场全景」页迁入）
+      + topDealsPanel()
+
+      // C7 靶点热度
+      + '<section class="lp-panel lp-wide">' + panelHead('靶点热度', 'DealForma · 公司公告', '八大竞价赛道：热度、趋势与关键信号')
+      + targetsTable()
+      + '<p class="lp-note">琥珀色 = 热度 ≥80 的白热化赛道。热度指数综合交易密度、首付溢价与买方竞价家数（汇编层测算）。</p></section>'
+
+      // 交易解剖室（自原「市场全景」页迁入，38 笔逐笔公开市场逻辑）
+      + '</div>'
+      + (window.DealAnatomy ? window.DealAnatomy.renderSection() : '')
+      + '<div class="lp-grid">'
+
+      // AI 洞察引擎
+      + '<section class="lp-panel lp-wide">' + panelHead('AI 洞察引擎', '汇编层分析产出 · 演示', '五大赛道深潜：摘要、异常预警与买方匹配')
+      + aiEngine() + '</section>'
+
+      // 双层互证
+      + '<section class="lp-panel lp-wide">' + panelHead('双层互证', 'Cross-Validation', '研报说的，实时数据认不认？')
+      + xrefTable()
+      + '<p class="lp-note">互证方法：同一维度下，汇编层给「交易端结果」，实时层给「研发端先行指标」；方向一致则结论加强，背离则标注预警。实时层数值快照 2026-07-17，最新值见下篇对应面板。</p></section>'
+      + '</div>'
+
+      + '<div class="lp-foot"><strong>汇编层来源清单：</strong>Bain M&amp;A Report 2026（TSR 对比）· IQVIA Biopharma M&amp;A Outlook 2026（中国资产占比 40%、平均单笔价值）· DealForma（交易结构/模态/地域口径）· '
+      + 'William Blair Q1 2025 Review（首付中位数 $47M 与 IQR 区间）· 医药魔方 NextPharma（2025 中国 License-out $135.7B 全球第一、首付款 $70 亿 +226% 首超一级市场融资、摘青苗 68–70%、NewCo 14 起、2026Q1 $59.6B）· '
+      + '摩根士丹利（研发差距 3.7 年、成本 36–40%、入组 1.5–2.5×）· 公司公告（辉瑞×三生、AZ×石药、GSK×恒瑞等）。宏观锚点校准自公开来源，标的级明细为演示合成数据；不构成投资建议。</div>'
+      + '</div>';
+  }
+
+  /* ---------- mount：AI 标签页交互（事件委托，防重复绑定） ---------- */
+  function mount() {
+    var body = document.getElementById('viewBody');
+    if (!body || body.__ciBound) return;
+    body.__ciBound = true;
+    body.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.classList || !t.classList.contains('ci-tab')) return;
+      var id = t.getAttribute('data-ci-topic');
+      var cur = AI_TOPICS.filter(function (x) { return x.id === id; })[0];
+      if (!cur) return;
+      aiActive = id;
+      body.querySelectorAll('.ci-tab').forEach(function (b) { b.classList.toggle('on', b === t); });
+      var host = document.getElementById('ciAiBody');
+      if (host) host.innerHTML = aiTopicBody(cur);
+    });
+  }
+
+  window.CuratedIntel = { renderSections: renderSections, mount: mount };
+})();
+
+  </script>
+
+  <script>
+/* ============================================================
+ * DealAnatomy · 交易解剖模块（公开市场逻辑层）
+ * 为市场全景页 38 笔汇编交易提供三层解剖：
+ *   买方动因 / 市场解读 / 传导与验证
+ * 数字回答「多少钱」，解剖回答「为什么值这个钱」。
+ * 纯 <details> 原生展开，零事件绑定、零侵入。
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  var CSS = ''
+    + '.da-section{margin-top:12px;}'
+    + '.da-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:4px;}'
+    + '.da-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:600;'
+    + 'background:color-mix(in srgb, var(--violet) 14%, var(--surface));color:var(--violet);border:1px solid color-mix(in srgb, var(--violet) 32%, transparent);}'
+    + '.da-intro{margin:8px 0 0;font-size:12px;line-height:1.65;color:var(--muted);max-width:72ch;}'
+    + '.da-intro strong{color:var(--text);}'
+    + '.da-group-title{display:flex;align-items:center;gap:8px;margin:18px 0 8px;font-size:12px;font-weight:700;color:var(--text-strong);}'
+    + '.da-group-title .cnt{font-weight:500;color:var(--muted);font-size:11px;}'
+    + '.da-group-title::after{content:"";flex:1;height:1px;background:var(--line-strong);}'
+    + '.da-item{border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface);margin-bottom:8px;overflow:hidden;}'
+    + '.da-item[open]{border-color:color-mix(in srgb, var(--violet) 45%, var(--line-strong));}'
+    + '.da-item summary{display:grid;grid-template-columns:74px 1fr auto;gap:4px 12px;align-items:center;padding:11px 14px;cursor:pointer;list-style:none;user-select:none;}'
+    + '.da-item summary::-webkit-details-marker{display:none;}'
+    + '.da-item summary:hover{background:var(--surface-2);}'
+    + '.da-date{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;}'
+    + '.da-line{min-width:0;display:flex;flex-direction:column;gap:1px;}'
+    + '.da-parties{font-size:12.5px;color:var(--text-strong);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}'
+    + '.da-parties .arr{color:var(--violet);font-weight:500;padding:0 2px;}'
+    + '.da-asset{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}'
+    + '.da-nums{display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums;}'
+    + '.da-nums .up{font-size:11px;color:var(--cyan);font-weight:600;}'
+    + '.da-nums .tot{font-size:12px;color:var(--text-strong);font-weight:700;}'
+    + '.da-caret{color:var(--muted);font-size:11px;transition:transform .18s ease;}'
+    + '.da-item[open] .da-caret{transform:rotate(90deg);}'
+    + '.da-body{border-top:1px dashed var(--line-strong);padding:12px 14px 13px;display:grid;gap:9px;background:color-mix(in srgb, var(--violet) 3%, var(--surface));}'
+    + '.da-row{display:grid;grid-template-columns:88px 1fr;gap:10px;font-size:12px;line-height:1.65;}'
+    + '.da-row .lb{display:flex;align-items:flex-start;gap:6px;color:var(--text-strong);font-weight:600;font-size:11.5px;padding-top:1px;white-space:nowrap;}'
+    + '.da-row .lb i{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;}'
+    + '.da-row .tx{color:var(--text);}'
+    + '.da-row .tx em{font-style:normal;color:var(--text-strong);font-weight:600;}'
+    + '.da-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;}'
+    + '.da-chip{padding:1px 8px;border-radius:999px;border:1px solid var(--line-strong);font-size:10px;color:var(--muted);}'
+    + '.da-foot{margin-top:10px;padding:9px 12px;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);font-size:11px;line-height:1.6;color:var(--muted);}'
+    + '@media(max-width:900px){.da-item summary{grid-template-columns:60px 1fr;}.da-nums{grid-column:2;}}';
+
+  /* ---------- 38 笔交易的公开市场逻辑 ---------- */
+  /* d=买方动因  m=市场解读  s=传导与验证 */
+  var LOGIC = {
+    'MW-001': {
+      d: 'BMS 在 O 药与 Revlimid 双重 LOE 压力下急需肿瘤新支柱；BL-B01D1 是全球首个双抗 ADC，在 EGFR 突变 NSCLC 后线展现 BIC 潜力。',
+      m: '$0.8B 首付刷新当时中国 license-out 纪录，百利天恒 A 股涨停并带动整个 ADC 板块重估——市场第一次用「全球 BIC」而非「me-too 折价」给中国资产定价。',
+      s: '确立双抗 ADC 的可交易性，直接催化映恩、宜联等平台后续交易；2025 年 BMS 再就 BNT327 与 BioNTech 分成合作，交叉验证该赛道。'
+    },
+    'MW-002': {
+      d: 'AZ 代谢布局几乎空白，口服小分子 GLP-1 是绕开注射剂产能与专利壁垒的最佳切入点；ECC5004 是当时少数进入临床的口服小分子。',
+      m: '首付仅 $18.5M——典型「低成本期权」结构，说明 2023 年口服 GLP-1 的成药性尚未被市场定价。',
+      s: '两年后口服 GLP-1 成为最热赛道（辉瑞 $10B 收 Metsera），回看此单期权性价比极高；也解释了 AZ 此后连续加码中国代谢资产的路径依赖。'
+    },
+    'MW-003': {
+      d: 'GSK 肿瘤管线在 Blenrep 受挫后 ADC 储备单薄；B7-H4 在卵巢癌、乳腺癌是差异化靶点。',
+      m: '首付 $85M、占比 5.4%——早期 ADC 的标准「中国折价」定价，反映当时买方对中国平台数据成熟度仍在打折。',
+      s: '开启 GSK 的「中国扫货」路径（两年后 $12B 恒瑞组合）；B7-H4 与 B7-H3 随后成为 ADC 次拥挤靶点。'
+    },
+    'MW-004': {
+      d: 'Claudin18.2 在胃癌人群基数大，AZ 缺少消化道肿瘤 ADC 布局；CMG901 是当时进度最快的同靶点 ADC。',
+      m: '首付 $63M 是 2023 年中国 ADC 出海的「地板价」——早期资产叠加单靶点竞争，买方议价优势明显。',
+      s: '安斯泰来 zolbetuximab 获批验证了靶点价值，Claudin18.2 此后达成 5+ 笔交易成为「中国 ADC 出海第一靶点」；信诺维同靶点首付翻倍即是 POC 溢价。'
+    },
+    'MW-005': {
+      d: 'BioNTech 新冠现金急需转化为肿瘤管线，「mRNA+ADC」叙事需要外部平台；映恩 DITAC 平台性价比突出。',
+      m: '打包两个早期 ADC 首付 $170M，被市场解读为 BioNTech「扫货式转型」的开端。',
+      s: 'BioNTech 此后连续加仓（普米斯 BNT327、映恩后续资产），映恩 2025 年港股 IPO 火爆——平台型公司的估值兑现路径被打通。'
+    },
+    'MW-006': {
+      d: '武田补充消化道肿瘤商业化品种；呋喹替尼中国已获批、FRESCO-2 全球数据成熟——买的是确定性而非期权。',
+      m: '首付 $400M 占总额 35%，是当年中国出海最高的首付占比之一，标志着「已验证资产」与「早期期权」的定价分层。',
+      s: '2023 年底 FDA 获批，成为中国小分子出海商业化验证样本；其高首付结构此后被康方、三生反复刷新。'
+    },
+    'MW-007': {
+      d: '辉瑞在 Seagen 整合后仍缺 IO 接棒资产，自研管线受挫后需要外部确定性；SSGJ-707 中国 Ph3 数据直接对标依沃西。',
+      m: '$1.25B 首付约为全球首付中位数的 20 倍，创中国资产纪录；公告后港股创新药板块整体重估，「PD-1×VEGF 赛道税」正式形成。',
+      s: '定价锚从康方 $500M（2022）→ 礼新 $588M（2024）→ 三生 $1.25B（2025）逐级抬升，直接推高 AbbVie×荣昌等后发交易的进场成本。'
+    },
+    'MW-008': {
+      d: '武田在 IO 与 ADC 双空白，一次性打包 PD-1×IL-2、Claudin18.2 ADC、EGFR/B7-H3 三个平台资产，属组合式补库。',
+      m: '$1.2B 首付配合深度共同开发结构——市场关注点在其风险共担深度显著高于普通 license。',
+      s: '中国头部 Biotech 从「单资产授权」升级为「管线组合输出」，信达模式成为 2025-26 年组合交易模板。'
+    },
+    'MW-009': {
+      d: 'GSK 呼吸/免疫管线换代，一次性锁定恒瑞早期管线库——期权批发。',
+      m: '单项目平均首付不足 $50M：恒瑞用数量换总额，GSK 用低首付买下整个管线漏斗，这是批发价逻辑。',
+      s: '管线打包授权成为中国头部药企常态（恒瑞随后再与 BMS 做 13 项目 Co-Co）；市场开始按「管线密度」而非单资产给中国公司估值。'
+    },
+    'MW-010': {
+      d: '诺华心血管战略（Inclisiran 之后）需要 siRNA 平台纵深；舶望 GalNAc 平台肝靶向管线厚度国内领先。',
+      m: '两年内二次合作且总额升级——首期数据兑现了平台承诺。「复购」是平台价值最强的公开市场信号。',
+      s: '确立小核酸「平台级定价」（多靶点 option + 低首付高总额）；瑞博、圣诺等同类平台随即获得密集尽调。'
+    },
+    'MW-011': {
+      d: 'AZ 补充口服小分子发现引擎；石药 AI 筛选平台在临床前阶段展现多靶点产出速度。',
+      m: '临床前平台拿 $110M 首付按当时口径偏高——反映「AI 发现平台」叙事在 2025 年的溢价窗口。',
+      s: '为半年后双方 $18.5B 代谢大合作奠定信任基础；「AI+平台」成为中国资产除 ADC/双抗外的第三叙事。'
+    },
+    'MW-012': {
+      d: 'AZ 需要双/多抗工程化平台补足 IO 组合策略；和铂 Harbour Mice 全人源平台在抗体发现上积累深。',
+      m: '平台型交易首付中等、option 密度高，市场把和铂按「平台公司」而非「管线公司」重估。',
+      s: '验证「卖铲人」模式：不押单一资产，向多家 MNC 输出发现平台持续收取期权费。'
+    },
+    'MW-013': {
+      d: '诺和在司美格鲁肽专利到期前补强下一代管线，三靶点 UBT251 与自研 CagriSema/amycretin 形成组合。',
+      m: '三靶点首付 $200M，市场对标礼来 retatrutide 数据——三靶点被视为减重终局方向。',
+      s: '中国多肽产能与工程能力进入全球减重供应链；翰森×再生元、石药×AZ 代谢交易随后连续落地。'
+    },
+    'MW-014': {
+      d: 'Biohaven 出售 CGRP 业务给辉瑞后转型肿瘤，需要即插即用的 ADC 平台与管线。',
+      m: '$13B 总额绝大多数为里程碑——headline 与首付的巨大落差是「总额通胀」的极端样本。',
+      s: '提醒市场用「首付/近期付款」而非 headline 比较平台交易；FGFR3 成为 ADC 新兴靶点。'
+    },
+    'MW-015': {
+      d: 'Vor Bio（原细胞治疗公司）借泰它西普切入自免大市场；荣昌需要海外商业化杠杆且保留权益。',
+      m: '首付仅 $45M 且含股权成分——典型「NewCo 出海」结构：用对方股权而非现金支付对价，市场对其风险定价分歧明显。',
+      s: 'NewCo/股权对价模式开始流行；自免中国资产找到 license 之外的第二条出海通道。'
+    },
+    'MW-016': {
+      d: 'AZ 在减重赛道全面落后礼来/诺和，急需「口服化+长效化」下一代资产一次性补位。',
+      m: '临床前资产 $1.2B 首付、$18.5B 总额——中国资产单笔总额纪录。首付占比仅 6.5%，实质风险后置，市场按里程碑折现重估 headline。',
+      s: '把「减重赛道税」推到新高；未布局代谢的 MNC 被倒逼加速，直接抬高后续所有代谢资产的竞价水位。'
+    },
+    'MW-017': {
+      d: 'AbbVie 后修美乐时代需要 IO 新支柱，且在 PD-1×VEGF 赛道已是 Top 20 中最后进场的买方之一。',
+      m: '首付 $650M 较康方（$500M）溢价 30%——后发买方的「迟到税」；赛道 25 个月内完成 5 笔 ≥$5B 交易。',
+      s: '可交易的独立 PD-1×VEGF 资产接近枯竭，竞争焦点转向下一代三抗与联用组合。'
+    },
+    'MW-018': {
+      d: '礼来深耕中国创新源头，信达是其验证过的「高确定性供给方」；第七次合作本质是长期期权续约。',
+      m: '复购次数本身就是定价信号——七次合作意味着历史交付记录取代了尽调折价。',
+      s: '「战略绑定型」关系取代一锤子买卖；中国头部 Biotech 开始享有「常客溢价」。'
+    },
+    'MW-019': {
+      d: 'BMS 专利悬崖敞口 Top 20 最大（O 药/Eliquis/Revlimid 三连），需要重建整个管线漏斗而非单点补强。',
+      m: 'Co-Co 共同开发结构让恒瑞保留更大长期价值——市场按 R&D 联盟而非 license 解读，从「卖资产」升级为「共建管线」。',
+      s: '中国头部药企进入「共同开发时代」，议价权从价格转向权益结构本身。'
+    },
+    'MW-020': {
+      d: '安斯泰来以 zolbetuximab 验证 Claudin18.2 后，需要 ADC 形态的下一代资产延续消化道肿瘤布局。',
+      m: '同靶点第 N 笔交易首付仍达 $130M——「靶点验证后」资产较「验证前」（康诺亚 $63M）系统性溢价一倍。',
+      s: '靶点 POC 是最强增值事件：验证前后同靶点资产定价中枢整体抬升。'
+    },
+    'MW-021': {
+      d: '默克 KGaA 补充 DDR（DNA 损伤修复）管线，与自有 ATR 抑制剂形成组合。',
+      m: '选择性 PARP1 抑制被视为减毒增效方向，临床前资产获 $170M 首付属合理偏积极定价。',
+      s: '中国小分子的差异化设计能力被认可，DDR 赛道中国资产进入 MNC 雷达。'
+    },
+    'MW-022': {
+      d: '再生元代谢零布局，用极低首付买「低成本进场期权」。',
+      m: '$80M 首付仅为同期赛道中位数的三分之一——反映再生元的期权式谈判策略与翰森出海通道需求的匹配。',
+      s: '代谢赛道买方分层清晰：重仓型（AZ/辉瑞）vs 期权型（再生元），同一资产对不同买方的价值差异巨大。'
+    },
+    'MW-101': {
+      d: '辉瑞新冠现金峰值叠加肿瘤管线空洞，一次性买下 ADC 商业化平台与四款上市产品。',
+      m: '宣布当日 Seagen 涨、辉瑞跌——市场对「规模即答案」存疑；$43B 全额现金显示其对整合能力的自信。',
+      s: '孤注一掷型交易的代表样本，为 Bain「24% vs 6%」TSR 结论提供论据；同时确立 ADC 平台的战略稀缺性，间接抬高所有 ADC 资产价格。'
+    },
+    'MW-102': {
+      d: 'AZ 从肿瘤/慢病扩展罕见病，C5 特许经营权提供高壁垒现金流。',
+      m: '现金+股票混合结构被接受，罕见病协同（Ultomiris 生命周期管理）在整合后实际兑现。',
+      s: '大型并购中少见的「协同兑现」案例——关键在于买的是 franchise 而非单一资产。'
+    },
+    'MW-103': {
+      d: '安进在 Enbrel 等老药 LOE 下补充罕见病/炎症现金流；Tepezza、Krystexxa 是防御型资产。',
+      m: '与赛诺菲、强生竞价胜出，溢价约 48%——稀缺商业化资产的竞价战直接推高价格。',
+      s: '罕见病「现金牛」的稀缺性溢价被确认；Tepezza 后续放量部分验证了逻辑。'
+    },
+    'MW-104': {
+      d: 'BMS 专利悬崖下寻找非肿瘤第二曲线；KarXT 毒蕈碱机制是精神分裂领域数十年首个新机制。',
+      m: '$14B 对应峰值销售预期 $3-5B，市场对新机制 CNS 给予高期待。',
+      s: '2024 年 KarXT（Cobenfy）获批，验证「机制突破型」资产的大额交易逻辑；CNS 赛道随即整体回暖。'
+    },
+    'MW-105': {
+      d: '强生补强神经科学管线；Caplyta 在双相抑郁与 MDD 辅助治疗上有明确扩展空间。',
+      m: '买已上市放量期产品——确定性溢价，风险低但峰值天花板相对清晰。',
+      s: '与 BMS×Karuna 共同确认 CNS 为 2024-25 年 MNC 补管线的主赛道之一。'
+    },
+    'MW-106': {
+      d: '诺华加码 RNA 平台纵深，从 siRNA 扩展到 AOC（抗体偶联寡核苷酸）；神经肌肉肝外递送是差异化。',
+      m: '$12B 买临床阶段平台——按「平台+罕见病 franchise」双重定价，溢价反映递送技术的稀缺性。',
+      s: '寡核苷酸从肝靶向走向肝外递送的价值重估；与诺华×舶望 license 构成其 RNA 双轨布局。'
+    },
+    'MW-107': {
+      d: 'K 药 LOE 前布局自免第二曲线；TL1A 是 IBD 最热新靶点，Prometheus 还附带 biomarker 精准医疗平台。',
+      m: '溢价约 75% 收购——TL1A 单靶点竞价白热化的直接证据。',
+      s: 'TL1A 随后成为自免交易主赛道（罗氏、赛诺菲跟进），单靶点龙头公司获得「赛道税」溢价。'
+    },
+    'MW-108': {
+      d: 'AbbVie 后修美乐多元化；Elahere（FRα ADC）已获批放量，附带 ADC 平台。',
+      m: '溢价约 95%——已商业化 ADC 资产在 2023 年顶点的稀缺性定价。',
+      s: '与辉瑞×Seagen 同年完成 ADC 双巨头卡位，构成中国 ADC 出海浪潮的估值背景板。'
+    },
+    'MW-109': {
+      d: 'K 药 LOE 倒逼默沙东买入已验证商业化资产；Ohtuvayre（PDE3/4）是 COPD 二十年首个新机制且已获批放量。',
+      m: '买「上市首年放量曲线」而非管线期权——确定性交易，市场普遍看好其呼吸科渠道协同。',
+      s: '「新机制+刚获批」成为 LOE 承压买方的首选画像；PDE3/4 赛道随即升温（恒瑞×GSK 组合即含同靶点）。'
+    },
+    'MW-110': {
+      d: '自研 GLP-1 两次失败后，辉瑞用并购直接买入下一代减重管线（口服+长效）。',
+      m: '与诺和诺德竞购战推高价格——减重资产的「战略必需性」溢价；Metsera 上市不足一年即被收购。',
+      s: '减重赛道从「布局」进入「军备竞赛」；与 AZ×石药 license 共同确立代谢资产 2025-26 年的定价天花板。'
+    },
+    'MW-111': {
+      d: '赛诺菲罕见病/免疫管线补强；Ayvakit（KIT）在系统性肥大细胞增多症占独占地位。',
+      m: '罕见病高壁垒品种再获溢价——收购价对应高个位数的峰值销售倍数。',
+      s: '罕见病 franchise 逻辑延续（Alexion 模式）；赛诺菲继续「小幅多次」的并购节奏。'
+    },
+    'MW-112': {
+      d: 'AbbVie 后修美乐多元化押注 CNS：emraclidine（精分）+ tavapadon（帕金森）双管线。',
+      m: '与 BMS×Karuna 同年——CNS 并购双响炮，市场重估整个神经科学板块。',
+      s: '精分新机制被双巨头同时下注，验证「机制突破」比「靶点跟随」更获溢价。'
+    },
+    'MW-113': {
+      d: 'Jazz 从嗜睡症扩展神经科学；Epidiolex 是首个 FDA 批准 CBD 药物，儿科癫痫壁垒高。',
+      m: '独特监管路径（大麻素）带来定价分歧，属当年大额罕见病交易。',
+      s: '首创监管路径的资产一旦获批即成稀缺标的；儿科罕见病「小而深」模式被验证。'
+    },
+    'MW-114': {
+      d: '辉瑞补充内科商业化品种；Nurtec（CGRP）双适应症、口服市场领先。',
+      m: '买已验证放量品种——Biohaven 股东在峰值前兑现，辉瑞获得现金流资产。',
+      s: 'CGRP 赛道整合完成（艾伯维/礼来/辉瑞三分）；Biohaven 用回笼资金转身做了启德 ADC 交易（MW-014）。'
+    },
+    'MW-115': {
+      d: '默沙东降低 K 药依赖的战略分散；sotatercept 是 PAH 首个疾病修饰疗法。',
+      m: '溢价收购 Ph3 资产——按「罕见病新机制 franchise」定价。',
+      s: '2024 年 Winrevair 获批后快速放量至年销 $1B+，成为大单资产并购的成功样本（对照辉瑞×Seagen 的整合阵痛）。'
+    },
+    'MW-116': {
+      d: 'Vertex 从 CF 垄断向肾病/免疫扩展；povetacicept（APRIL/BAFF 双靶点）在 IgA 肾病有 BIC 潜力。',
+      m: 'IgA 肾病是当年自免肾病最热适应症，现金充裕的 Vertex 支付确定性溢价。',
+      s: '验证 Vertex「小幅精准并购」路线；APRIL/BAFF 靶点随后被多家跟进（含荣昌泰它西普的海外重估）。'
+    },
+  };
+
+  /* ---------- 渲染 ---------- */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function fmtB(v) {
+    if (v === null || v === undefined) return '未披露';
+    return v >= 1 ? '$' + (Number.isInteger(v) ? v : v.toFixed(1)) + 'B' : '$' + Math.round(v * 1000) + 'M';
+  }
+  function pct(up, tot) {
+    if (!up || !tot) return null;
+    return Math.round(up / tot * 100);
+  }
+
+  function item(d) {
+    var lg = LOGIC[d.id];
+    if (!lg) return '';
+    var p = pct(d.upfront, d.total);
+    return '<details class="da-item"><summary>'
+      + '<span class="da-date">' + esc(d.date) + '</span>'
+      + '<span class="da-line"><span class="da-parties">' + esc(d.seller) + '<span class="arr"> → </span>' + esc(d.buyer) + '</span>'
+      + '<span class="da-asset">' + esc(d.asset) + ' · ' + esc(d.target) + ' · ' + esc(d.modality) + '</span></span>'
+      + '<span class="da-nums">'
+      + (d.upfront ? '<span class="up">首付 ' + fmtB(d.upfront) + (p != null ? ' · ' + p + '%' : '') + '</span>' : '<span class="up">首付未披露</span>')
+      + '<span class="tot">' + fmtB(d.total) + '</span>'
+      + '<span class="da-caret">▶</span></span>'
+      + '</summary>'
+      + '<div class="da-body">'
+      + '<div class="da-row"><span class="lb"><i style="background:var(--violet)"></i>买方动因</span><span class="tx">' + esc(lg.d) + '</span></div>'
+      + '<div class="da-row"><span class="lb"><i style="background:var(--cyan)"></i>市场解读</span><span class="tx">' + esc(lg.m) + '</span></div>'
+      + '<div class="da-row"><span class="lb"><i style="background:var(--amber)"></i>传导与验证</span><span class="tx">' + esc(lg.s) + '</span></div>'
+      + '<div class="da-meta"><span class="da-chip">' + esc(d.origin) + ' → ' + esc(d.region) + '</span>'
+      + '<span class="da-chip">' + (d.type === 'M_AND_A' ? 'M&A' : 'Licensing') + '</span>'
+      + '<span class="da-chip">来源：' + esc(d.source) + '</span></div>'
+      + '</div></details>';
+  }
+
+  function renderSection() {
+    var MW = window.ConvergenceMarketWide;
+    if (!MW || !MW.deals) return '';
+    var deals = MW.deals.filter(function (d) { return LOGIC[d.id]; });
+    var cn = deals.filter(function (d) { return d.type !== 'M_AND_A'; }).sort(function (a, b) { return (b.total || 0) - (a.total || 0); });
+    var ma = deals.filter(function (d) { return d.type === 'M_AND_A'; }).sort(function (a, b) { return (b.total || 0) - (a.total || 0); });
+    return '<section class="intel-panel da-section" aria-label="交易解剖：公开市场逻辑">'
+      + '<div class="da-head"><div>'
+      + '<span class="da-badge">交易解剖室 · DEAL ANATOMY</span>'
+      + '<p class="da-intro"><strong>数字只回答「多少钱」，解剖回答「为什么值这个钱」。</strong>'
+      + '以下 ' + deals.length + ' 笔代表性交易，每笔按三层拆解公开市场逻辑——'
+      + '<strong>买方动因</strong>（战略缺口与 LOE 压力）、<strong>市场解读</strong>（定价信号与结构含义）、<strong>传导与验证</strong>（对同赛道资产的定价外溢与事后兑现）。点击任意一行展开。</p>'
+      + '</div></div>'
+      + '<div class="da-group-title">中国资产 License-out<span class="cnt">' + cn.length + ' 笔 · 按总额排序</span></div>'
+      + cn.map(item).join('')
+      + '<div class="da-group-title">全球 M&A<span class="cnt">' + ma.length + ' 笔 · 按总额排序</span></div>'
+      + ma.map(item).join('')
+      + '<div class="da-foot"><strong>口径说明：</strong>公开市场逻辑为基于公司公告、财报电话会与后续公开事件的分析师视角归纳，非公司声明；'
+      + '交易金额沿用本页汇编口径（详见上方表格与「自建管线分析」页的一手核实数据）。</div>'
+      + '</section>';
+  }
+
+  var styleEl = document.createElement('style');
+  styleEl.textContent = CSS;
+  document.head.appendChild(styleEl);
+
+  window.DealAnatomy = { renderSection: renderSection };
+  /* 本模块由 CuratedIntel.renderSections() 直接调用；首屏重渲染由 LivePulse 末尾钩子统一兜底 */
+})();
+
+  </script>
+
+  <script>
+/* ============================================================
+ * LivePulse · 实时 API 验证层模块（交易情报 · 下篇）
+ * 全部数据由浏览器实时调用公共 API 生成：
+ *   - ClinicalTrials.gov API v2（试验启动计数 / 申办方 / 管线）
+ *   - openFDA drugsfda（新药批准节奏）
+ * 零自建管线、零手工加工；结果带 12h sessionStorage 缓存。
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  var TODAY = '2026-07-17';
+  var YEARS = [2021, 2022, 2023, 2024, 2025, 2026];
+  var CT = 'https://clinicaltrials.gov/api/v2/studies';
+  var FDA = 'https://api.fda.gov/drug/drugsfda.json';
+  var CACHE_NS = 'lp1:';
+  var TTL = 12 * 3600 * 1000;
+
+  /* ---------- 样式注入（全部使用站点 CSS 变量，深浅主题自适应） ---------- */
+  var CSS = ''
+    + '.lp-banner{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;margin-bottom:12px;'
+    + 'border:1px solid color-mix(in srgb, var(--cyan) 40%, transparent);border-left:3px solid var(--cyan);'
+    + 'border-radius:var(--radius-sm);background:color-mix(in srgb, var(--cyan) 8%, var(--surface));}'
+    + '.lp-flag{flex-shrink:0;padding:3px 10px;border-radius:999px;background:color-mix(in srgb, var(--cyan) 18%, var(--surface));'
+    + 'color:var(--cyan);font-size:11px;font-weight:600;letter-spacing:.04em;white-space:nowrap;}'
+    + '.lp-banner p{margin:0;font-size:12px;line-height:1.6;color:var(--text);}'
+    + '.lp-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:12px 0;}'
+    + '@media(max-width:1100px){.lp-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}'
+    + '.lp-kpi{padding:14px 16px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface);}'
+    + '.lp-kpi .k{font-size:11px;color:var(--muted);}'
+    + '.lp-kpi .v{margin-top:4px;font-size:24px;font-weight:700;color:var(--text-strong);font-variant-numeric:tabular-nums;letter-spacing:-.02em;}'
+    + '.lp-kpi .d{margin-top:2px;font-size:11px;color:var(--muted);}'
+    + '.lp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}'
+    + '@media(max-width:1100px){.lp-grid{grid-template-columns:1fr;}}'
+    + '.lp-panel{min-width:0;padding:16px 18px;border:1px solid var(--line-strong);border-radius:var(--radius);background:var(--surface);}'
+    + '.lp-wide{grid-column:1/-1;}'
+    + '.lp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}'
+    + '.lp-head h2{margin:4px 0 0;font-size:14.5px;font-weight:680;color:var(--text-strong);letter-spacing:-.015em;}'
+    + '.lp-kicker{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}'
+    + '.lp-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:600;'
+    + 'background:color-mix(in srgb, var(--cyan) 14%, var(--surface));color:var(--cyan);border:1px solid color-mix(in srgb, var(--cyan) 30%, transparent);}'
+    + '.lp-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:lp-pulse 1.6s ease-in-out infinite;}'
+    + '@keyframes lp-pulse{0%,100%{opacity:1}50%{opacity:.25}}'
+    + '.lp-note{margin:8px 0 0;font-size:11px;line-height:1.55;color:var(--muted);}'
+    + '.lp-src{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border:1px solid var(--line-strong);border-radius:999px;'
+    + 'font-size:10px;color:var(--muted);white-space:nowrap;}'
+    + '.lp-skel{border-radius:8px;background:linear-gradient(90deg,var(--surface-2) 25%,var(--surface-3) 50%,var(--surface-2) 75%);'
+    + 'background-size:400% 100%;animation:lp-shimmer 1.3s infinite;}'
+    + '@keyframes lp-shimmer{0%{background-position:100% 0}100%{background-position:0 0}}'
+    + '.lp-err{padding:14px;border:1px dashed color-mix(in srgb, var(--red) 45%, transparent);border-radius:8px;'
+    + 'color:var(--red);font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;}'
+    + '.lp-retry{flex-shrink:0;padding:4px 12px;border:1px solid var(--line-strong);border-radius:999px;background:var(--surface);'
+    + 'color:var(--text);font-size:11px;cursor:pointer;}'
+    + '.lp-retry:hover{border-color:var(--cyan);color:var(--cyan);}'
+    + '.lp-legend{display:flex;flex-wrap:wrap;gap:10px 14px;margin:2px 0 8px;font-size:11px;color:var(--muted);}'
+    + '.lp-legend span{display:inline-flex;align-items:center;gap:5px;}'
+    + '.lp-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;}'
+    + '.lp-hbar-row{display:grid;grid-template-columns:130px 1fr 64px;align-items:center;gap:10px;padding:5px 0;font-size:12px;}'
+    + '.lp-hbar-row .nm{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}'
+    + '.lp-hbar-row .val{text-align:right;font-variant-numeric:tabular-nums;color:var(--text-strong);font-weight:600;font-size:11.5px;}'
+    + '.lp-track{height:8px;border-radius:99px;background:var(--surface-3);overflow:hidden;}'
+    + '.lp-fill{height:100%;border-radius:99px;}'
+    + '.lp-tbl{width:100%;border-collapse:collapse;font-size:12px;}'
+    + '.lp-tbl th{padding:8px 10px;text-align:left;font-size:10.5px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line-strong);'
+    + 'text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}'
+    + '.lp-tbl td{padding:9px 10px;border-bottom:1px solid var(--line);color:var(--text);vertical-align:top;}'
+    + '.lp-tbl tr:last-child td{border-bottom:none;}'
+    + '.lp-tbl tr:hover td{background:var(--surface-2);}'
+    + '.lp-tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}'
+    + '.lp-nct{font-family:ui-monospace,monospace;font-size:11px;}'
+    + '.lp-tag{display:inline-block;padding:1px 7px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap;}'
+    + '.lp-foot{margin-top:12px;padding:10px 14px;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);'
+    + 'font-size:11px;line-height:1.6;color:var(--muted);}'
+    + '.lp-delta{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;}'
+    + '.lp-scroll{overflow-x:auto;}';
+
+  /* ---------- 工具 ---------- */
+  var styleEl = document.createElement('style');
+  styleEl.textContent = CSS;
+  document.head.appendChild(styleEl);
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function fmt(n) { return n == null ? '—' : Number(n).toLocaleString('en-US'); }
+  function cacheGet(key) {
+    try {
+      var raw = sessionStorage.getItem(CACHE_NS + key);
+      if (!raw) return null;
+      var o = JSON.parse(raw);
+      if (Date.now() - o.t > TTL) return null;
+      return o.v;
+    } catch (e) { return null; }
+  }
+  function cacheSet(key, v) {
+    try { sessionStorage.setItem(CACHE_NS + key, JSON.stringify({ t: Date.now(), v: v })); } catch (e) {}
+  }
+  function fetchJson(url, timeout) {
+    var cached = cacheGet(url);
+    if (cached) return Promise.resolve(cached);
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, timeout || 15000);
+    return fetch(url, { signal: ctrl.signal })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (j) { cacheSet(url, j); return j; })
+      .finally(function () { clearTimeout(timer); });
+  }
+  /* 受控并发 */
+  function pool(tasks, size, onStep) {
+    var i = 0, active = 0, done = 0;
+    var results = new Array(tasks.length);
+    return new Promise(function (resolve) {
+      if (!tasks.length) { resolve([]); return; }
+      function next() {
+        while (i < tasks.length && active < size) {
+          (function (idx) {
+            active++;
+            tasks[idx]()
+              .then(function (v) { results[idx] = { ok: true, v: v }; })
+              .catch(function (e) { results[idx] = { ok: false, e: e }; })
+              .then(function () {
+                active--;
+                done++;
+                if (onStep) onStep(done, tasks.length);
+                if (done === tasks.length) resolve(results);
+                else next();
+              });
+          })(i++);
+        }
+      }
+      next();
+    });
+  }
+
+  var MODALITIES = [
+    { id: 'adc',  label: 'ADC',        term: '"antibody-drug conjugate"',      color: 'var(--amber)' },
+    { id: 'bis',  label: '双抗/多抗',   term: '"bispecific antibody"',          color: 'var(--violet)' },
+    { id: 'glp',  label: 'GLP-1/代谢',  term: 'GLP-1 OR "glucagon-like peptide"', color: 'var(--cyan)' },
+    { id: 'sir',  label: 'siRNA/ASO',  term: 'siRNA OR antisense',             color: 'var(--blue)' },
+    { id: 'mrn',  label: 'mRNA',       term: 'mRNA',                           color: 'var(--green)' },
+    { id: 'cgt',  label: 'CAR-T/基因',  term: '"CAR-T" OR "gene therapy"',      color: 'var(--red)' },
+  ];
+  var TARGETS = [
+    { label: 'GLP-1', term: 'GLP-1' },
+    { label: 'TROP2', term: 'TROP2' },
+    { label: 'HER2', term: 'HER2' },
+    { label: 'PD-1 × VEGF', term: '("PD-1" OR PD1) AND VEGF' },
+    { label: 'TL1A', term: 'TL1A' },
+    { label: 'KRAS', term: 'KRAS' },
+    { label: 'B7-H3', term: '"B7-H3"' },
+    { label: 'TfR1/BBB', term: 'TfR1 OR "transferrin receptor"' },
+  ];
+  function yearRange(y) { return 'AREA[StartDate]RANGE[' + y + '-01-01,' + (y === 2026 ? TODAY : y + '-12-31') + ']'; }
+  function ctUrl(term, extra) {
+    return CT + '?query.term=' + encodeURIComponent(term) + '&pageSize=1&countTotal=true&fields=NCTId' + (extra || '');
+  }
+  function fdaUrl(y) {
+    return FDA + '?search=' + encodeURIComponent('submissions.submission_type:ORIG AND submissions.submission_status:AP AND submissions.submission_status_date:[' + y + '0101 TO ' + (y === 2026 ? TODAY.replace(/-/g, '') : y + '1231') + ']') + '&limit=1';
+  }
+
+  var store = {}; /* 各面板数据 */
+  var stats = { total: 0, done: 0 };
+
+  function tick(n) {
+    stats.done += (n || 1);
+    var el = $('lpProgress');
+    if (el) el.textContent = '实时拉取公共 API · ' + Math.min(stats.done, stats.total) + '/' + stats.total + ' 查询';
+  }
+  function finishAll() {
+    var el = $('lpProgress');
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    if (el) el.innerHTML = '<span class="lp-badge"><span class="lp-dot"></span>LIVE</span>&nbsp;实时拉取完成 · ' + hh + ' · 缓存 12h';
+    var st = $('viewStatus');
+    if (st) st.innerHTML = '<span class="lp-badge"><span class="lp-dot"></span>LIVE 数据</span><span class="freshness">实时拉取于 ' + hh + ' · ClinicalTrials.gov + openFDA</span>';
+  }
+  function panelError(elId, retryFn) {
+    var el = $(elId);
+    if (!el) return;
+    el.innerHTML = '<div class="lp-err"><span>数据拉取失败（网络或限流）</span><button class="lp-retry" data-retry="' + elId + '">重试</button></div>';
+    el.__retry = retryFn;
+  }
+
+  /* ---------- SVG 图表 ---------- */
+  function axisTicks(max, n) {
+    var raw = max / (n || 4), mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var step = raw / mag >= 5 ? mag * 2 : raw / mag >= 2 ? mag : mag / 2;
+    var out = [];
+    for (var v = 0; v <= max + step * 0.01; v += step) out.push(Math.round(v));
+    return out;
+  }
+
+  function lineChart(el, series, opts) {
+    /* series: [{label,color,values:[..]}] 共享 YEARS x 轴 */
+    var W = 660, H = opts && opts.h || 250, mL = 46, mR = 88, mT = 12, mB = 26;
+    var maxV = 0;
+    series.forEach(function (s) { s.values.forEach(function (v) { if (v != null && v > maxV) maxV = v; }); });
+    if (!maxV) maxV = 1;
+    var ticks = axisTicks(maxV, 4);
+    var top = ticks[ticks.length - 1];
+    var x = function (i) { return mL + (i / (YEARS.length - 1)) * (W - mL - mR); };
+    var y = function (v) { return mT + (1 - v / top) * (H - mT - mB); };
+    var g = '';
+    ticks.forEach(function (t) {
+      g += '<line x1="' + mL + '" y1="' + y(t) + '" x2="' + (W - mR) + '" y2="' + y(t) + '" style="stroke:var(--line-strong)" stroke-dasharray="3 3"/>'
+        + '<text x="' + (mL - 6) + '" y="' + (y(t) + 3) + '" text-anchor="end" style="font-size:10px;fill:var(--muted)">' + fmt(t) + '</text>';
+    });
+    YEARS.forEach(function (yr, i) {
+      g += '<text x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle" style="font-size:10px;fill:var(--muted)">' + (yr === 2026 ? '26▲' : yr) + '</text>';
+    });
+    var endLabels = [];
+    series.forEach(function (s) {
+      var pts = s.values.map(function (v, i) { return v == null ? null : [x(i), y(v)]; });
+      var d = '', started = false;
+      pts.forEach(function (p) { if (p) { d += (started ? ' L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); started = true; } });
+      g += '<path d="' + d + '" fill="none" style="stroke:' + s.color + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
+      pts.forEach(function (p) { if (p) g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="2.4" style="fill:' + s.color + '"/>'; });
+      for (var i = pts.length - 1; i >= 0; i--) {
+        if (pts[i]) { endLabels.push({ y: pts[i][1], label: s.label, color: s.color }); break; }
+      }
+    });
+    /* 末端标签防重叠 */
+    endLabels.sort(function (a, b) { return a.y - b.y; });
+    for (var li = 1; li < endLabels.length; li++) {
+      if (endLabels[li].y - endLabels[li - 1].y < 13) endLabels[li].y = endLabels[li - 1].y + 13;
+    }
+    endLabels.forEach(function (l) {
+      g += '<text x="' + (W - mR + 8) + '" y="' + (l.y + 3.5) + '" style="font-size:10.5px;font-weight:700;fill:' + l.color + '">' + esc(l.label) + '</text>';
+    });
+    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block">' + g + '</svg>';
+  }
+
+  function barLineChart(el, bars, line, opts) {
+    var W = 660, H = (opts && opts.h) || 250, mL = 46, mR = 52, mT = 12, mB = 26;
+    var maxB = Math.max.apply(null, bars.values.concat([1]));
+    var maxL = Math.max.apply(null, line.values.concat([1]));
+    var bt = axisTicks(maxB, 4), lt = axisTicks(maxL, 4);
+    var bw = (W - mL - mR) / bars.values.length * 0.52;
+    var x = function (i) { return mL + (i + 0.5) * ((W - mL - mR) / bars.values.length); };
+    var yB = function (v) { return mT + (1 - v / bt[bt.length - 1]) * (H - mT - mB); };
+    var yL = function (v) { return mT + (1 - v / lt[lt.length - 1]) * (H - mT - mB); };
+    var g = '';
+    bt.forEach(function (t) {
+      g += '<line x1="' + mL + '" y1="' + yB(t) + '" x2="' + (W - mR) + '" y2="' + yB(t) + '" style="stroke:var(--line-strong)" stroke-dasharray="3 3"/>'
+        + '<text x="' + (mL - 6) + '" y="' + (yB(t) + 3) + '" text-anchor="end" style="font-size:10px;fill:var(--muted)">' + fmt(t) + '</text>';
+    });
+    lt.forEach(function (t) {
+      g += '<text x="' + (W - mR + 6) + '" y="' + (yL(t) + 3) + '" style="font-size:10px;fill:' + line.color + '">' + fmt(t) + '</text>';
+    });
+    bars.values.forEach(function (v, i) {
+      var h = (H - mB) - yB(v);
+      g += '<rect x="' + (x(i) - bw / 2) + '" y="' + yB(v) + '" width="' + bw + '" height="' + Math.max(h, 1) + '" rx="3" style="fill:' + bars.color + '" opacity="' + (i === bars.values.length - 1 ? 0.45 : 0.9) + '"><title>' + YEARS[i] + ' · ' + fmt(v) + '</title></rect>';
+      g += '<text x="' + x(i) + '" y="' + (H - 8) + '" text-anchor="middle" style="font-size:10px;fill:var(--muted)">' + (YEARS[i] === 2026 ? '26▲' : YEARS[i]) + '</text>';
+    });
+    var d = '';
+    line.values.forEach(function (v, i) { d += (i ? ' L' : 'M') + x(i).toFixed(1) + ' ' + yL(v).toFixed(1); });
+    g += '<path d="' + d + '" fill="none" style="stroke:' + line.color + '" stroke-width="2.2" stroke-linecap="round"/>';
+    line.values.forEach(function (v, i) { g += '<circle cx="' + x(i) + '" cy="' + yL(v) + '" r="2.6" style="fill:' + line.color + '"><title>' + YEARS[i] + ' · ' + fmt(v) + '</title></circle>'; });
+    el.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block">' + g + '</svg>';
+  }
+
+  /* ---------- 面板加载器 ---------- */
+  var globalPromise = null;
+  function getGlobal() {
+    if (!globalPromise) {
+      var tasks = YEARS.map(function (y) {
+        return function () { return fetchJson(ctUrl(yearRange(y) + ' AND AREA[LeadSponsorClass]INDUSTRY')).then(function (j) { return j.totalCount; }); };
+      });
+      globalPromise = pool(tasks, 6, function () { tick(); }).then(function (rs) {
+        return rs.map(function (r) { return r.ok ? r.v : null; });
+      });
+    }
+    return globalPromise;
+  }
+
+  function loadMacro() {
+    var fdaTasks = YEARS.map(function (y) {
+      return function () { return fetchJson(fdaUrl(y)).then(function (j) { return j.meta.results.total; }); };
+    });
+    return Promise.all([
+      getGlobal(),
+      pool(fdaTasks, 4, function () { tick(); }),
+    ]).then(function (pair) {
+      var gl = pair[0];
+      var fda = pair[1].map(function (r) { return r.ok ? r.v : null; });
+      store.macro = { global: gl, fda: fda };
+      var el = $('lpChartMacro');
+      if (el) barLineChart(el,
+        { values: gl.map(function (v) { return v || 0; }), color: 'var(--blue)' },
+        { values: fda.map(function (v) { return v || 0; }), color: 'var(--amber)' });
+      var k1 = $('lpKpiGlobal');
+      if (k1 && gl[4]) {
+        k1.querySelector('.v').textContent = fmt(gl[4]);
+        var cagr = ((gl[4] / gl[0] - 1) * 100);
+        k1.querySelector('.d').textContent = '2025 行业申办启动 · 五年 ' + (cagr >= 0 ? '+' : '') + cagr.toFixed(0) + '%';
+      }
+    });
+  }
+
+  function loadModality() {
+    var tasks = [];
+    MODALITIES.forEach(function (m) {
+      YEARS.forEach(function (y) {
+        tasks.push(function () {
+          return fetchJson(ctUrl(yearRange(y) + ' AND (' + m.term + ') AND AREA[LeadSponsorClass]INDUSTRY'))
+            .then(function (j) { return j.totalCount; });
+        });
+      });
+    });
+    return pool(tasks, 8, function () { tick(); }).then(function (rs) {
+      var series = MODALITIES.map(function (m, mi) {
+        return { label: m.label, color: m.color, values: rs.slice(mi * 6, mi * 6 + 6).map(function (r) { return r.ok ? r.v : null; }) };
+      });
+      store.modality = series;
+      var el = $('lpChartModality');
+      if (el) lineChart(el, series, { h: 260 });
+      /* 洞察注脚 */
+      var note = $('lpModalityInsight');
+      if (note) {
+        var adc = series[0].values, bis = series[1].values;
+        var msg = [];
+        if (adc[0] && adc[4]) msg.push('ADC 五年 ×' + (adc[4] / adc[0]).toFixed(1));
+        if (bis[0] && bis[4]) msg.push('双抗 ×' + (bis[4] / bis[0]).toFixed(1));
+        if (series[2].values[0] && series[2].values[4]) msg.push('GLP-1 ×' + (series[2].values[4] / series[2].values[0]).toFixed(1));
+        note.innerHTML = '<b>读法：</b>2026▲ 为截至 7-17 的半年数据，不可与整年直接比较。' + msg.join('，') + '——研发活动领先交易 12–24 个月，模态扩张曲线即未来的交易管线。';
+      }
+      var k3 = $('lpKpiAdc');
+      if (k3 && adc[0] && adc[4]) {
+        k3.querySelector('.v').textContent = '×' + (adc[4] / adc[0]).toFixed(1);
+        k3.querySelector('.d').textContent = 'ADC 试验启动 2021→2025（' + fmt(adc[0]) + ' → ' + fmt(adc[4]) + '）';
+      }
+    });
+  }
+
+  function loadChina() {
+    var tasks = [];
+    YEARS.forEach(function (y) { tasks.push(function () { return fetchJson(ctUrl(yearRange(y) + ' AND AREA[LocationCountry]China AND AREA[LeadSponsorClass]INDUSTRY')).then(function (j) { return j.totalCount; }); }); });
+    YEARS.forEach(function (y) { tasks.push(function () { return fetchJson(ctUrl(yearRange(y) + ' AND AREA[LocationCountry]China AND AREA[LeadSponsorClass]INDUSTRY', '&aggFilters=phase:1')).then(function (j) { return j.totalCount; }); }); });
+    YEARS.forEach(function (y) { tasks.push(function () { return fetchJson(ctUrl(yearRange(y) + ' AND AREA[LeadSponsorClass]INDUSTRY', '&aggFilters=phase:1')).then(function (j) { return j.totalCount; }); }); });
+    return Promise.all([pool(tasks, 8, function () { tick(); }), getGlobal()]).then(function (pair) {
+      var rs = pair[0], gl = pair[1];
+      var cn = rs.slice(0, 6).map(function (r) { return r.ok ? r.v : null; });
+      var cn1 = rs.slice(6, 12).map(function (r) { return r.ok ? r.v : null; });
+      var gl1 = rs.slice(12).map(function (r) { return r.ok ? r.v : null; });
+      store.china = { cn: cn, cn1: cn1, gl1: gl1 };
+      var share = cn.map(function (v, i) {
+        var g = gl[i];
+        return (v != null && g) ? Math.round(v / g * 1000) / 10 : null;
+      });
+      var el = $('lpChartChina');
+      if (el) barLineChart(el,
+        { values: cn.map(function (v) { return v || 0; }), color: 'var(--cyan)' },
+        { values: share.map(function (v) { return v || 0; }), color: 'var(--violet)' },
+        { h: 240 });
+      var lg = $('lpChinaLegend');
+      if (lg) lg.innerHTML = '<span><i style="background:var(--cyan)"></i>含中国中心的行业试验</span><span><i style="background:var(--violet)"></i>占全球比例 %（右轴）</span>';
+      var k2 = $('lpKpiChina');
+      if (k2 && share[4] != null) {
+        k2.querySelector('.v').textContent = share[4].toFixed(1) + '%';
+        k2.querySelector('.d').textContent = '2025 含中国中心占比 · 2021 为 ' + (share[0] != null ? share[0].toFixed(1) : '—') + '%';
+      }
+      var p1 = $('lpChinaPh1');
+      if (p1 && cn1[4] && gl1[4]) {
+        p1.innerHTML = '<b>早期资产视角：</b>2025 年全球 Ph1 行业试验中 <b>' + (cn1[4] / gl1[4] * 100).toFixed(1) + '%</b> 含中国中心（' + fmt(cn1[4]) + ' / ' + fmt(gl1[4]) + '）——与「中国资产占大药企引进 40%」的交易端观察互为印证。';
+      }
+    });
+  }
+
+  function loadTargets() {
+    var p1 = 'AREA[StartDate]RANGE[2024-07-17,' + TODAY + ']', p0 = 'AREA[StartDate]RANGE[2022-07-17,2024-07-16]';
+    var tasks = [];
+    TARGETS.forEach(function (t) {
+      tasks.push(function () { return fetchJson(ctUrl(p1 + ' AND (' + t.term + ') AND AREA[LeadSponsorClass]INDUSTRY')).then(function (j) { return j.totalCount; }); });
+      tasks.push(function () { return fetchJson(ctUrl(p0 + ' AND (' + t.term + ') AND AREA[LeadSponsorClass]INDUSTRY')).then(function (j) { return j.totalCount; }); });
+    });
+    return pool(tasks, 8, function () { tick(); }).then(function (rs) {
+      var rows = TARGETS.map(function (t, i) {
+        var cur = rs[i * 2].ok ? rs[i * 2].v : 0;
+        var prev = rs[i * 2 + 1].ok ? rs[i * 2 + 1].v : 0;
+        return { label: t.label, cur: cur, prev: prev, delta: prev ? (cur / prev - 1) * 100 : null };
+      }).sort(function (a, b) { return b.cur - a.cur; });
+      var max = rows[0] ? rows[0].cur : 1;
+      var el = $('lpTargets');
+      if (el) {
+        el.innerHTML = rows.map(function (r) {
+          var col = r.delta != null && r.delta >= 30 ? 'var(--amber)' : 'var(--cyan)';
+          return '<div class="lp-hbar-row"><span class="nm">' + esc(r.label) + '</span>'
+            + '<div class="lp-track"><div class="lp-fill" style="width:' + (r.cur / max * 100).toFixed(1) + '%;background:' + col + '"></div></div>'
+            + '<span class="val">' + fmt(r.cur) + (r.delta != null ? ' <span class="lp-delta" style="color:' + (r.delta >= 0 ? 'var(--green)' : 'var(--red)') + '">' + (r.delta >= 0 ? '+' : '') + r.delta.toFixed(0) + '%</span>' : '') + '</span></div>';
+        }).join('');
+      }
+    });
+  }
+
+  function loadSponsors() {
+    var url = CT + '?query.term=' + encodeURIComponent('("antibody-drug conjugate" OR "bispecific antibody") AND AREA[StartDate]RANGE[2023-01-01,' + TODAY + '] AND AREA[LeadSponsorClass]INDUSTRY')
+      + '&fields=NCTId,LeadSponsorName,Phase,StartDate&pageSize=100';
+    var studies = [];
+    function page(u, token, left) {
+      var full = token ? u + '&pageToken=' + token : u;
+      return fetchJson(full, 20000).then(function (j) {
+        studies = studies.concat(j.studies || []);
+        if (j.nextPageToken && left > 1) return page(u, j.nextPageToken, left - 1);
+      });
+    }
+    return page(url, null, 8).then(function () {
+      tick();
+      var agg = {};
+      studies.forEach(function (st) {
+        var ps = st.protocolSection || {};
+        var sp = ((ps.sponsorCollaboratorsModule || {}).leadSponsor || {}).name || '未知';
+        var ph = ((ps.designModule || {}).phases || [])[0] || 'NA';
+        if (!agg[sp]) agg[sp] = { n: 0, p1: 0, p2: 0, p3: 0 };
+        agg[sp].n++;
+        if (ph === 'PHASE1') agg[sp].p1++;
+        else if (ph === 'PHASE2') agg[sp].p2++;
+        else if (ph === 'PHASE3') agg[sp].p3++;
+      });
+      var rows = Object.keys(agg).map(function (k) { return { name: k, v: agg[k] }; })
+        .sort(function (a, b) { return b.v.n - a.v.n; }).slice(0, 12);
+      var max = rows[0] ? rows[0].v.n : 1;
+      var el = $('lpSponsors');
+      if (el) {
+        el.innerHTML = rows.map(function (r) {
+          var late = r.v.p3 + r.v.p2;
+          return '<div class="lp-hbar-row" style="grid-template-columns:170px 1fr 92px"><span class="nm" title="' + esc(r.name) + '">' + esc(r.name) + '</span>'
+            + '<div class="lp-track" style="display:flex"><div class="lp-fill" style="width:' + (r.v.p3 / max * 100).toFixed(1) + '%;background:var(--violet)"></div>'
+            + '<div class="lp-fill" style="width:' + (r.v.p2 / max * 100).toFixed(1) + '%;background:var(--blue)"></div>'
+            + '<div class="lp-fill" style="width:' + (r.v.p1 / max * 100).toFixed(1) + '%;background:var(--cyan)"></div></div>'
+            + '<span class="val">' + r.v.n + ' 项' + (late ? ' <span style="color:var(--muted);font-weight:400">· Ph2+ ' + late + '</span>' : '') + '</span></div>';
+        }).join('') + '<p class="lp-note"><b>读法：</b>条带按 Ph3（紫）/ Ph2（蓝）/ Ph1（青）分段——右端越偏紫，管线越接近交易兑现期。基于 ' + fmt(studies.length) + ' 项 ADC/双抗试验（2023 至今）申办方聚合。</p>';
+      }
+    });
+  }
+
+  function loadWatchlist() {
+    var url = CT + '?query.term=' + encodeURIComponent('("antibody-drug conjugate" OR "bispecific antibody" OR "GLP-1") AND AREA[StartDate]RANGE[2025-07-17,' + TODAY + '] AND AREA[LeadSponsorClass]INDUSTRY')
+      + '&fields=NCTId,BriefTitle,LeadSponsorName,Phase,StartDate,Condition&pageSize=40&sort=StartDate:desc';
+    return fetchJson(url, 20000).then(function (j) {
+      tick();
+      var rows = (j.studies || []).map(function (st) {
+        var ps = st.protocolSection || {};
+        var idm = ps.identificationModule || {}, dm = ps.designModule || {}, cm = ps.conditionsModule || {}, sm = ps.statusModule || {};
+        var phases = dm.phases || [];
+        var late = phases.indexOf('PHASE3') >= 0 ? 'Ph3' : phases.indexOf('PHASE2') >= 0 ? 'Ph2' : phases.indexOf('PHASE1') >= 0 ? 'Ph1' : '—';
+        return {
+          nct: idm.nctId || '',
+          title: (idm.briefTitle || '').slice(0, 88),
+          sponsor: ((ps.sponsorCollaboratorsModule || {}).leadSponsor || {}).name || '—',
+          ph: late,
+          date: (sm.startDateStruct || {}).date || '—',
+          cond: (cm.conditions || [])[0] || '—',
+        };
+      }).filter(function (r) { return r.ph === 'Ph2' || r.ph === 'Ph3'; }).slice(0, 9);
+      var el = $('lpWatchlist');
+      if (el) {
+        el.innerHTML = '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
+          + '<th>NCT</th><th>申办方</th><th>研究</th><th>阶段</th><th class="num">启动</th></tr></thead><tbody>'
+          + rows.map(function (r) {
+            var phColor = r.ph === 'Ph3' ? 'var(--violet)' : 'var(--blue)';
+            return '<tr><td><a class="lp-nct" href="https://clinicaltrials.gov/study/' + esc(r.nct) + '" target="_blank" rel="noopener">' + esc(r.nct) + '</a></td>'
+              + '<td style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(r.sponsor) + '"><strong>' + esc(r.sponsor) + '</strong></td>'
+              + '<td style="max-width:340px" title="' + esc(r.title) + '">' + esc(r.title) + '<div style="color:var(--muted);font-size:10.5px">' + esc(r.cond) + '</div></td>'
+              + '<td><span class="lp-tag" style="background:color-mix(in srgb,' + phColor + ' 14%, var(--surface));color:' + phColor + '">' + r.ph + '</span></td>'
+              + '<td class="num">' + esc(r.date) + '</td></tr>';
+          }).join('') + '</tbody></table></div>';
+      }
+    });
+  }
+
+  function loadFda() {
+    var url = FDA + '?search=' + encodeURIComponent('submissions.submission_type:ORIG AND submissions.submission_status:AP AND submissions.submission_status_date:[20250717 TO ' + TODAY.replace(/-/g, '') + ']') + '&limit=1';
+    return fetchJson(url).then(function (j) {
+      tick();
+      var k4 = $('lpKpiFda');
+      if (k4) {
+        k4.querySelector('.v').textContent = fmt(j.meta.results.total);
+        k4.querySelector('.d').textContent = 'FDA 批准的原始申请 · 近 12 月（ORIG 口径）';
+      }
+    });
+  }
+
+  /* ---------- 视图骨架 ---------- */
+  function skeleton(h) { return '<div class="lp-skel" style="height:' + h + 'px"></div>'; }
+
+  function render() {
+    stats.total = 6 + 6 + 36 + 18 + 16 + 2 + 1;
+    stats.done = 0;
+    return ''
+      + '<section class="lp-banner" role="note">'
+      + '<span class="lp-flag">双层数据主权 · DUAL-LAYER</span>'
+      + '<p><strong>本页是一个双层结构的独立数据看板，两层都不依赖站内数据管线：</strong>'
+      + '<strong>上篇「研报汇编分析层」</strong>取自公开研报/公告/专业数据库的人工汇编（每面板标注来源），回答「交易为什么值这个钱」；'
+      + '<strong>下篇「实时 API 验证层」</strong>在你打开页面的这一刻由浏览器直接调用 ClinicalTrials.gov 与 openFDA 实时生成，回答「管线在为谁投票」。'
+      + '<strong>逻辑主线：研发活动是 BD 交易的 12–24 个月先行指标</strong>——两层互为印证，交叉验证结论。</p></section>'
+
+      + '<nav class="ci-toc" aria-label="页内导航"><span><strong>本页结构</strong> · 点击直达：</span>'
+      + '<a href="#ciLayerCurated">上篇 · 研报汇编分析层（宏观/买方/结构/模态/地域 → 38 笔交易汇编与逐笔解剖 → AI 洞察）</a>'
+      + '<a href="#lpLayerLive" class="ci-toc-live">下篇 · 实时 API 验证层（管线先行指标 · LIVE）</a></nav>'
+
+      + (window.CuratedIntel ? window.CuratedIntel.renderSections() : '')
+
+      + '<div class="ci-layer" id="lpLayerLive">'
+      + '<div class="ci-layer-head">'
+      + '<div class="ci-eyebrow" style="color:var(--cyan)">下篇 · 实时 API 验证层 · Live Public APIs</div>'
+      + '<h2>管线先行指标：此刻正在发生的研发投票</h2>'
+      + '<p>以下全部图表在你打开页面的这一刻，由浏览器直接调用 ClinicalTrials.gov API v2 与 openFDA 实时生成——不经过采集、治理、建模管线，无任何手工加工。口径为原始注册/申报数据，含噪声（如申办方名称未归一化），各图均标注查询定义。</p>'
+      + '</div>'
+
+      + '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 10px">'
+      + '<div class="lp-kicker"><span id="lpProgress" class="lp-note" style="margin:0">实时拉取公共 API…</span></div>'
+      + '<button class="lp-retry" id="lpRefetch">清除缓存重新拉取</button></div>'
+
+      + '<div class="lp-kpis">'
+      + '<div class="lp-kpi" id="lpKpiGlobal"><div class="k">全球行业试验启动 · 2025</div><div class="v">…</div><div class="d">ClinicalTrials.gov 实时</div></div>'
+      + '<div class="lp-kpi" id="lpKpiChina"><div class="k">含中国中心占比 · 2025</div><div class="v">…</div><div class="d">LocationCountry=China</div></div>'
+      + '<div class="lp-kpi" id="lpKpiAdc"><div class="k">ADC 五年扩张倍数</div><div class="v">…</div><div class="d">行业申办试验启动</div></div>'
+      + '<div class="lp-kpi" id="lpKpiFda"><div class="k">FDA 原始申请批准 · 近 12 月</div><div class="v">…</div><div class="d">openFDA drugsfda</div></div>'
+      + '</div>'
+
+      + '<div class="lp-grid">'
+      + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">宏观脉冲</span><span class="lp-src">CT.gov · countTotal</span></div>'
+      + '<h2>研发供给双引擎：全球行业试验启动 × FDA 批准节奏</h2></div></div>'
+      + '<div class="lp-legend"><span><i style="background:var(--blue)"></i>全球行业申办试验启动（左轴）</span><span><i style="background:var(--amber)"></i>FDA 原始申请批准（右轴，ORIG 口径）</span></div>'
+      + '<div id="lpChartMacro" style="max-width:760px;margin:0 auto">' + skeleton(250) + '</div>'
+      + '<p class="lp-note">2026▲ = 截至 2026-07-17 的年内数据（半透明柱）。试验启动衡量「管线供给」，批准数衡量「兑现出口」——两者的剪刀差即 BD 买方市场的资产库存。</p></section>'
+
+      + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">模态流向</span><span class="lp-src">CT.gov · 6 模态 × 6 年</span></div>'
+      + '<h2>资金尚未投票，管线已经投票：六类模态的试验启动曲线</h2></div></div>'
+      + '<div id="lpChartModality" style="max-width:760px;margin:0 auto">' + skeleton(260) + '</div>'
+      + '<p class="lp-note" id="lpModalityInsight"></p></section>'
+
+      + '<section class="lp-panel"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">地域崛起</span><span class="lp-src">CT.gov · LocationCountry</span></div>'
+      + '<h2>中国创新供给的实时曲线</h2></div></div>'
+      + '<div class="lp-legend" id="lpChinaLegend"></div>'
+      + '<div id="lpChartChina">' + skeleton(240) + '</div>'
+      + '<p class="lp-note" id="lpChinaPh1"></p></section>'
+
+      + '<section class="lp-panel"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">靶点热度</span><span class="lp-src">CT.gov · 近 24 月 vs 前 24 月</span></div>'
+      + '<h2>靶点竞价热力图</h2></div></div>'
+      + '<div id="lpTargets">' + skeleton(280) + '</div>'
+      + '<p class="lp-note"><b>读法：</b>琥珀色 = 环比增长 ≥30% 的「升温靶点」。试验启动密度领先交易热度——靶点拥挤度是未来交易溢价的先行信号。</p></section>'
+
+      + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">研发火力</span><span class="lp-src">CT.gov · 客户端聚合</span></div>'
+      + '<h2>谁在重仓 ADC / 双抗：申办方战力榜（2023 至今）</h2></div></div>'
+      + '<div id="lpSponsors">' + skeleton(300) + '</div></section>'
+
+      + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">交易标的雷达</span><span class="lp-src">CT.gov · 近 12 月新进后期</span></div>'
+      + '<h2>明日的交易管线：新进入 Ph2/3 的热模态资产</h2></div></div>'
+      + '<div id="lpWatchlist">' + skeleton(300) + '</div>'
+      + '<p class="lp-note">筛选：ADC / 双抗 / GLP-1 · 行业申办 · 启动于近 12 个月 · 按启动日期倒序。NCT 号可点击直达注册页——每一条都是可核验的一手证据。</p></section>'
+      + '</div>'
+
+      + '<div class="lp-foot"><strong>口径与限制（诚实边界）：</strong>① 数据为 ClinicalTrials.gov 注册信息与 openFDA 申报记录的原始计数，未做公司名归一化、适应症去重或人工核验；'
+      + '② 试验启动数 ≠ 交易活动，两者关系是「先行指标 → 滞后兑现」；③ 2026 年为年内不完整数据；④ 模态/靶点按关键词匹配，存在漏召回（如未在标题/干预名中显式标注模态的资产）。'
+      + '缓存 12 小时存于 sessionStorage，可点上方按钮强制刷新。查询定义：countTotal + AREA[StartDate] / LeadSponsorClass=INDUSTRY / LocationCountry / aggFilters=phase。</div>'
+      + '</div>';
+  }
+
+  var mounted = false;
+  function mount() {
+    var body = $('viewBody');
+    if (!body || !body.querySelector('.lp-banner')) return;
+    mounted = true;
+    if (window.CuratedIntel) window.CuratedIntel.mount();
+    var btn = $('lpRefetch');
+    if (btn) btn.addEventListener('click', function () {
+      Object.keys(sessionStorage).filter(function (k) { return k.indexOf(CACHE_NS) === 0; }).forEach(function (k) { sessionStorage.removeItem(k); });
+      store = {};
+      body.querySelectorAll('.lp-panel div[id^="lpChart"], #lpTargets, #lpSponsors, #lpWatchlist').forEach(function (el) { el.innerHTML = skeleton(240); });
+      runAll();
+    });
+    if (!body.__lpBound) {
+      body.__lpBound = true;
+      body.addEventListener('click', function (e) {
+        var t = e.target;
+        if (t && t.classList && t.classList.contains('lp-retry') && t.dataset.retry) {
+          var host = $(t.dataset.retry);
+          if (host && host.__retry) { host.innerHTML = skeleton(200); host.__retry(); }
+        }
+      });
+    }
+    runAll();
+  }
+
+  function runAll() {
+    var jobs = [
+      ['lpChartMacro', loadMacro],
+      ['lpChartModality', loadModality],
+      ['lpChartChina', loadChina],
+      ['lpTargets', loadTargets],
+      ['lpSponsors', loadSponsors],
+      ['lpWatchlist', loadWatchlist],
+      [null, loadFda],
+    ];
+    var pending = jobs.length;
+    jobs.forEach(function (pair) {
+      var elId = pair[0], fn = pair[1];
+      fn()
+        .catch(function () { if (elId) panelError(elId, fn); })
+        .finally(function () { if (--pending === 0) finishAll(); });
+    });
+  }
+
+  window.LivePulse = { render: render, mount: mount };
+
+  /* 主应用在模块之前已完成首屏渲染；若首屏即 live 视图，补一次重渲染 */
+  if (window.__CONVERGENCE_V5_TEST__) {
+    try {
+      if (window.__CONVERGENCE_V5_TEST__.getState().view === 'live') {
+        window.__CONVERGENCE_V5_TEST__.render();
+      }
+    } catch (e) {}
+  }
+})();
 
   </script>
 </body>
