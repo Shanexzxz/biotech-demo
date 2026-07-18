@@ -8290,25 +8290,98 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   function renderMethods() {
     const openReconciliations = T.reconciliation_results.filter(row => row.review_status === 'OPEN');
     const blockedUses = data.manifest.blocked_uses || [];
+    const counts = data.manifest.counts;
+    const gates = T.release_gates;
+    const blockedGateCount = gates.filter(g => g.current_state === 'BLOCKED').length;
+
+    // L0–L4 业务化解读：合伙人先读「这一级能说什么」，工程师再看硬要求
+    const gateMeaning = {
+      L0: '只是线索：触发研究任务，写不进任何结论',
+      L1: '具名事实：可以引用某笔交易的具体字段',
+      L2: '具名样本：可以说「这批交易里谁占多少」',
+      L3: '市场指标：全球份额 / 同比——没有权威全球分母，当前阻断',
+      L4: '预测模型：需回测与模型卡，未开放',
+    };
+    const blockedZh = {
+      'market totals': '全球市场总量',
+      'market shares': '市场份额',
+      'annual market trends': '年度市场趋势',
+      'predictive buyer ranking': '预测性买方排名',
+      'using T2 or T3 sources alone for transaction economics': '仅凭二手 / 三手来源书写交易经济条款',
+      'automated bulk crawling that violates source controls or terms': '违反来源条款的批量爬取',
+      'full-text republication of third-party articles or licensed reports': '全文转载第三方文章或授权报告',
+      'treating a mapped or licensed source as already ingested': '把「已登记 / 已授权」当成「已入库」',
+    };
+    const dealOf = id => T.deals.find(d => d.deal_id === id) || {};
+    // 未决分歧改写成案例：隐去工单号，突出「来源冲突 → 我们选择不猜」
+    const reconStory = row => {
+      const deal = dealOf(row.deal_id);
+      const where = [deal.asset_name, deal.buyer_or_partner].filter(Boolean).join(' × ') || row.deal_id;
+      const storyMap = {
+        'REC-009': {
+          title: '首付款还是里程碑？$150M 合并披露拆不开',
+          body: `${where} 把 $150M 合并披露为一个总额，无法拆分「确定首付」与「或有里程碑」。我们没有按比例硬猜——在出现拆分依据前，这笔钱不进入任何首付比率统计。`,
+        },
+        'REC-014': {
+          title: '首付款 12.5 亿还是 14 亿美元？两个说法都在',
+          body: `${where} 公告当期双方口径为 $1.25B，后续材料出现 $1.4B 措辞。我们保留可回溯的 $1.25B 作为正式口径，把 $1.4B 标记待季报级复核——不静默覆盖。`,
+        },
+      };
+      const st = storyMap[row.reconciliation_id] || {
+        title: `字段 ${row.field_name}：来源口径冲突`,
+        body: `${where} · ${C.escapeHtml(row.decision)}（不静默覆盖，挂起待核）`,
+      };
+      return `<article class="recon-case"><strong>${st.title}</strong><p>${st.body}</p><span class="recon-case-meta">状态 · 挂起待核（OPEN）· 影响度 ${C.escapeHtml(row.materiality)}</span></article>`;
+    };
+
     return `
-      <section class="methods-summary">
-        <div><span class="eyebrow">SOURCE PORTFOLIO</span><h2>来源与方法：${T.source_registry.length} 个来源，${summary.active_sources} 个在用</h2><p>映射登记 ≠ 已入库（Mapped ≠ Ingested）；来源权威、访问路径、授权状态和证据角色独立记录。</p></div>
-        <dl><div><dt>CSV tables</dt><dd>${data.manifest.counts.csv_tables}</dd></div><div><dt>Structured rows</dt><dd>${data.manifest.counts.csv_rows_total}</dd></div><div><dt>Source documents</dt><dd>${summary.source_documents}</dd></div><div><dt>Open reconciliation</dt><dd>${summary.open_reconciliations}</dd></div></dl>
+      <!-- ① 30 秒层：非技术读者导读 -->
+      <section class="methods-plain-lead">
+        <span class="eyebrow">给非技术读者 · 30 秒版</span>
+        <h2>这里的每条结论，都经得起三个问题</h2>
+        <div class="plain-questions">
+          <article><b>从哪来？</b><p>每个数字挂在一手可回溯的来源上——issuer 公告、交易所文件、财报，而不是「网上说」。</p></article>
+          <article><b>谁核实过？</b><p>AI 抽取 + 人工复核，分歧不静默抹平。${counts.field_provenance_rows} 条字段核对记录中 ${counts.field_provenance_verified} 条已核实、${counts.field_provenance_partial} 条部分核实。</p></article>
+          <article><b>什么不能说？</b><p>${blockedGateCount} 道发布门槛当前阻断市场级结论（全球份额 / 同比）——我们不假装拥有全球普查数据。</p></article>
+        </div>
+        <dl class="library-metrics">
+          <div><dt>登记来源</dt><dd>${T.source_registry.length}<small class="metric-split">${summary.active_sources} 条路径在用</small></dd></div>
+          <div><dt>来源文档</dt><dd>${summary.source_documents}<small class="metric-split">篇原始材料</small></dd></div>
+          <div><dt>字段核对</dt><dd>${counts.field_provenance_rows}<small class="metric-split">${counts.field_provenance_verified} 已核实</small></dd></div>
+          <div><dt>挂起分歧</dt><dd>${openReconciliations.length}<small class="metric-split">不猜，挂起</small></dd></div>
+        </dl>
       </section>
+
+      <!-- ② 原则层：每张卡附一行「通俗说」 -->
       <section class="methods-policy-grid">
-        <article><span>证据分级 · EVIDENCE TIERS（T0–T3）</span><h3>证据角色不由链接数量决定</h3><p>${glossary('T0')} / ${glossary('T1')} 承担字段适配的硬事实；T1_ATTRIBUTED（带可核验出处的转述）；T2 / T3 用于背景（Context）或发现（Discovery），不能自行升级结论。</p></article>
-        <article class="policy-attributed"><span>带出处转述 · T1_ATTRIBUTED</span><h3>标注了一手出处的公众号可作溯源指针</h3><p>当公众号（如医药魔方）转述并标注了可核验的一手出处（issuer 公告 / 交易所文件），它可作为溯源指针；但字段事实只有在<strong>其标注的出处被追溯确认后</strong>，才随该出处一起达到可用等级——升级的是被指向的一手来源，不是公众号本身。</p></article>
-        <article><span>仅发现层 · DISCOVERY ONLY</span><h3>无出处公众号只承担 Discovery</h3><p>未标注可核验出处的公众号与行业媒体只触发研究任务；交易经济条款必须回到 issuer、exchange 或字段适配的权威来源。</p></article>
-        <article><span>AI + HUMAN</span><h3>AI 抽取 + 人工核对，分歧进 ${glossary('reconciliation')}</h3><p>数据清洗由 AI 与人工共同完成：AI 抽取初判，人工复核终审；AI 与人工的分歧不被静默抹平，进入 ${glossary('reconciliation')} 显式解决。AI 不能跨越 ${glossary('release gate')}。</p></article>
+        <article><span>证据分级 · EVIDENCE TIERS（T0–T3）</span><h3>证据角色不由链接数量决定</h3><p class="policy-plain">通俗说：证据分四级，一手公告才算硬事实；级别不够，结论自动降级，转载再多也撑不上去。</p><p>${glossary('T0')} / ${glossary('T1')} 承担字段适配的硬事实；T1_ATTRIBUTED（带可核验出处的转述）；T2 / T3 用于背景（Context）或发现（Discovery），不能自行升级结论。</p></article>
+        <article class="policy-attributed"><span>带出处转述 · T1_ATTRIBUTED</span><h3>标注了一手出处的公众号可作溯源指针</h3><p class="policy-plain">通俗说：医药魔方转述的数字，我们回溯到它标注的公告原文核实后才敢用——记功的是原文，不是转述。</p><p>当公众号（如医药魔方）转述并标注了可核验的一手出处（issuer 公告 / 交易所文件），它可作为溯源指针；但字段事实只有在<strong>其标注的出处被追溯确认后</strong>，才随该出处一起达到可用等级——升级的是被指向的一手来源，不是公众号本身。</p></article>
+        <article><span>仅发现层 · DISCOVERY ONLY</span><h3>无出处公众号只承担 Discovery</h3><p class="policy-plain">通俗说：没标出处的公众号只用来「发现线索」；交易金额必须回到公告原文。</p><p>未标注可核验出处的公众号与行业媒体只触发研究任务；交易经济条款必须回到 issuer、exchange 或字段适配的权威来源。</p></article>
+        <article><span>AI + HUMAN</span><h3>AI 抽取 + 人工核对，分歧进 ${glossary('reconciliation')}</h3><p class="policy-plain">通俗说：AI 先读、人终审；两者意见不一致就挂出来显式解决，AI 无权单方面拍板。</p><p>数据清洗由 AI 与人工共同完成：AI 抽取初判，人工复核终审；AI 与人工的分歧不被静默抹平，进入 ${glossary('reconciliation')} 显式解决。AI 不能跨越 ${glossary('release gate')}。</p></article>
       </section>
       ${renderCoverageProgress()}
       <section class="source-registry-pointer" aria-label="完整来源清单指引">
         <div><span class="eyebrow">受治理来源登记 · GOVERNED SOURCE REGISTRY</span><h2>完整来源清单</h2><p>本页专注<strong>治理规则与边界</strong>；${T.source_registry.length} 个来源的逐条明细（发布方、证据分级、覆盖范围、可用角色、原文入口）统一在<strong>来源资料库</strong>集中浏览，避免两页重复登记。</p></div>
         <button type="button" class="quiet-button" data-goto-view="library">前往来源资料库查看全部来源 →</button>
       </section>
-      <section class="release-gate-section"><header><div><span class="eyebrow">分级门槛 · L0–L4</span><h2>发布门槛与阻断用途 · RELEASE GATES</h2></div></header><div class="release-gate-grid">${T.release_gates.map(gate => `<article class="${gate.current_state === 'BLOCKED' ? 'is-blocked' : ''}"><strong>${C.escapeHtml(gate.release_level)}</strong><span>${C.escapeHtml(gate.output_type)}</span><b>${C.escapeHtml(gate.current_state)}</b><p>${C.escapeHtml(gate.hard_requirements)}</p></article>`).join('')}</div><div class="blocked-use-list"><strong>受阻用途 · Blocked uses</strong>${blockedUses.map(item => `<span>${C.escapeHtml(item)}</span>`).join('')}</div></section>
-      <section class="open-reconciliation-section"><header><span class="eyebrow">未决重大问题 · OPEN MATERIAL QUESTIONS</span><h2>不可静默覆盖的 ${glossary('reconciliation')}</h2></header>${openReconciliations.map(row => `<article><strong>${C.escapeHtml(row.reconciliation_id)} · ${C.escapeHtml(row.deal_id)}</strong><span>${C.escapeHtml(row.field_name)}</span><p>${C.escapeHtml(row.decision)}</p></article>`).join('')}</section>
-      <section class="catalog-section"><header><span class="eyebrow">底层数据文件 · UNDERLYING ARTIFACTS</span><h2>底层数据目录</h2></header><div class="catalog-grid">${data.catalog.map(file => `<a href="data/real_seed_v5/${C.escapeHtml(file)}" target="_blank" rel="noreferrer"><strong>${C.escapeHtml(file)}</strong><span>打开文件 · Open artifact</span></a>`).join('')}</div></section>
+
+      <section class="release-gate-section"><header><div><span class="eyebrow">分级门槛 · L0–L4</span><h2>发布门槛与阻断用途 · RELEASE GATES</h2><p class="section-plain">每级结论对应一道硬门槛：条件不满足，该级结论宁可空着。当前 L3（市场指标）处于阻断——这就是「我们不发布全球份额」的制度原因。</p></div></header><div class="release-gate-grid">${gates.map(gate => `<article class="${gate.current_state === 'BLOCKED' ? 'is-blocked' : ''}"><strong>${C.escapeHtml(gate.release_level)}</strong><span>${C.escapeHtml(gate.output_type)}</span><b>${C.escapeHtml(gate.current_state)}</b><p class="gate-meaning">${C.escapeHtml(gateMeaning[gate.release_level] || '')}</p><p class="gate-hard">${C.escapeHtml(gate.hard_requirements)}</p></article>`).join('')}</div><div class="blocked-use-list"><strong>当前不能做的事 · 我们对外引用的边界</strong>${blockedUses.map(item => `<span>${C.escapeHtml(blockedZh[item] || item)}</span>`).join('')}</div></section>
+
+      <!-- 不猜原则 · 活案例 -->
+      <section class="open-reconciliation-section"><header><span class="eyebrow">不猜原则 · 活案例</span><h2>来源打架时，我们选择挂起，而不是选一个好看的</h2><p class="section-plain">以下 ${openReconciliations.length} 个重大分歧当前仍然挂着——不会被悄悄填上一个数。技术尽调可看下方审计区的原始工单。</p></header>${openReconciliations.map(reconStory).join('')}</section>
+
+      <!-- ③ 审计层：技术细节折叠 -->
+      <details class="audit-zone">
+        <summary><span>技术审计区</span><small>工程师 / 数据尽调专用：未决工单原文、受阻用途原始定义、底层数据文件</small></summary>
+        <div class="audit-zone-body">
+          <h3>未决 reconciliation 工单（原始记录）</h3>
+          ${openReconciliations.map(row => `<article class="audit-item"><strong>${C.escapeHtml(row.reconciliation_id)} · ${C.escapeHtml(row.deal_id)}</strong><span>${C.escapeHtml(row.field_name)} · ${C.escapeHtml(row.result_type)}</span><p>${C.escapeHtml(row.decision)}</p><small>${C.escapeHtml(row.notes || '')}</small></article>`).join('')}
+          <h3>受阻用途（原始定义）</h3>
+          <div class="blocked-use-list">${blockedUses.map(item => `<span>${C.escapeHtml(item)}</span>`).join('')}</div>
+          <h3>底层数据目录</h3>
+          <div class="catalog-grid">${data.catalog.map(file => `<a href="data/real_seed_v5/${C.escapeHtml(file)}" target="_blank" rel="noreferrer"><strong>${C.escapeHtml(file)}</strong><span>打开文件 · Open artifact</span></a>`).join('')}</div>
+        </div>
+      </details>
       <p class="sr-only" id="app-live-region" aria-live="polite">已进入来源与方法。</p>`;
   }
 
@@ -8555,6 +8628,208 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 // DEDUP_ONTOLOGY_DONE
 
   </script>
+
+  <style>
+/* ===== 来源与方法页：双读者分层（30秒层 / 原则层 / 审计层） ===== */
+.methods-plain-lead {
+  margin-top: 16px;
+  padding: 20px 18px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cyan);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.methods-plain-lead h2 {
+  margin: 6px 0 14px;
+  color: var(--text-strong);
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.plain-questions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.plain-questions article {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.plain-questions b {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--cyan);
+  font-size: 14px;
+}
+
+.plain-questions p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+.methods-plain-lead .library-metrics {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.policy-plain {
+  margin: 0 0 10px !important;
+  padding: 8px 10px;
+  border-left: 2px solid var(--cyan);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: color-mix(in srgb, var(--cyan) 8%, var(--surface-2));
+  color: var(--text-strong) !important;
+  font-size: 12.5px !important;
+  line-height: 1.6;
+}
+
+.section-plain {
+  margin: 6px 0 0;
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+.gate-meaning {
+  margin: 8px 0 0;
+  color: var(--text-strong);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.gate-hard {
+  margin: 6px 0 0;
+  padding-top: 6px;
+  border-top: 1px dashed var(--line);
+  color: var(--muted-2);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.recon-case {
+  margin-top: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.recon-case strong {
+  display: block;
+  color: var(--text-strong);
+  font-size: 14px;
+}
+
+.recon-case p {
+  margin: 7px 0 0;
+  color: var(--text);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.recon-case-meta {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.audit-zone {
+  margin-top: 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.audit-zone > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.audit-zone > summary::-webkit-details-marker { display: none; }
+
+.audit-zone > summary span {
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.audit-zone > summary span::before {
+  content: '▸ ';
+  color: var(--muted-2);
+}
+
+.audit-zone[open] > summary span::before { content: '▾ '; }
+
+.audit-zone > summary small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.audit-zone-body {
+  padding: 0 16px 16px;
+}
+
+.audit-zone-body h3 {
+  margin: 14px 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.audit-item {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 12px;
+}
+
+.audit-item + .audit-item { margin-top: 8px; }
+
+.audit-item strong { color: var(--text-strong); }
+.audit-item span { display: block; margin-top: 2px; color: var(--muted); }
+.audit-item p { margin: 6px 0 0; color: var(--text); line-height: 1.6; }
+.audit-item small { display: block; margin-top: 4px; color: var(--muted-2); }
+
+@media (max-width: 760px) {
+  .plain-questions { grid-template-columns: 1fr; }
+  .audit-zone > summary { flex-direction: column; gap: 2px; }
+}
+
+/* 修正：KPI 副标另起一行；recon 案例卡覆盖旧的三列网格布局 */
+.library-metrics dd .metric-split {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.open-reconciliation-section article.recon-case {
+  display: block;
+  grid-template-columns: none;
+  border-top: 0;
+  padding: 14px 16px;
+}
+
+  </style>
 
   <script>
 /* ============================================================
