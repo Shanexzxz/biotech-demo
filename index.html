@@ -9019,6 +9019,24 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   .private-context-lock p { font-size: 12px; }
 }
 
+/* ===== 证据抽屉：移动端贴底抽屉（FAB 导航后 bottom:64 的遗留导致悬空） ===== */
+@media (max-width: 760px) {
+  .evidence-drawer {
+    bottom: 0;
+    max-height: 78vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .evidence-table-wrap {
+    max-height: calc(78vh - 75px);
+  }
+
+  /* 抽屉打开时隐藏 FAB，避免遮挡 */
+  body:has(.evidence-drawer) .fab-nav {
+    display: none;
+  }
+}
+
   </style>
 
   <script>
