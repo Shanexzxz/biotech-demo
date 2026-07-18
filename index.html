@@ -3945,6 +3945,43 @@ input:focus-visible,
     min-width: 0;
   }
 
+  /* 移动端修复⑦：数据能力四页适配
+     a) hero 是 flex 不折行，右侧 4 列统计被挤成竖条 → 改块级上下排 */
+  .pipeline-hero,
+  .library-hero,
+  .methods-summary {
+    display: block;
+  }
+
+  .pipeline-hero .library-metrics,
+  .library-hero .library-metrics {
+    margin-top: 12px;
+  }
+
+  /* b) 数据血缘 SVG min-width:660px，经 grid item min-width:auto 撑破整页 */
+  .pipeline-flow > * {
+    min-width: 0;
+  }
+
+  /* c) 资料库卡片分级标签是长英文 token，允许断词防溢出 */
+  .library-card .lib-tier,
+  .library-card .lib-role {
+    overflow-wrap: anywhere;
+  }
+
+  /* d) AI Thesis 买方候选行：5 列 grid 最小 ~532px，移动端减列 */
+  .shortlist-row {
+    grid-template-columns: 26px minmax(0, 1fr) 64px 64px;
+  }
+
+  .shortlist-row > * {
+    min-width: 0;
+  }
+
+  .shortlist-row .shortlist-stage {
+    display: none;
+  }
+
   /* 移动端修复⑤：glossary 气泡是 width:max-content 的绝对定位盒，
      visibility:hidden 仍计入可滚动溢出，会把 ICB 撑宽（455px 元凶）。
      改为 fixed 底部浮层：不参与文档流溢出，且不会被挤出视口。 */
