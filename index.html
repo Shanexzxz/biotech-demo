@@ -3939,6 +3939,12 @@ input:focus-visible,
     flex-wrap: wrap;
   }
 
+  /* 移动端修复⑥：模态矩阵列也是 grid item，min-width:auto 会被表格 min-content 撑破 */
+  .modality-split > *,
+  .modality-matrix-col {
+    min-width: 0;
+  }
+
   /* 移动端修复⑤：glossary 气泡是 width:max-content 的绝对定位盒，
      visibility:hidden 仍计入可滚动溢出，会把 ICB 撑宽（455px 元凶）。
      改为 fixed 底部浮层：不参与文档流溢出，且不会被挤出视口。 */
