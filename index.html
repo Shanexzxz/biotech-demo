@@ -7104,21 +7104,21 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     return '可用';
   }
 
-  function renderSignalInbox() {
+  function renderSignalInbox(activeSignal) {
     // 边界声明（dimension=BOUNDARY）不是可行动的分析信号，而是"系统不能回答什么"的诚实约束。
     // 它不该与分析信号平级混排、更不该置顶——拆出为顶部背景约束条，信号列表只留可决策的分析信号。
     const actionSignals = signals.filter(signal => signal.dimension !== 'BOUNDARY');
     const boundarySignals = signals.filter(signal => signal.dimension === 'BOUNDARY');
-    const boundaryBanner = boundarySignals.map(signal => `<button type="button" class="boundary-note${signal.id === state.selectedSignal ? ' is-selected' : ''}" data-select-signal="${signal.id}" aria-label="分析边界：${C.escapeHtml(signal.title)}">
+    const boundaryBanner = boundarySignals.map(signal => `<button type="button" class="boundary-note${signal.id === (activeSignal && activeSignal.id) ? ' is-selected' : ''}" data-select-signal="${signal.id}" aria-label="分析边界：${C.escapeHtml(signal.title)}">
         <span class="boundary-flag">分析边界</span>
         <span class="boundary-copy"><strong>${C.escapeHtml(signal.title)}</strong><small>${C.escapeHtml(signal.inference)}</small></span>
         <span class="boundary-state">${signalStateLabel(signal)}</span>
       </button>`).join('');
     return `<section class="signal-inbox" id="signal-inbox" aria-labelledby="signal-inbox-title">
-      <header><div><span class="eyebrow">AI 主动洞察 · 证据编排 · EVIDENCE-ORCHESTRATED</span><h2 id="signal-inbox-title">AI 信号</h2><p class="signal-lead">点击信号即展开对应结构化 Thesis；AI 负责证据编排，不改变 ${glossary('release gate')}。</p></div><span class="signal-count">${actionSignals.length}</span></header>
+      <header><div><span class="eyebrow">AI 主动洞察 · 证据编排 · EVIDENCE-ORCHESTRATED</span><h2 id="signal-inbox-title">AI 信号</h2><p class="signal-lead">点击信号，整页切换为该主题的结构化 Thesis；AI 负责证据编排，不改变 ${glossary('release gate')}。</p></div><span class="signal-count">${actionSignals.length}</span></header>
       ${boundaryBanner ? `<div class="boundary-band" aria-label="分析边界约束">${boundaryBanner}</div>` : ''}
       <div class="signal-list-label">可行动分析信号</div>
-      <div class="signal-list signal-list-row">${actionSignals.map((signal, index) => `<button type="button" class="signal-card${signal.id === state.selectedSignal ? ' is-selected' : ''}" data-select-signal="${signal.id}">
+      <div class="signal-list signal-list-row">${actionSignals.map((signal, index) => `<button type="button" class="signal-card${signal.id === (activeSignal && activeSignal.id) ? ' is-selected' : ''}" data-select-signal="${signal.id}">
         <span class="signal-rank">${String(index + 1).padStart(2, '0')}</span>
         <span class="signal-copy"><strong>${C.escapeHtml(signal.title)}</strong><span>${C.escapeHtml(signal.fact)}</span><small>${signal.release_level} · ${C.escapeHtml(signal.coverage)} · 更新 ${C.escapeHtml(signal.freshness)}</small></span>
         <span class="signal-state state-${signal.release_state.toLowerCase()}">${signalStateLabel(signal)}</span>
@@ -7562,36 +7562,54 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   function renderThesis() {
-    const result = M.buildThesisWorkspace(state.thesisQuery, T);
+    // 阅读优先重构：合伙人打开即读完整内容，交互只是可选深化
+    const actionSignals = signals.filter(item => item.dimension !== 'BOUNDARY');
+    // 未选信号时默认展开第一个可行动信号（仅展示层联动，不改 URL 状态）
+    const activeSignal = signals.find(item => item.id === state.selectedSignal) || actionSignals.find(item => signalThesisQuery(item)) || actionSignals[0] || null;
+    const effectiveQuery = state.selectedSignal
+      ? state.thesisQuery
+      : ((activeSignal && signalThesisQuery(activeSignal)) || state.thesisQuery);
+    const result = M.buildThesisWorkspace(effectiveQuery, T);
     const blocked = result.status === 'BLOCKED_NO_VERIFIED_COHORT';
+    // 带第三方引用口径的信号：把「可发布/不可发布」与「市场定位」并入证据区，不再开决策坞
+    const hasMarketCtx = activeSignal && activeSignal.referenced_market && activeSignal.referenced_market.available;
+    const marketCtxBlocks = hasMarketCtx
+      ? `${activeSignal.disclosed_breakdown ? renderDisclosedShare(activeSignal.disclosed_breakdown) : ''}${renderReferencedMarket(activeSignal.referenced_market)}`
+      : '';
     return `
-      ${renderThesisIntro()}
-      ${renderSignalInbox()}
-      <section class="thesis-query-bar" aria-label="Thesis 主动查询">
-        <div class="thesis-query-lead"><span class="query-eyebrow">主动探查 · 或自己开题</span><p>上面的信号是 AI 主动递给你的异常；你也可以自己输入一个主题、靶点或模态，生成同一套结构化 Thesis。</p></div>
-        <div class="thesis-query-controls">
-          <label for="thesisQuery"><span>主题、靶点或模态</span><input id="thesisQuery" value="${C.escapeHtml(state.thesisQuery)}" placeholder="例如 BNT327、ADC、TfR1 BBB shuttle"></label>
-          <button type="button" class="primary-button" id="runThesisQuery">生成结构化 Thesis</button>
-          <div class="query-presets"><span class="query-presets-label">试试</span><button type="button" data-thesis-preset="BNT327">BNT327</button><button type="button" data-thesis-preset="ADC">ADC</button><button type="button" data-thesis-preset="China-originated">China-originated</button></div>
+      <details class="thesis-intro-fold">
+        <summary><span>这一页怎么看</span><small>AI 把证据编排成可审计的推理：选题 → 看答案 → 查证据，三步读完</small></summary>
+        <div class="thesis-intro-fold-body">
+          <p><b>从信号进入</b>——不给现成结论，从异常信号出发；<b>${glossary('证据门控')}</b>——没有已验证可比 cohort 就拒绝生成（${glossary('BLOCKED')}），绝不硬编一个像样的答案；<b>五格分离 + 显式留白</b>——事实 / 推断 / 反方假设 / 未知 / 行动分开摆，未解锁的私有能力如实标注。</p>
         </div>
+      </details>
+      ${renderSignalInbox(activeSignal)}
+      <div class="thesis-presets-row"><span class="query-presets-label">换个主题看看</span><button type="button" data-thesis-preset="BNT327">BNT327</button><button type="button" data-thesis-preset="ADC">ADC</button><button type="button" data-thesis-preset="China-originated">China-originated</button></div>
+
+      <section class="thesis-result" id="thesis-workspace" aria-label="当前主题的结构化 Thesis">
+        <div class="thesis-zone-head"><span class="step-tag">② 当前 Thesis · 答案</span><span class="thesis-topic">主题 · ${C.escapeHtml(effectiveQuery)}</span></div>
+        <section class="thesis-hero ${blocked ? 'is-blocked' : ''}">
+          <div><span class="status-label ${blocked ? 'status-blocked' : ''}">${result.status}</span><h2>${C.escapeHtml(result.title)}</h2><p>${C.escapeHtml(result.decision_thesis || '证据门槛尚未满足，当前不生成投资结论。')}</p></div>
+          <div class="thesis-scope">${scopeBadge()}<span>${result.release_level}</span></div>
+        </section>
+        ${renderConviction(result)}
       </section>
-      ${renderDecisionDock()}
-      <section class="thesis-hero ${blocked ? 'is-blocked' : ''}" id="thesis-workspace">
-        <div><span class="status-label ${blocked ? 'status-blocked' : ''}">${result.status}</span><h2>${C.escapeHtml(result.title)}</h2><p>${C.escapeHtml(result.decision_thesis || '证据门槛尚未满足，当前不生成投资结论。')}</p></div>
-        <div class="thesis-scope">${scopeBadge()}<span>${result.release_level}</span></div>
+
+      <section class="thesis-evidence-flow" aria-label="证据与推理">
+        <div class="thesis-zone-head"><span class="step-tag">③ 证据与推理 · 凭什么这么说</span></div>
+        ${marketCtxBlocks ? `<div class="thesis-market-ctx">${marketCtxBlocks}</div>` : ''}
+        ${renderThesisComparables(result)}
+        <section class="reasoning-grid" aria-label="结构化 Thesis">
+          <article class="reasoning-card fact"><span>Fact / 已验证事实</span><p>${C.escapeHtml(result.fact)}</p></article>
+          <article class="reasoning-card inference"><span>Inference / 投资解释</span><p>${C.escapeHtml(result.inference)}</p></article>
+          <article class="reasoning-card counter"><span>Counter-thesis / 反方假设</span><p>${C.escapeHtml(result.counter_thesis)}</p></article>
+          <article class="reasoning-card unknown"><span>Unknown / 未知项</span><ul>${result.unknowns.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ul></article>
+          <article class="reasoning-card action"><span>Action / 建议行动</span><ol>${result.actions.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></article>
+        </section>
+        ${result.scenarios.length ? `<section class="scenario-section"><header><span class="eyebrow">12–36 MONTHS · CONDITIONAL, NOT FORECAST</span><h2>Bull / Base / Bear 条件情景</h2></header><div class="scenario-grid">${result.scenarios.map(scenario => `<article><strong>${scenario.name}</strong><p>${C.escapeHtml(scenario.condition)}</p><span>领先指标 · ${C.escapeHtml(scenario.indicator)}</span><small>失效条件 · ${C.escapeHtml(scenario.invalidation)}</small></article>`).join('')}</div></section>` : ''}
+        ${renderBuyerShortlist(result)}
+        <section class="private-context-lock"><div><span class="scope-badge scope-private">Private</span><h2>基金私有上下文（Private Fund Context）未解锁</h2><p>接入基金 Pipeline、CRM、Mandate 与关系数据后，才显示 Potential Strategic Buyers、Portfolio Fit 和 Buyer Whitespace。</p></div><span>受数据范围限制 · LOCKED BY DATA SCOPE</span></section>
       </section>
-      ${renderConviction(result)}
-      <section class="reasoning-grid" aria-label="结构化 Thesis">
-        <article class="reasoning-card fact"><span>Fact / 已验证事实</span><p>${C.escapeHtml(result.fact)}</p></article>
-        <article class="reasoning-card inference"><span>Inference / 投资解释</span><p>${C.escapeHtml(result.inference)}</p></article>
-        <article class="reasoning-card counter"><span>Counter-thesis / 反方假设</span><p>${C.escapeHtml(result.counter_thesis)}</p></article>
-        <article class="reasoning-card unknown"><span>Unknown / 未知项</span><ul>${result.unknowns.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ul></article>
-        <article class="reasoning-card action"><span>Action / 建议行动</span><ol>${result.actions.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></article>
-      </section>
-      ${result.scenarios.length ? `<section class="scenario-section"><header><span class="eyebrow">12–36 MONTHS · CONDITIONAL, NOT FORECAST</span><h2>Bull / Base / Bear 条件情景</h2></header><div class="scenario-grid">${result.scenarios.map(scenario => `<article><strong>${scenario.name}</strong><p>${C.escapeHtml(scenario.condition)}</p><span>领先指标 · ${C.escapeHtml(scenario.indicator)}</span><small>失效条件 · ${C.escapeHtml(scenario.invalidation)}</small></article>`).join('')}</div></section>` : ''}
-      ${renderBuyerShortlist(result)}
-      <section class="private-context-lock"><div><span class="scope-badge scope-private">Private</span><h2>基金私有上下文（Private Fund Context）未解锁</h2><p>接入基金 Pipeline、CRM、Mandate 与关系数据后，才显示 Potential Strategic Buyers、Portfolio Fit 和 Buyer Whitespace。</p></div><span>受数据范围限制 · LOCKED BY DATA SCOPE</span></section>
-      ${renderThesisComparables(result)}
       ${blocked ? `<section class="verification-queue"><h2>下一步核验 · Next verification</h2><ol>${result.next_verification.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></section>` : ''}
       ${renderEvidenceDrawer()}
       <p class="sr-only" id="app-live-region" aria-live="polite">已进入 AI Thesis 工作区。</p>`;
@@ -8529,8 +8547,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         const patch = {
           view: 'thesis',
           selectedSignal: button.dataset.selectSignal,
-          decisionDockOpen: true,
-          scrollToId: 'decision-dock',
+          decisionDockOpen: false,
+          scrollToId: 'thesis-workspace',
         };
         const query = signalThesisQuery(signal);
         if (query) patch.thesisQuery = query;
@@ -8827,6 +8845,130 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   grid-template-columns: none;
   border-top: 0;
   padding: 14px 16px;
+}
+
+/* ===== AI Thesis：阅读优先三步叙事 ===== */
+.thesis-intro-fold {
+  margin-top: 8px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.thesis-intro-fold > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.thesis-intro-fold > summary::-webkit-details-marker { display: none; }
+
+.thesis-intro-fold > summary span {
+  color: var(--text-strong);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.thesis-intro-fold > summary span::before { content: '▸ '; color: var(--muted-2); }
+.thesis-intro-fold[open] > summary span::before { content: '▾ '; }
+
+.thesis-intro-fold > summary small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.thesis-intro-fold-body {
+  padding: 0 14px 10px;
+}
+
+.thesis-intro-fold-body p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+/* ② 答案容器：视觉上与信号区、证据区分层 */
+.thesis-result {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--cyan) 3%, var(--surface));
+}
+
+.thesis-result .thesis-hero { margin-top: 0; }
+
+.thesis-zone-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.step-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--text-strong);
+  color: var(--surface);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.thesis-topic {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.thesis-evidence-flow {
+  margin-top: 18px;
+}
+
+.thesis-evidence-flow .thesis-zone-head { margin-bottom: 4px; }
+
+.thesis-market-ctx {
+  display: grid;
+  gap: 12px;
+  margin: 10px 0 14px;
+}
+
+.thesis-presets-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.thesis-presets-row .query-presets-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.thesis-presets-row button {
+  min-height: 32px;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.thesis-presets-row button:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+@media (max-width: 760px) {
+  .thesis-zone-head { flex-direction: column; gap: 4px; }
+  .thesis-result { padding: 10px; }
 }
 
   </style>
