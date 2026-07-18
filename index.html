@@ -8971,6 +8971,54 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   .thesis-result { padding: 10px; }
 }
 
+/* ===== AI Thesis：桌面端密度收敛（不改变信息，只收松紧） ===== */
+@media (min-width: 761px) {
+  /* 页头与区间距 */
+  .signal-inbox { margin-top: 10px; }
+  .signal-inbox > header { margin-bottom: 8px; }
+  .signal-card { min-height: 0; padding: 9px 10px; }
+  .thesis-result { padding: 12px 14px; }
+  .thesis-evidence-flow { margin-top: 14px; }
+  .thesis-evidence-flow > section,
+  .thesis-evidence-flow .buyer-shortlist { margin-top: 10px; }
+
+  /* 答案区 */
+  .thesis-hero { padding: 13px 15px; }
+  .conviction-grid article { padding: 8px 12px; }
+
+  /* 证据表：行高收敛 */
+  .thesis-comparables > header { margin-bottom: 8px; }
+  .thesis-comparables .compact-table th,
+  .thesis-comparables .compact-table td { padding: 6px 8px; }
+  .thesis-comparables .tag { padding: 1px 8px; font-size: 11px; }
+
+  /* 五格推理卡 */
+  .reasoning-grid { margin-top: 10px; }
+  .reasoning-card { padding: 10px 12px; }
+  .reasoning-card p,
+  .reasoning-card ul,
+  .reasoning-card ol { margin-top: 5px; }
+
+  /* 情景卡 */
+  .scenario-section > header { margin-bottom: 8px; }
+  .scenario-grid article { padding: 10px 12px; }
+
+  /* 买方候选：行更扁、指标列聚拢 */
+  .buyer-shortlist { padding: 14px 16px; }
+  .buyer-shortlist header { margin-bottom: 8px; }
+  .shortlist-body { gap: 4px; }
+  .shortlist-row {
+    grid-template-columns: 26px minmax(0, 1fr) auto auto auto;
+    gap: 10px 28px;
+    padding: 6px 10px;
+  }
+
+  /* Private 留白：压成 slim 条 */
+  .private-context-lock { padding: 11px 16px; }
+  .private-context-lock h2 { font-size: 13.5px; margin: 3px 0 2px; }
+  .private-context-lock p { font-size: 12px; }
+}
+
   </style>
 
   <script>
