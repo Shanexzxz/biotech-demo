@@ -68,6 +68,10 @@ html[data-theme="light"] {
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: clip;
+}
+
 html {
   min-width: 320px;
   background: var(--bg);
@@ -5188,6 +5192,7 @@ input:focus-visible,
   transform: translateY(-2px);
   transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
   pointer-events: none;
+  display: none;
 }
 .glossary-term:hover::after,
 .glossary-term:focus-visible::after,
@@ -5195,6 +5200,7 @@ input:focus-visible,
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  display: block;
 }
 
 /* ===== P1③ 回到顶部悬浮按钮（超长页滚动后浮现） ===== */
@@ -6118,7 +6124,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       },
       {
         id: 'CR-ATTRIBUTED', label: '权威公众号（带一手出处）', en: 'Authoritative WeChat w/ attribution',
-        score: 45, base: true,
+        score: 50, base: true,
         trigger: '医药魔方/动脉网等有编辑审核的权威公众号，且标注可核验的一手出处',
         hits: docs.filter(d => d.source_tier === 'T1_ATTRIBUTED').length, unit: '篇带出处转述',
         note: '权威公众号可信度显著高于无名公众号，但单源仍需与一手/交叉比对叠加才达入库线。',
@@ -6157,7 +6163,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     const promotionThreshold = 100;
     const promotionPaths = [
       { name: '一手 + 交叉比对', combo: ['CR-PRIMARY', 'CR-CROSSCHECK', 'CR-HUMAN'], total: 60 + 25 + 15, reaches: true },
-      { name: '权威公众号 + 交叉比对 + 人工终审', combo: ['CR-ATTRIBUTED', 'CR-CROSSCHECK', 'CR-RECONCILED', 'CR-HUMAN'], total: 45 + 25 + 10 + 15, reaches: true },
+      { name: '权威公众号 + 交叉比对 + 人工终审', combo: ['CR-ATTRIBUTED', 'CR-CROSSCHECK', 'CR-RECONCILED', 'CR-HUMAN'], total: 50 + 25 + 10 + 15, reaches: true },
       { name: '一般公众号单源', combo: ['CR-WECHAT-PLAIN'], total: 20, reaches: false },
     ];
 
@@ -6309,7 +6315,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     const amount = Number(value);
     if (Math.abs(amount) >= 1000) {
       const billions = amount / 1000;
-      return `$${Number.isInteger(billions) ? billions.toFixed(0) : billions.toFixed(1)}B`;
+      if (Number.isInteger(billions)) return `$${billions.toFixed(0)}B`;
+      const rounded1 = Math.round(billions * 10) / 10;
+      const rounded2 = Math.round(billions * 100) / 100;
+      // 10B 以下用两位有效数字消除舍入误差（1.25 → $1.25B；6.05 → $6.05B）；大额保持一位
+      return `$${billions < 10 && Math.abs(rounded2 - rounded1) >= 0.005 ? rounded2.toFixed(2).replace(/0$/, '') : rounded1.toFixed(1)}B`;
     }
     return `$${Math.round(amount).toLocaleString('en-US')}M`;
   }
@@ -6937,7 +6947,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     landscape: {
       eyebrow: '数据能力 · 基于自建管线 · 一手核实 · 可审计',
       title: '自建管线分析',
-      description: '基于自建的采集→治理→建模→分析管线，78 笔逐笔回一手来源核实、可审计。一屏回答四个维度：买方活跃度、交易结构演变、模态与靶点流向、资产地域流向。',
+      description: '基于自建的采集→治理→建模→分析管线：34 笔核心库逐笔回一手来源核实 + 44 笔候选转正扩展（据第三方口径纳入、待逐笔一手复核），全程可审计。一屏回答四个维度：买方活跃度、交易结构演变、模态与靶点流向、资产地域流向。',
     },
     marketwide: {
       eyebrow: '外部数据 · 洞察能力 · 公开口径汇编 · 广度优先',
@@ -7026,11 +7036,14 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     return [...new Set(rows.map(row => row[field] || 'Undisclosed'))].sort((a, b) => a.localeCompare(b));
   }
 
+  const FILTER_VALUE_LABELS = {
+    LICENSE_COLLABORATION: '授权合作（Licensing）', M_AND_A: '并购（M&A）',
+  };
   function filterSelect(key, label, values) {
     const selected = state.filters[key];
     return `<label class="filter-control"><span>${C.escapeHtml(label)}</span><select data-filter="${key}">
       <option value="all">全部</option>
-      ${values.map(value => `<option value="${C.escapeHtml(value)}"${value === selected ? ' selected' : ''}>${C.escapeHtml(value)}</option>`).join('')}
+      ${values.map(value => `<option value="${C.escapeHtml(value)}"${value === selected ? ' selected' : ''}>${C.escapeHtml(FILTER_VALUE_LABELS[value] || value)}</option>`).join('')}
     </select></label>`;
   }
 
@@ -7370,13 +7383,13 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       <section class="overview-lead">
         <span class="guide-eyebrow">设计思路 · HOW THIS PLATFORM IS ORGANIZED</span>
         <h2>一屏看懂这个系统怎么组织</h2>
-        <p>平台刻意用两组能力对照，来回答同一个问题的两个层面：</p>
+        <p>平台用两组能力对照，来回答同一个问题的两个层面：</p>
         <ul class="overview-thesis">
           <li><span class="ot-tag ot-insight">洞察能力</span><span class="ot-body"><strong>基于公开数据（公众号、行业媒体盘点）做分析</strong>——覆盖广、更接近真实市场规模，重点展示我们把数据讲成全景的<strong>可视化与分析视角</strong>；数据未逐笔一手核实。</span></li>
           <li><span class="ot-tag ot-data">数据能力</span><span class="ot-body"><strong>我们自建了完整的采集 → 治理 → 建模 → 分析基础设施</strong>，再基于它做分析——每笔可回溯一手来源、可审计，重点展示<strong>数据工程与可信度</strong>，而非拿现成数据画图。</span></li>
         </ul>
         <p class="overview-lead-foot">一句话：<strong>洞察能力展示"会讲故事"，数据能力证明"结论可信"</strong>。点击任意卡片直达该页。</p>
-        <p class="overview-lead-note">之所以分成两条线，也是为了在 demo 阶段合理控制资源投入：洞察能力用公开数据快速铺出全景广度，数据能力则把有限的时间与算力集中投到少量交易的自建管线上，做到逐笔可回溯——先看广度、再看深度，而不是在全部数据上都做重核实。</p>
+        <p class="overview-lead-note">两条线对应两种不同的建设路径：洞察能力用公开数据铺出全景广度，数据能力把核实做深——逐笔回溯到一手来源。先看广度、再看深度，而不是在全部数据上都做同等深度的核实。</p>
       </section>
       ${groups.map(groupBlock).join('')}
       <p class="sr-only" id="app-live-region" aria-live="polite">已显示设计思路，七个页面按洞察能力与数据能力两组组织。</p>`;
@@ -7517,13 +7530,13 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     return `
       <section class="mw-demo-banner mw-demo-banner-trust" role="note" aria-label="数据能力说明">
         <span class="mw-flag mw-flag-trust">自建管道 · 可审计</span>
-        <p><strong>本页是「数据能力」的展示：</strong>每笔交易都经自建的采集→治理→建模→分析管道，逐笔回一手来源核实、可追溯、可审计——这是与「洞察能力」组里那份宽口径外部数据的关键区别。想先看覆盖更广、更接近真实市场规模的全局，见「洞察能力」组的「交易情报」页。</p>
+        <p><strong>本页是「数据能力」的展示：</strong>核心库 34 笔交易逐笔回一手来源核实、可追溯、可审计；另有 44 笔候选转正扩展层按第三方口径纳入并显式标注（待逐笔一手复核）——这是与「洞察能力」组里那份宽口径外部数据的关键区别。想先看覆盖更广、更接近真实市场规模的全局，见「交易情报」页（外部公开数据宽口径汇编）。</p>
       </section>
       <section class="market-regime-band" id="market-regime-band" aria-labelledby="market-regime-title">
         <div>
           <div class="regime-kicker">${scopeBadge()}<span class="status-label status-referenced">宏观年度趋势 · 引用口径定位</span></div>
           <h2 id="market-regime-title">可解释披露交易结构，并用第三方公开口径定位样本在市场中的位置</h2>
-          <p>精选样本用于追踪买方、条款、模态与资产来源；权威市场份额仍需商业库授权，当前以医药魔方 NextPharma 等公开口径作分母做定位并标注误差（详见 AI Thesis 分析边界）。样本 = ${T.deals.filter(d => d.review_status !== 'PROMOTED_FROM_CANDIDATE').length} 笔一手核实核心库 + ${T.deals.filter(d => d.review_status === 'PROMOTED_FROM_CANDIDATE').length} 笔公众号候选转正的扩展层（后者据第三方口径纳入、待逐笔一手复核）。</p>
+          <p>精选样本用于追踪买方、条款、模态与资产来源；权威市场份额仍需商业库授权，当前以医药魔方 NextPharma 等公开口径作分母做定位并标注误差（详见「来源与方法」页）。样本 = ${T.deals.filter(d => d.review_status !== 'PROMOTED_FROM_CANDIDATE').length} 笔一手核实核心库 + ${T.deals.filter(d => d.review_status === 'PROMOTED_FROM_CANDIDATE').length} 笔公众号候选转正的扩展层（后者据第三方口径纳入、待逐笔一手复核）。</p>
         </div>
         <dl class="regime-metrics">
           <div><dt>披露交易</dt><dd>${summary.deals}<small class="metric-split">${T.deals.filter(d => d.review_status !== 'PROMOTED_FROM_CANDIDATE').length} 核心 + ${T.deals.filter(d => d.review_status === 'PROMOTED_FROM_CANDIDATE').length} 扩展</small></dd></div>
@@ -7558,7 +7571,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
             ${C.renderStructurePulse(pulse)}
           </article>
           <article class="intel-panel dimension-origin${state.activeDimension === 'origin' ? ' is-mobile-active' : ''}" id="origin-flow-panel">
-            ${renderPanelHeading('04', '创新来源流向', '按资产来源地 → 买方区域排序，避免世界地图飞线造成定量误读。', 'Asset origin')}
+            ${renderPanelHeading('04', '创新来源流向', '按资产来源地 → 买方区域排序，各走廊金额与笔数直接可读。', 'Asset origin')}
             ${C.renderOriginFlows(flows, state.selectedOrigin)}
             <p class="chart-note">Origin 使用资产来源口径；Rights Scope 保持独立维度。</p>
           </article>
@@ -7838,6 +7851,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     const map = {
       NORMALIZED: '已归一', SOURCE_NAMED: '源命名', PORTFOLIO_RECORD: '组合记录',
       RESOLVED: '已解析', PENDING: '待处理',
+      ACQUIRED_ENTITY: '收购实体', PORTFOLIO_PLACEHOLDER: '组合占位',
+      NORMALIZED_COMBINATION: '归一组合',
     };
     return map[s] || s;
   }
@@ -7901,7 +7916,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
           <div>
             <span class="eyebrow">${glossary('本体')}模型 · ONTOLOGY MODEL</span>
             <h3>底层数据如何变成投资结论</h3>
-            <p>主图采用稳定的左到右 DAG，不使用力导向网络，避免每次打开位置漂移和关系交叉。绿色=已构建，黄色=部分构建，红色=被数据依赖阻塞。</p>
+            <p>主图按依赖方向从左到右固定排布：绿色 = 已构建，黄色 = 部分构建，红色 = 被数据依赖阻塞。绿色=已构建，黄色=部分构建，红色=被数据依赖阻塞。</p>
           </div>
           <div class="odag-stat"><b>${entities.length}</b> ENTITIES · <b>${relCount}</b> EDGES</div>
         </header>
@@ -7954,7 +7969,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 
     // 治理规则（用真实 transformation_runs + reconciliation + 核对链驱动）
     const governanceRules = [
-      { name: '跨源交叉比对', en: 'Cross-source reconciliation', metric: `${T.reconciliation_results.length} 项`, desc: `announcement vs closing、${glossary('CVR')}、净现金等差异分开保存，不静默覆盖`, conf: 'HIGH' },
+      { name: '跨源交叉比对', en: 'Cross-source reconciliation', metric: `${T.reconciliation_results.length} 项`, desc: `announcement vs closing、CVR（或有价值权利）、净现金等差异分开保存，不静默覆盖`, conf: 'HIGH' },
       { name: 'NER 主体消歧与对齐', en: 'Entity resolution', metric: `${summary.organizations} 组织 / ${summary.assets} 资产`, desc: '组织、资产、靶点别名归一到主数据，Identity before count', conf: 'HIGH' },
       { name: 'LLM 抽取与初判', en: 'LLM extraction', metric: `${rc.total || 0} 字段`, desc: 'AI 从来源文档抽取字段与证据定位，给出初判可信度', conf: 'MEDIUM' },
       { name: '规范化与口径校验', en: 'Normalization', metric: `${transforms.length} 个 transform`, desc: `${totalIn} 输入 → ${totalAccepted} 接受 / ${totalRejected} 拒绝，每步留 rule 版本`, conf: 'HIGH' },
@@ -7992,7 +8007,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
                 <div class="access-col"><span class="access-head">${accessTag('AVAILABLE_FREE')} · ${availFree.length}</span>${availFree.map(e => `<span class="ext-name">${C.escapeHtml(e.source_name)}</span>`).join('')}</div>
                 <div class="access-col"><span class="access-head">${accessTag('PENDING_ACCESS')} · ${pending.length}</span>${pending.map(e => `<span class="ext-name is-pending">${C.escapeHtml(e.source_name)}</span>`).join('')}</div>
               </div>
-              <p class="stage-note">免费接口（ClinicalTrials.gov / SEC / HKEX）已接入或可接入；商业库（Cortellis / 医药魔方 / GlobalData 等）长期要纳入但暂无 access，显式标「待连接授权」，不伪装成已有数据。</p>
+              <p class="stage-note">免费接口（ClinicalTrials.gov / SEC / HKEX）已接入或可接入；商业库（Cortellis / 医药魔方 / GlobalData 等）长期要纳入但尚无接入权限，显式标「待连接授权」，不伪装成已有数据。</p>
             </article>
             <article class="pipe-block pipe-block-wide denominator-status">
               <strong>全球分母解锁状态 · 为什么份额/同比仍 Blocked</strong>
@@ -8010,11 +8025,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
                 </div>
                 <div class="denom-col denom-general">
                   <span class="denom-head">通用私募库·不对口本课题</span>
-                  <p>强在 VC/融资/跨行业 M&A；不逐笔拆 BD 许可条款、无靶点模态、中国 out 弱。仅供买方融资背景参考，非条款/分母源。</p>
+                  <p>强在 VC/融资/跨行业 M&A；不逐笔拆 BD 许可条款、无靶点模态，中国出海（license-out）交易覆盖弱。仅供买方融资背景参考，非条款/分母源。</p>
                   <div class="denom-tags">${generalPrivate.map(e => `<span class="ext-name is-general">${C.escapeHtml(e.source_name)}</span>`).join('') || '<span class="ext-name is-general">PitchBook / Crunchbase</span>'}</div>
                 </div>
               </div>
-              <p class="stage-note">结论：在接入上述任一商业普查库并核对口径前，全球份额/同比维持 Blocked；当前可诚实发布的是「披露样本内结构占比」（见 AI Thesis 分析边界）。</p>
+              <p class="stage-note">结论：在接入上述任一商业普查库并核对口径前，全球份额/同比维持 Blocked；当前可诚实发布的是「披露样本内结构占比」（见「来源与方法」页）。</p>
             </article>
           </div>
         </section>
@@ -8052,7 +8067,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
           <header><span class="stage-no">04</span><div><h3>业务逻辑数据库 · 服务最终分析</h3><span>沉淀为可复用的决策数据资产</span></div></header>
           <div class="stage-body">
             <article class="pipe-block serve-block" data-goto-view="landscape"><strong>自建管线分析（四维视图）</strong><p>买方活跃度 · 交易结构 · 模态靶点 · 资产地域</p></article>
-            <article class="pipe-block serve-block" data-goto-view="thesis"><strong>AI Thesis 工作区</strong><p>信号 → 结构化 Thesis → 条件情景</p></article>
+            <article class="pipe-block serve-block" data-goto-view="live"><strong>AI 结构化 Thesis 示例</strong><p>证据 → 五格推理 → 可比交易（见交易情报 ⑤ 启示）</p></article>
             <article class="pipe-block serve-block" data-goto-view="foundation"><strong>数据模型与审计</strong><p>${glossary('ontology')} / ${glossary('reconciliation')} / 核对责任链</p></article>
           </div>
         </section>
@@ -8137,7 +8152,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
             ${concNodes}
           </svg>
         </div>
-        <p class="chart-note">底表行数为真实数据；派生指标对应 model 层同名纯函数；结论层即首页四维分析视图。</p>
+        <p class="chart-note">底表行数为真实数据；派生指标对应 model 层同名纯函数；结论层即「自建管线分析」页的四维视图。</p>
       </section>`;
   }
 
@@ -8361,7 +8376,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       <section class="coverage-section">
         <header><div><span class="eyebrow">数据渠道施工进度 · COVERAGE</span><h2>我们铺了哪些数据渠道，进度到哪一步</h2><p>这张图回答三件事：数据覆盖了哪些渠道、每个渠道进度到哪、为什么还不能发布全球市场份额。绿=已完成，蓝=进行中，灰=已规划待接入，琥珀=待商业授权。</p></div><span class="status-label status-blocked">市场份额结论：待商业普查库授权</span></header>
         <div class="coverage-progress-grid">${cards}</div>
-        <p class="chart-note">"市场份额 / 同比"需要一个去重的全球交易总量（分母），目前只在待授权的商业普查库里；在它接入前，全站不发布未经授权的权威市场份额（当前改用第三方公开口径做定位，见 AI Thesis）。</p>
+        <p class="chart-note">"市场份额 / 同比"需要一个去重的全球交易总量（分母），目前只在待授权的商业普查库里；在它接入前，全站不发布未经授权的权威市场份额（当前改用第三方公开口径做定位，见「来源与方法」页）。</p>
       </section>`;
   }
 
@@ -9345,15 +9360,15 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     { who: 'BMS × 百利天恒 BL-B01D1', year: '2023', total: 8.4, med: 12.4, note: '',
       segs: [ { k: '首付款', v: 0.8, color: '#2DD4BF', desc: '签约即付' },
               { k: '里程碑及或有对价', v: 7.6, color: '#60A5FA', desc: '达成临床 / 注册 / 商业化条件支付' } ] },
-    { who: 'GSK × 恒瑞（12 项目批量授权）', year: '2025', total: 12.0, med: 8.9, note: '',
+    { who: 'GSK × 恒瑞（12 项目批量授权）', year: '2025', total: 12.5, med: 8.9, note: '',
       segs: [ { k: '首付款', v: 0.5, color: '#2DD4BF', desc: '签约即付' },
-              { k: '里程碑及或有对价', v: 11.5, color: '#60A5FA', desc: '按 12 个项目分别达成约定条件支付' } ] },
-    { who: '辉瑞 × 三生制药 SSGJ-707（PD-1/VEGF 双抗）', year: '2025', total: 6.0, med: 8.9,
+              { k: '里程碑及或有对价', v: 12.0, color: '#60A5FA', desc: '按 12 个项目分别达成约定条件支付' } ] },
+    { who: '辉瑞 × 三生制药 SSGJ-707（PD-1/VEGF 双抗）', year: '2025', total: 6.05, med: 8.9,
       note: '竞价溢价的极端值：$12.5 亿首付创中国资产纪录，为当年中位水平的 2.3 倍——头部稀缺资产遭买方竞价时，首付溢价与中位趋势背离｜另有梯度销售分成（Tiered Royalty，约低双位数 %）｜医药魔方口径首付包 $15 亿 = $12.5 亿首付 + $1 亿股权 + $1.5 亿市场选择权',
       segs: [ { k: '首付款', v: 1.25, color: '#2DD4BF', desc: '签约即付 · 创中国资产纪录' },
               { k: '开发里程碑', v: 0.9, color: '#60A5FA', desc: '关键临床读出触发' },
               { k: '注册里程碑', v: 1.1, color: '#A78BFA', desc: 'FDA/EMA 获批触发' },
-              { k: '商业化里程碑', v: 2.75, color: '#FBBF24', desc: '销售额梯度触发' } ] }
+              { k: '商业化里程碑', v: 2.8, color: '#FBBF24', desc: '销售额梯度触发' } ] }
   ];
   function dealStructRows() {
     return STRUCT_DEALS.map(function (d) {
@@ -9438,7 +9453,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       ],
       summary: [
         '资金沿「新靶点 + 新载荷 + 新连接子」三轴向早期迁移：临床 1 期前资产占比五年内从 31% 升至 66%。',
-        '中国卖方主导供给端（61%），买方竞价白热化——多 MNC 围标同一资产使首付中位数一年抬升 34%。',
+        '中国卖方主导供给端（61%），买方竞价白热化——多家 MNC 争抢同一资产使首付中位数一年抬升 34%。',
         '双载荷（dual-payload）与双抗 ADC 成为 2026 年差异化新前沿，尚无大额交易锁定，属买方可布局的「预期差」区域。'
       ],
       anomalies: [
@@ -9630,8 +9645,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     s += '<text x="14" y="' + ((mT + H - mB) / 2) + '" text-anchor="middle" style="' + TICK + '" transform="rotate(-90 14 ' + ((mT + H - mB) / 2) + ')">总交易价值 →</text>';
     placed.forEach(function (l) {
       var b = l.b, meta = STYLE_META[b.style];
-      s += '<g><circle cx="' + l.x + '" cy="' + l.y + '" r="' + l.r + '" fill="' + meta.color + '" fill-opacity="0.62" stroke="' + meta.color + '" stroke-opacity="0.95">'
-        + '<title>' + esc(b.cn) + ' ' + esc(b.n) + '｜交易 ' + b.deals + ' 笔｜总值 $' + b.val + 'B｜首付均值 ' + b.up + '%｜' + meta.label + (b.tags ? '｜' + esc(b.tags) : '') + '｜偏好 ' + esc(b.stage) + '</title></circle>'
+      s += '<g><circle class="ci-sk-flow" data-ro="ciQbReadout" data-t="' + esc(b.cn) + ' ' + esc(b.n) + '｜交易 ' + b.deals + ' 笔｜总值 $' + b.val + 'B｜首付均值 ' + b.up + '%｜' + meta.label + (b.tags ? '｜' + esc(b.tags) : '') + '｜偏好 ' + esc(b.stage) + '" cx="' + l.x + '" cy="' + l.y + '" r="' + l.r + '" fill="' + meta.color + '" fill-opacity="0.62" stroke="' + meta.color + '" stroke-opacity="0.95">'
+        + '<title>' + esc(b.cn) + ' ' + esc(b.n) + '｜交易 ' + b.deals + ' 笔｜总值 $' + b.val + 'B｜首付均值 ' + b.up + '%</title></circle>'
         + '<text x="' + l.x + '" y="' + l.ly + '" text-anchor="middle" style="font-size:10.5px;font-weight:500;fill:var(--text);pointer-events:none;">' + esc(b.cn) + '</text></g>';
     });
     s += '</svg>';
@@ -9734,7 +9749,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     flows.forEach(function (f) {
       var d = 'M ' + (xL + nodeW) + ' ' + f.y1 + ' C ' + mx + ' ' + f.y1 + ', ' + mx + ' ' + f.y2 + ', ' + xR + ' ' + f.y2
         + ' L ' + xR + ' ' + (f.y2 + f.h) + ' C ' + mx + ' ' + (f.y2 + f.h) + ', ' + mx + ' ' + (f.y1 + f.h) + ', ' + (xL + nodeW) + ' ' + (f.y1 + f.h) + ' Z';
-      s += '<path class="ci-sk-flow" data-t="' + SK_O[f.from] + '资产 → ' + SK_D[f.to] + '买方：$' + f.v + 'B" d="' + d + '" fill="' + SK_OC[f.from] + '" fill-opacity="' + (f.hot ? 0.5 : 0.13) + '"' + (f.hot ? ' stroke="' + SK_OC[f.from] + '" stroke-opacity="0.6" stroke-width="0.5"' : '') + '>'
+      s += '<path class="ci-sk-flow" data-ro="ciSkReadout" data-t="' + SK_O[f.from] + '资产 → ' + SK_D[f.to] + '买方：$' + f.v + 'B" d="' + d + '" fill="' + SK_OC[f.from] + '" fill-opacity="' + (f.hot ? 0.5 : 0.13) + '"' + (f.hot ? ' stroke="' + SK_OC[f.from] + '" stroke-opacity="0.6" stroke-width="0.5"' : '') + '>'
         + '<title>' + SK_O[f.from] + ' → ' + SK_D[f.to] + '买方：$' + f.v + 'B</title></path>';
     });
     origins.forEach(function (n, i2) {
@@ -10022,7 +10037,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
       + '<th>时间</th><th>卖方 → 买方</th><th>靶点 / 模态</th><th>类型</th><th style="text-align:right">首付</th><th style="text-align:right">总额</th><th>来源</th>'
       + '</tr></thead><tbody>' + rows + '</tbody></table></div>'
-      + '<p class="lp-note">共汇编 ' + MW.deals.length + ' 笔代表性交易，此处显示总额 TOP 16；全部 ' + MW.deals.length + ' 笔的三层公开市场逻辑拆解见下方「交易解剖室」。汇编口径未逐笔回一手核实（逐笔核实版见「自建管线分析」页）。</p></section>';
+      + '<p class="lp-note">共汇编 ' + MW.deals.length + ' 笔代表性交易，此处显示总额 TOP 16；其中 38 笔的三层公开市场逻辑拆解见下方「交易解剖室」。汇编口径未逐笔回一手核实（逐笔核实版见「自建管线分析」页）。</p></section>';
   }
 
   /* ---------- TSR 对比条（Bain 2026） ---------- */
@@ -10032,7 +10047,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         return '<div style="padding:12px 14px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)">'
           + '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">'
           + '<span style="font-size:11.5px;color:var(--text)">' + esc(t.g) + '</span>'
-          + '<strong style="font-size:22px;color:' + t.color + ';font-variant-numeric:tabular-nums">' + t.v + '%</strong></div>'
+          + '<strong style="font-size:22px;color:#0D9488;font-variant-numeric:tabular-nums">' + t.v + '%</strong></div>'
           + '<div class="lp-track" style="margin-top:8px"><div class="lp-fill" style="width:' + (t.v / 24 * 100) + '%;background:' + t.color + '"></div></div>'
           + '<div style="margin-top:5px;font-size:10px;color:var(--muted)">年均股东总回报 TSR · 2020–2025 · Top 20 药企</div></div>';
       }).join('') + '</div>';
@@ -10064,9 +10079,9 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="ci-takeaways" aria-label="给决策者的 60 秒结论">'
       + '<div class="ci-takeaways-head"><span class="ci-takeaways-badge">60 秒结论 · 给决策者</span><span class="ci-takeaways-sub">细节在下方五个决策区，每区独立标注来源、可单独核验</span></div>'
       + '<ol class="ci-takeaways-list">'
-      + '<li><b>时机</b>：交易数量连续 4 年收缩、平均单笔价值五年翻倍——买方从铺量转向重仓确定性；但 2026Q1 中国出海 $59.6B 单季已超 2024 全年，热度正在回暖。</li>'
+      + '<li><b>时机</b>：交易数量连续 4 年收缩、平均单笔价值五年近翻倍——买方从铺量转向重仓确定性；但 2026Q1 中国出海 $59.6B 单季已超 2024 全年，热度正在回暖。</li>'
       + '<li><b>热点</b>：肿瘤仍占 41%，但 2025–26 起代谢（GLP-1）与心血管 siRNA 快速放量；ADC+双抗交易价值份额 12%→34%。</li>'
-      + '<li><b>定价</b>：License 买早期（64% 为平台/临床前/1 期）、M&A 买成熟（84% 为临床 2 期及以后）；首付占比中位数五年腰斩至 8.9%，里程碑成为定价主角。</li>'
+      + '<li><b>定价</b>：License 买早期（64% 为平台/临床前/1 期）、M&A 买成熟（95% 为临床 2 期及以后）；首付占比中位数五年腰斩至 8.9%，里程碑成为定价主角。</li>'
       + '<li><b>玩家</b>：TOP20 MNC 引进金额约 40% 流向中国资产；连续小额并购者年均 TSR 24%，是孤注一掷型的 4 倍。</li>'
       + '<li><b>启示</b>：窗口期在 2026–27——早期中国资产正被期权式结构批量锁定；持有同领域、同阶段资产的一方，估值锚正在上移。</li>'
       + '</ol></section>'
@@ -10081,7 +10096,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="ci-kpi"><div class="k"><span>中国 BD 首付款 · 2025</span><span class="ci-src">医药魔方</span></div><div class="v">$7.0B</div><div class="d">同比 +226% · <strong>首超一级市场融资额</strong></div></div>'
       + '</div>'
 
-      + '<div class="lp-grid">'
       + '<div class="ci-spynav-wrap"><nav class="ci-spynav" aria-label="本页主线进度">'
       + '<button type="button" class="ci-spynav-chip">① 时机</button>'
       + '<button type="button" class="ci-spynav-chip">② 热点</button>'
@@ -10090,12 +10104,13 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<button type="button" class="ci-spynav-chip">⑤ 启示</button>'
       + '<button type="button" class="ci-spynav-chip ci-spynav-appendix" data-spy-appendix>▾ 附录 · API 验证</button>'
       + '</nav></div>'
+      + '<div class="lp-grid">'
       + '<div class="ci-zone"><span class="ci-zone-tag">① 时机 · 市场周期</span><span class="ci-zone-q">现在是什么周期位置？该出手还是观望</span></div>'
       // C1 剪刀差
       + '<section class="lp-panel lp-wide">' + panelHead('宏观剪刀差', 'DealForma · IQVIA 合成', '量减价增：买方更少、更贵、更挑剔')
       + '<div class="lp-legend"><span><i style="background:var(--blue)"></i>交易数量（左轴，笔）</span><span><i style="background:var(--amber)"></i>平均单笔价值（右轴）</span></div>'
       + '<div style="max-width:880px;margin:0 auto">' + chartScissors() + '</div>'
-      + '<p class="lp-note">2026H1▲ 为半年数据。交易数量连续第 4 年收缩，平均单笔价值五年翻倍——买方策略从「铺量」转向「重仓确定性」。'
+      + '<p class="lp-note">2026H1▲ 为半年数据。交易数量连续第 4 年收缩，平均单笔价值五年近翻倍——买方策略从「铺量」转向「重仓确定性」。'
       + '另据医药魔方：2026Q1 中国出海交易 $59.6B，单季已超 2024 全年。</p></section>'
 
       + '<div class="ci-zone"><span class="ci-zone-tag">② 热点 · 钱往哪流</span><span class="ci-zone-q">钱在往哪个领域、模态、靶点流——你的组合在主航道上吗</span></div>'
@@ -10137,8 +10152,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="ci-zone"><span class="ci-zone-tag">④ 玩家 · 谁在买</span><span class="ci-zone-q">谁在扫货、谁在跟我抢资产</span></div>'
       // C3 买方象限
       + '<section class="lp-panel lp-wide">' + panelHead('买方画像', 'DealForma · 公司公告', '四象限：谁在买、怎么买——气泡大小 = 平均首付占比')
-      + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>高频扫货型</span><span><i style="background:#60A5FA"></i>均衡型</span><span><i style="background:#FBBF24"></i>孤注一掷型</span><span style="color:var(--muted)">悬停气泡查看明细</span></div>'
-      + '<div style="max-width:760px;margin:0 auto">' + chartQuadrant() + tsrStrip() + '</div>'
+      + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>高频扫货型</span><span><i style="background:#60A5FA"></i>均衡型</span><span><i style="background:#FBBF24"></i>孤注一掷型</span><span style="color:var(--muted)">悬停（手机点按）气泡查看明细</span></div>'
+      + '<div style="max-width:760px;margin:0 auto">' + chartQuadrant() + '<div class="ci-sk-readout" id="ciQbReadout">悬停（手机点按）气泡，此处显示该买方明细</div>' + tsrStrip() + '</div>'
       + '<p class="lp-note">Bain M&A Report 2026：连续小额并购者年均 TSR 24%，是孤注一掷型（6%）的 4 倍——「程序化并购」是过去五年唯一被验证的超额收益策略。'
       + '典型连续收购者：礼来、诺华、强生（年均多笔中小型 BD，围绕核心治疗领域补管线）；超大并购型：辉瑞（Seagen $43B）、安进（Horizon $27.8B）、AZ（Alexion $39B）——SVB Leerink 口径下超大并购后 3 年 TSR 中位数为负。</p></section>'
 
@@ -10158,6 +10173,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 
       // AI 洞察引擎
       + '<section class="lp-panel lp-wide">' + panelHead('AI 洞察引擎', '汇编层分析产出 · 演示', '五大赛道深潜：摘要、异常预警与买方匹配')
+      + '<div class="ci-gloss" style="margin:0 2px 8px">本区为基于汇编数据的演示性分析产出（含买方匹配打分），用于展示分析范式；平台对外发布能力的边界见「05 来源与方法」。</div>'
       + aiEngine() + '</section>'
 
       // AI 结构化 Thesis · 示例（由主脚本 window.ConvergenceThesisDemo 渲染，数据 = 自建管线证据集）
@@ -10215,21 +10231,47 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     setupSpy(body);
     if (body.__ciBound) return;
     body.__ciBound = true;
-    // 桑基流带：悬停/点按显示走廊金额（不用 title 提示，手机上不可用）
-    var SK_HINT = '悬停（手机点按）流带，此处显示该走廊的分项金额';
+    // 流带/气泡读数：鼠标悬停即时显示；触屏点按锁定，再点或点空白清除（不用 title 提示，手机上不可用）
+    function skHint(el) { return el && el.id === 'ciQbReadout' ? '悬停（手机点按）气泡，此处显示该买方明细' : '悬停（手机点按）流带，此处显示该走廊的分项金额'; }
     body.addEventListener('pointerover', function (e) {
+      if (e.pointerType === 'touch') return;
       var f = e.target && e.target.closest ? e.target.closest('.ci-sk-flow') : null;
       if (!f) return;
-      var ro = document.getElementById('ciSkReadout');
+      var ro = document.getElementById(f.getAttribute('data-ro') || 'ciSkReadout');
       if (ro) ro.textContent = f.getAttribute('data-t');
       f.classList.add('on');
     });
     body.addEventListener('pointerout', function (e) {
+      if (e.pointerType === 'touch') return;
       var f = e.target && e.target.closest ? e.target.closest('.ci-sk-flow') : null;
-      if (!f) return;
-      var ro = document.getElementById('ciSkReadout');
-      if (ro) ro.textContent = SK_HINT;
+      if (!f || f.classList.contains('lock')) return;
+      var ro = document.getElementById(f.getAttribute('data-ro') || 'ciSkReadout');
+      if (ro) ro.textContent = skHint(ro);
       f.classList.remove('on');
+    });
+    body.addEventListener('click', function (e) {
+      var f = e.target && e.target.closest ? e.target.closest('.ci-sk-flow') : null;
+      var locked = body.querySelector('.ci-sk-flow.lock');
+      if (f) {
+        if (locked === f) { // 再点已锁定流带 → 解除
+          f.classList.remove('lock', 'on');
+          var ro0 = document.getElementById(f.getAttribute('data-ro') || 'ciSkReadout');
+          if (ro0) ro0.textContent = skHint(ro0);
+          return;
+        }
+        if (locked) {
+          locked.classList.remove('lock', 'on');
+          var ro1 = document.getElementById(locked.getAttribute('data-ro') || 'ciSkReadout');
+          if (ro1) ro1.textContent = skHint(ro1);
+        }
+        f.classList.add('lock', 'on');
+        var ro2 = document.getElementById(f.getAttribute('data-ro') || 'ciSkReadout');
+        if (ro2) ro2.textContent = f.getAttribute('data-t');
+      } else if (locked) {
+        locked.classList.remove('lock', 'on');
+        var ro3 = document.getElementById(locked.getAttribute('data-ro') || 'ciSkReadout');
+        if (ro3) ro3.textContent = skHint(ro3);
+      }
     });
     body.addEventListener('click', function (e) {
       var t = e.target;
@@ -10328,7 +10370,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     },
     'MW-002': {
       d: 'AZ 代谢布局几乎空白，口服小分子 GLP-1 是绕开注射剂产能与专利壁垒的最佳切入点；ECC5004 是当时少数进入临床的口服小分子。',
-      m: '首付仅 $18.5M——典型「低成本期权」结构，说明 2023 年口服 GLP-1 的成药性尚未被市场定价。',
+      m: '首付 $185M、约占总额 9%——风险后置的期权式结构，说明 2023 年口服 GLP-1 资产的确定性溢价尚未形成。',
       s: '两年后口服 GLP-1 成为最热赛道（辉瑞 $10B 收 Metsera），回看此单期权性价比极高；也解释了 AZ 此后连续加码中国代谢资产的路径依赖。'
     },
     'MW-003': {
@@ -10352,8 +10394,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       s: '2023 年底 FDA 获批，成为中国小分子出海商业化验证样本；其高首付结构此后被康方、三生反复刷新。'
     },
     'MW-007': {
-      d: '辉瑞在 Seagen 整合后仍缺 IO 接棒资产，自研管线受挫后需要外部确定性；SSGJ-707 中国 Ph3 数据直接对标依沃西。',
-      m: '$1.25B 首付约为全球首付中位数的 20 倍，创中国资产纪录；公告后港股创新药板块整体重估，「PD-1×VEGF 赛道税」正式形成。',
+      d: '辉瑞在 Seagen 整合后仍缺 IO 接棒资产，自研管线受挫后需要外部确定性；SSGJ-707 中国临床 3 期数据直接对标依沃西。',
+      m: '$1.25B 首付约为全球首付中位数的 26 倍，创中国资产纪录；公告后港股创新药板块整体重估，「PD-1×VEGF 赛道税」正式形成。',
       s: '定价锚从康方 $500M（2022）→ 礼新 $588M（2024）→ 三生 $1.25B（2025）逐级抬升，直接推高 AbbVie×荣昌等后发交易的进场成本。'
     },
     'MW-008': {
@@ -10499,11 +10541,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     'MW-114': {
       d: '辉瑞补充内科商业化品种；Nurtec（CGRP）双适应症、口服市场领先。',
       m: '买已验证放量品种——Biohaven 股东在峰值前兑现，辉瑞获得现金流资产。',
-      s: 'CGRP 赛道整合完成（艾伯维/礼来/辉瑞三分）；Biohaven 用回笼资金转身做了启德 ADC 交易（MW-014）。'
+      s: 'CGRP 赛道整合完成（艾伯维/礼来/辉瑞三分）；Biohaven 用回笼资金转身做了启德 ADC 交易。'
     },
     'MW-115': {
       d: '默沙东降低 K 药依赖的战略分散；sotatercept 是 PAH 首个疾病修饰疗法。',
-      m: '溢价收购 Ph3 资产——按「罕见病新机制 franchise」定价。',
+      m: '溢价收购临床 3 期资产——按「罕见病新机制 franchise」定价。',
       s: '2024 年 Winrevair 获批后快速放量至年销 $1B+，成为大单资产并购的成功样本（对照辉瑞×Seagen 的整合阵痛）。'
     },
     'MW-116': {
