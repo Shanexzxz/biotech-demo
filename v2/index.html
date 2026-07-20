@@ -9254,7 +9254,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-x-cur{background:color-mix(in srgb, var(--violet) 15%, var(--surface));color:var(--violet);}'
     + '.ci-x-live{background:color-mix(in srgb, var(--cyan) 15%, var(--surface));color:var(--cyan);}'
     + '.ci-x-src{display:block;margin-top:3px;font-size:10px;color:var(--muted);}'
-    + '.ci-svg text{user-select:none;}';
+    + '.ci-svg text{user-select:none;}'
+    + '.ci-sk-flow{cursor:pointer;transition:fill-opacity .12s ease;}'
+    + '.ci-sk-flow:hover,.ci-sk-flow.on{fill-opacity:.72;}'
+    + '.ci-sk-readout{margin:8px auto 0;max-width:700px;min-height:20px;text-align:center;font-size:12.5px;font-weight:600;color:var(--text-strong);}'
+    + '.ci-sk-readout:empty::before{content:"悬停（手机点按）流带，此处显示该走廊的分项金额";font-weight:400;color:var(--muted);}';
   var styleEl = document.createElement('style');
   styleEl.textContent = CSS;
   document.head.appendChild(styleEl);
@@ -9285,22 +9289,22 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   ];
   // 买方画像（DealForma + 公司公告合成）
   var BUYERS = [
-    { n: 'AstraZeneca', cn: '阿斯利康', deals: 38, val: 61.4, up: 8.4, stage: 'Ph1–2 / 临床前', style: 'serial', tags: '高频扫货 · 重仓中国' },
-    { n: 'Roche', cn: '罗氏', deals: 34, val: 48.2, up: 11.2, stage: 'Ph2–3', style: 'balanced', tags: '专利悬崖承压' },
-    { n: 'Novartis', cn: '诺华', deals: 41, val: 52.6, up: 9.8, stage: 'Ph1–2', style: 'serial', tags: '高频扫货 · siRNA 偏好' },
-    { n: 'Eli Lilly', cn: '礼来', deals: 33, val: 47.3, up: 9.2, stage: 'Ph1–2', style: 'serial', tags: '重仓代谢' },
-    { n: 'Merck & Co.', cn: '默沙东', deals: 29, val: 55.8, up: 10.1, stage: 'Ph2–3', style: 'balanced', tags: 'K 药接棒' },
-    { n: 'Pfizer', cn: '辉瑞', deals: 22, val: 58.9, up: 12.6, stage: 'Ph3 / 商业化', style: 'big-game', tags: '孤注一掷 · 肿瘤补强' },
-    { n: 'AbbVie', cn: '艾伯维', deals: 23, val: 26.7, up: 13.4, stage: 'Ph2–3', style: 'balanced', tags: '后修美乐时代' },
-    { n: 'GSK', cn: '葛兰素史克', deals: 26, val: 33.2, up: 8.8, stage: 'Ph1–2', style: 'balanced', tags: '中国资产偏好' },
-    { n: 'BMS', cn: '百时美施贵宝', deals: 19, val: 38.5, up: 14.7, stage: 'Ph2–3', style: 'big-game', tags: '孤注一掷' },
-    { n: 'Sanofi', cn: '赛诺菲', deals: 24, val: 21.8, up: 9.4, stage: 'Ph1–2', style: 'balanced', tags: '自免加码' },
-    { n: 'J&J', cn: '强生', deals: 21, val: 29.4, up: 11.8, stage: 'Ph2–3', style: 'balanced', tags: '' },
-    { n: 'Novo Nordisk', cn: '诺和诺德', deals: 15, val: 22.6, up: 10.5, stage: 'Ph1–2', style: 'balanced', tags: '重仓代谢' },
-    { n: 'BioNTech', cn: '拜恩泰科', deals: 17, val: 9.8, up: 7.2, stage: '临床前–Ph1', style: 'serial', tags: '转型迫切 · 重仓中国' },
-    { n: 'Vertex', cn: '福泰制药', deals: 12, val: 10.4, up: 12.1, stage: 'Ph2–3', style: 'balanced', tags: '现金充裕' },
-    { n: 'Regeneron', cn: '再生元', deals: 11, val: 7.2, up: 8.6, stage: 'Ph1–2', style: 'balanced', tags: '代谢入局' },
-    { n: 'Gilead', cn: '吉利德', deals: 16, val: 24.1, up: 11.4, stage: 'Ph2–3', style: 'balanced', tags: '肿瘤补强' }
+    { n: 'AstraZeneca', cn: '阿斯利康', deals: 38, val: 61.4, up: 8.4, stage: '临床 1–2 期 / 临床前', style: 'serial', tags: '高频扫货 · 重仓中国' },
+    { n: 'Roche', cn: '罗氏', deals: 34, val: 48.2, up: 11.2, stage: '临床 2–3 期', style: 'balanced', tags: '专利悬崖承压' },
+    { n: 'Novartis', cn: '诺华', deals: 41, val: 52.6, up: 9.8, stage: '临床 1–2 期', style: 'serial', tags: '高频扫货 · siRNA 偏好' },
+    { n: 'Eli Lilly', cn: '礼来', deals: 33, val: 47.3, up: 9.2, stage: '临床 1–2 期', style: 'serial', tags: '重仓代谢' },
+    { n: 'Merck & Co.', cn: '默沙东', deals: 29, val: 55.8, up: 10.1, stage: '临床 2–3 期', style: 'balanced', tags: 'K 药接棒' },
+    { n: 'Pfizer', cn: '辉瑞', deals: 22, val: 58.9, up: 12.6, stage: '临床 3 期 / 商业化', style: 'big-game', tags: '孤注一掷 · 肿瘤补强' },
+    { n: 'AbbVie', cn: '艾伯维', deals: 23, val: 26.7, up: 13.4, stage: '临床 2–3 期', style: 'balanced', tags: '后修美乐时代' },
+    { n: 'GSK', cn: '葛兰素史克', deals: 26, val: 33.2, up: 8.8, stage: '临床 1–2 期', style: 'balanced', tags: '中国资产偏好' },
+    { n: 'BMS', cn: '百时美施贵宝', deals: 19, val: 38.5, up: 14.7, stage: '临床 2–3 期', style: 'big-game', tags: '孤注一掷' },
+    { n: 'Sanofi', cn: '赛诺菲', deals: 24, val: 21.8, up: 9.4, stage: '临床 1–2 期', style: 'balanced', tags: '自免加码' },
+    { n: 'J&J', cn: '强生', deals: 21, val: 29.4, up: 11.8, stage: '临床 2–3 期', style: 'balanced', tags: '' },
+    { n: 'Novo Nordisk', cn: '诺和诺德', deals: 15, val: 22.6, up: 10.5, stage: '临床 1–2 期', style: 'balanced', tags: '重仓代谢' },
+    { n: 'BioNTech', cn: '拜恩泰科', deals: 17, val: 9.8, up: 7.2, stage: '临床前–1 期', style: 'serial', tags: '转型迫切 · 重仓中国' },
+    { n: 'Vertex', cn: '福泰制药', deals: 12, val: 10.4, up: 12.1, stage: '临床 2–3 期', style: 'balanced', tags: '现金充裕' },
+    { n: 'Regeneron', cn: '再生元', deals: 11, val: 7.2, up: 8.6, stage: '临床 1–2 期', style: 'balanced', tags: '代谢入局' },
+    { n: 'Gilead', cn: '吉利德', deals: 16, val: 24.1, up: 11.4, stage: '临床 2–3 期', style: 'balanced', tags: '肿瘤补强' }
   ];
   var STYLE_META = {
     'serial': { label: '高频扫货型', color: '#2DD4BF' },
@@ -9430,10 +9434,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         { k: '区间交易价值', v: '$48.6B', d: '占肿瘤交易 22%' },
         { k: '交易数量', v: '38', d: '中国卖方占 61%' },
         { k: '首付中位数', v: '$95M', d: '同比 +34%' },
-        { k: 'Ph1 及以前占比', v: '66%', d: '早期化显著' }
+        { k: '临床 1 期及以前占比', v: '66%', d: '早期化显著' }
       ],
       summary: [
-        '资金沿「新靶点 + 新载荷 + 新连接子」三轴向早期迁移：Ph1 前资产占比五年内从 31% 升至 66%。',
+        '资金沿「新靶点 + 新载荷 + 新连接子」三轴向早期迁移：临床 1 期前资产占比五年内从 31% 升至 66%。',
         '中国卖方主导供给端（61%），买方竞价白热化——多 MNC 围标同一资产使首付中位数一年抬升 34%。',
         '双载荷（dual-payload）与双抗 ADC 成为 2026 年差异化新前沿，尚无大额交易锁定，属买方可布局的「预期差」区域。'
       ],
@@ -9462,7 +9466,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         '剩余可交易独立资产不足 6 个，AI 判断 2026H2 起竞争焦点将转向 PD-1/VEGF×ADC 联用组合与下一代三抗。'
       ],
       anomalies: [
-        { t: '辉瑞首付 $1.25B 创纪录', b: '为全球首付中位数的 26 倍。若按 Ph3 成功率 58% 折现，隐含峰值销售预期 >$8B——定价已计入头对头胜出假设。', sev: 'high' },
+        { t: '辉瑞首付 $1.25B 创纪录', b: '为全球首付中位数的 26 倍。若按临床 3 期成功率 58% 折现，隐含峰值销售预期 >$8B——定价已计入头对头胜出假设。', sev: 'high' },
         { t: 'AbbVie × 荣昌 $650M 首付', b: '赛道第 5 笔 ≥$5B 交易，距离首笔仅 25 个月，进场成本曲线持续陡峭化。', sev: 'mid' }
       ],
       matches: [
@@ -9482,7 +9486,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       ],
       summary: [
         'BBB 穿梭是 CNS 交易回暖的「卖铲人」：平台型交易结构（多靶点 option + 研究合作）占 83%，单笔首付低但期权密度高。',
-        '罗氏 Brain Shuttle 与 Denali ATV 双平台进入 Ph2/3 读出密集期，AI 预测首个 POC 成功将触发 3–5 笔跟随交易，复制 ADC 在 2020 年的「平台验证→扫货」路径。',
+        '罗氏 Brain Shuttle 与 Denali ATV 双平台进入临床 2/3 期读出密集期，AI 预测首个 POC 成功将触发 3–5 笔跟随交易，复制 ADC 在 2020 年的「平台验证→扫货」路径。',
         '当前估值尚未计入罕见病酶替代疗法外溢，属低拥挤、高期权价值的「预期差」区域。'
       ],
       anomalies: [
@@ -9730,7 +9734,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     flows.forEach(function (f) {
       var d = 'M ' + (xL + nodeW) + ' ' + f.y1 + ' C ' + mx + ' ' + f.y1 + ', ' + mx + ' ' + f.y2 + ', ' + xR + ' ' + f.y2
         + ' L ' + xR + ' ' + (f.y2 + f.h) + ' C ' + mx + ' ' + (f.y2 + f.h) + ', ' + mx + ' ' + (f.y1 + f.h) + ', ' + (xL + nodeW) + ' ' + (f.y1 + f.h) + ' Z';
-      s += '<path d="' + d + '" fill="' + SK_OC[f.from] + '" fill-opacity="' + (f.hot ? 0.5 : 0.13) + '"' + (f.hot ? ' stroke="' + SK_OC[f.from] + '" stroke-opacity="0.6" stroke-width="0.5"' : '') + '>'
+      s += '<path class="ci-sk-flow" data-t="' + SK_O[f.from] + '资产 → ' + SK_D[f.to] + '买方：$' + f.v + 'B" d="' + d + '" fill="' + SK_OC[f.from] + '" fill-opacity="' + (f.hot ? 0.5 : 0.13) + '"' + (f.hot ? ' stroke="' + SK_OC[f.from] + '" stroke-opacity="0.6" stroke-width="0.5"' : '') + '>'
         + '<title>' + SK_O[f.from] + ' → ' + SK_D[f.to] + '买方：$' + f.v + 'B</title></path>';
     });
     origins.forEach(function (n, i2) {
@@ -9812,9 +9816,9 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       dim: '中国崛起',
       cur: '中国资产占 MNC 引进 40%；2025 license-out 总额 $135.7B 全球第一，占全球交易额 52%',
       curSrc: 'IQVIA · 医药魔方 NextPharma',
-      live: '含中国中心试验占比 17.8% → 25.1%（2021→2025），Ph1 占比 32.5%',
+      live: '含中国中心试验占比 17.8% → 25.1%（2021→2025），临床 1 期占比 32.5%',
       liveSrc: 'CT.gov 实时 · 下篇「地域崛起」',
-      verdict: '试验供给曲线印证交易曲线——今天的 Ph1 占比就是三年后的 license-out 份额'
+      verdict: '试验供给曲线印证交易曲线——今天的临床 1 期占比就是三年后的 license-out 份额'
     },
     {
       dim: '赛道拥挤度',
@@ -9836,7 +9840,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       dim: '摘青苗',
       cur: '临床前至 I 期资产占出海交易 68–70%；NewCo 模式累计 14 起',
       curSrc: '医药魔方 · 公众号年度盘点',
-      live: '近 12 月新进入 Ph2/3 的 ADC/双抗/GLP-1 资产实时可列',
+      live: '近 12 月新进入临床 2/3 期的 ADC/双抗/GLP-1 资产实时可列',
       liveSrc: 'CT.gov 实时 · 下篇「交易标的雷达」',
       verdict: '下篇雷达表就是「青苗」的实时花名册——每一条 NCT 都可核验'
     }
@@ -10142,7 +10146,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="lp-panel lp-wide">' + panelHead('地域流向', 'DealForma 合成 · 2024–2025 聚合', '桑基图：中国资产，全球买单')
       + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>高亮流 = 中国来源资产（$147B，81% 流向美欧买方）</span></div>'
       + '<div style="max-width:700px;margin:0 auto">' + chartSankey() + '</div>'
-      + '<p class="lp-note">悬停流带可查看各走廊的分项金额。'
+      + '<div class="ci-sk-readout" id="ciSkReadout">悬停（手机点按）流带，此处显示该走廊的分项金额</div>'
+      + '<p class="lp-note">悬停或点按流带可查看各走廊的分项金额。'
       + '另据 Clarivate：China-out 占全球 out-licensing 比例从 2020 年约 5% 升至 2025H1 约 32%；中国 → 美国为最大走廊。</p></section>'
 
       + '<div class="ci-zone"><span class="ci-zone-tag">⑤ 启示 · 市场含义</span><span class="ci-zone-q">98 笔汇编背后的公开市场逻辑与启示</span></div>'
@@ -10210,6 +10215,22 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     setupSpy(body);
     if (body.__ciBound) return;
     body.__ciBound = true;
+    // 桑基流带：悬停/点按显示走廊金额（不用 title 提示，手机上不可用）
+    var SK_HINT = '悬停（手机点按）流带，此处显示该走廊的分项金额';
+    body.addEventListener('pointerover', function (e) {
+      var f = e.target && e.target.closest ? e.target.closest('.ci-sk-flow') : null;
+      if (!f) return;
+      var ro = document.getElementById('ciSkReadout');
+      if (ro) ro.textContent = f.getAttribute('data-t');
+      f.classList.add('on');
+    });
+    body.addEventListener('pointerout', function (e) {
+      var f = e.target && e.target.closest ? e.target.closest('.ci-sk-flow') : null;
+      if (!f) return;
+      var ro = document.getElementById('ciSkReadout');
+      if (ro) ro.textContent = SK_HINT;
+      f.classList.remove('on');
+    });
     body.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.classList) return;
@@ -10949,7 +10970,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       }
       var p1 = $('lpChinaPh1');
       if (p1 && cn1[4] && gl1[4]) {
-        p1.innerHTML = '<b>早期资产视角：</b>2025 年全球 Ph1 行业试验中 <b>' + (cn1[4] / gl1[4] * 100).toFixed(1) + '%</b> 含中国中心（' + fmt(cn1[4]) + ' / ' + fmt(gl1[4]) + '）——与「中国资产占大药企引进 40%」的交易端观察互为印证。';
+        p1.innerHTML = '<b>早期资产视角：</b>2025 年全球临床 1 期行业试验中 <b>' + (cn1[4] / gl1[4] * 100).toFixed(1) + '%</b> 含中国中心（' + fmt(cn1[4]) + ' / ' + fmt(gl1[4]) + '）——与「中国资产占大药企引进 40%」的交易端观察互为印证。';
       }
     });
   }
@@ -11015,8 +11036,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
             + '<div class="lp-track" style="display:flex"><div class="lp-fill" style="width:' + (r.v.p3 / max * 100).toFixed(1) + '%;background:var(--violet)"></div>'
             + '<div class="lp-fill" style="width:' + (r.v.p2 / max * 100).toFixed(1) + '%;background:var(--blue)"></div>'
             + '<div class="lp-fill" style="width:' + (r.v.p1 / max * 100).toFixed(1) + '%;background:var(--cyan)"></div></div>'
-            + '<span class="val">' + r.v.n + ' 项' + (late ? ' <span style="color:var(--muted);font-weight:400">· Ph2+ ' + late + '</span>' : '') + '</span></div>';
-        }).join('') + '<p class="lp-note"><b>读法：</b>条带按 Ph3（紫）/ Ph2（蓝）/ Ph1（青）分段——右端越偏紫，管线越接近交易兑现期。基于 ' + fmt(studies.length) + ' 项 ADC/双抗试验（2023 至今）申办方聚合。</p>';
+            + '<span class="val">' + r.v.n + ' 项' + (late ? ' <span style="color:var(--muted);font-weight:400">· 临床 2 期+ ' + late + '</span>' : '') + '</span></div>';
+        }).join('') + '<p class="lp-note"><b>读法：</b>条带按临床 3 期（紫）/ 2 期（蓝）/ 1 期（青）分段——右端越偏紫，管线越接近交易兑现期。基于 ' + fmt(studies.length) + ' 项 ADC/双抗试验（2023 至今）申办方聚合。</p>';
       }
     });
   }
@@ -11030,7 +11051,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         var ps = st.protocolSection || {};
         var idm = ps.identificationModule || {}, dm = ps.designModule || {}, cm = ps.conditionsModule || {}, sm = ps.statusModule || {};
         var phases = dm.phases || [];
-        var late = phases.indexOf('PHASE3') >= 0 ? 'Ph3' : phases.indexOf('PHASE2') >= 0 ? 'Ph2' : phases.indexOf('PHASE1') >= 0 ? 'Ph1' : '—';
+        var late = phases.indexOf('PHASE3') >= 0 ? '3 期' : phases.indexOf('PHASE2') >= 0 ? '2 期' : phases.indexOf('PHASE1') >= 0 ? '1 期' : '—';
         return {
           nct: idm.nctId || '',
           title: (idm.briefTitle || '').slice(0, 88),
@@ -11039,13 +11060,13 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
           date: (sm.startDateStruct || {}).date || '—',
           cond: (cm.conditions || [])[0] || '—',
         };
-      }).filter(function (r) { return r.ph === 'Ph2' || r.ph === 'Ph3'; }).slice(0, 9);
+      }).filter(function (r) { return r.ph === '2 期' || r.ph === '3 期'; }).slice(0, 9);
       var el = $('lpWatchlist');
       if (el) {
         el.innerHTML = '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
           + '<th>NCT</th><th>申办方</th><th>研究</th><th>阶段</th><th class="num">启动</th></tr></thead><tbody>'
           + rows.map(function (r) {
-            var phColor = r.ph === 'Ph3' ? 'var(--violet)' : 'var(--blue)';
+            var phColor = r.ph === '3 期' ? 'var(--violet)' : 'var(--blue)';
             return '<tr><td><a class="lp-nct" href="https://clinicaltrials.gov/study/' + esc(r.nct) + '" target="_blank" rel="noopener">' + esc(r.nct) + '</a></td>'
               + '<td style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(r.sponsor) + '"><strong>' + esc(r.sponsor) + '</strong></td>'
               + '<td style="max-width:340px" title="' + esc(r.title) + '">' + esc(r.title) + '<div style="color:var(--muted);font-size:10.5px">' + esc(r.cond) + '</div></td>'
@@ -11136,7 +11157,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div id="lpSponsors">' + skeleton(300) + '</div></section>'
 
       + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">交易标的雷达</span><span class="lp-src">CT.gov · 近 12 月新进后期</span></div>'
-      + '<h2>明日的交易管线：新进入 Ph2/3 的热模态资产</h2></div></div>'
+      + '<h2>明日的交易管线：新进入临床 2/3 期（Ph2/3）的热模态资产</h2></div></div>'
       + '<div id="lpWatchlist">' + skeleton(300) + '</div>'
       + '<p class="lp-note">筛选：ADC / 双抗 / GLP-1 · 行业申办 · 启动于近 12 个月 · 按启动日期倒序。NCT 号可点击直达注册页——每一条都是可核验的一手证据。</p></section>'
       + '</div>'
