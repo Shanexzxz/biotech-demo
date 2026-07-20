@@ -5257,15 +5257,14 @@ input:focus-visible,
         <div class="nav-group">
           <div class="nav-group-label">洞察能力 · 用外部数据</div>
           <button type="button" class="nav-button" data-view="live"><span>01</span>交易情报</button>
-          <button type="button" class="nav-button" data-view="thesis"><span>02</span>AI Thesis</button>
         </div>
         <div class="nav-group nav-group-foundation">
           <div class="nav-group-label">数据能力 · 自建管线</div>
-          <button type="button" class="nav-button" data-view="landscape"><span>03</span>自建管线分析</button>
-          <button type="button" class="nav-button" data-view="pipeline"><span>04</span>数据工作流</button>
-          <button type="button" class="nav-button" data-view="foundation"><span>05</span>数据模型</button>
-          <button type="button" class="nav-button" data-view="methods"><span>06</span>来源与方法</button>
-          <button type="button" class="nav-button" data-view="library"><span>07</span>来源资料库</button>
+          <button type="button" class="nav-button" data-view="landscape"><span>02</span>自建管线分析</button>
+          <button type="button" class="nav-button" data-view="pipeline"><span>03</span>数据工作流</button>
+          <button type="button" class="nav-button" data-view="foundation"><span>04</span>数据模型</button>
+          <button type="button" class="nav-button" data-view="methods"><span>05</span>来源与方法</button>
+          <button type="button" class="nav-button" data-view="library"><span>06</span>来源资料库</button>
         </div>
       </nav>
     </aside>
@@ -6973,7 +6972,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     live: {
       eyebrow: '洞察能力 · 研报汇编 × 实时 API · 零管线',
       title: '交易情报（Deal Intelligence）',
-      description: '集中的交易情报分析页：上篇汇编公开研报、公告与 98 笔代表性交易的「交易定论」（60 秒结论 + 时机/热点/定价/玩家/含义 五个决策区 + AI 洞察），下篇由浏览器实时调用 ClinicalTrials.gov 与 openFDA 生成「管线先行指标」——两层均不经过任何自建数据管线，互相印证。',
+      description: '集中的交易情报分析页：上篇汇编公开研报、公告与 98 笔代表性交易的「交易定论」（60 秒结论 + 时机/热点/定价/玩家/启示 五个决策区 + AI 洞察），下篇由浏览器实时调用 ClinicalTrials.gov 与 openFDA 生成「管线先行指标」——两层均不经过任何自建数据管线，互相印证。',
     },
   };
 
@@ -7342,18 +7341,17 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         note: '基于公开数据做分析 · 展示可视化与分析视角',
         cards: [
           { view: 'live', icon: 'market', tone: 'insight', no: '01', title: '交易情报（Deal Intelligence）', q: '交易为什么值这个钱？', tags: '研报汇编 × 实时 API · 双层互证' },
-          { view: 'thesis', icon: 'thesis', tone: 'thesis', no: '02', title: 'AI Thesis', q: '异常怎么推理成判断？', tags: `${glossary('证据门控')} · 五格分离 · 留白` },
         ],
       },
       {
         kicker: '数据能力 · 自建管线',
         note: '自建采集→治理→建模→分析基础设施 · 展示数据工程与可信度',
         cards: [
-          { view: 'landscape', icon: 'trust', tone: 'data', no: '03', title: '自建管线分析', q: '每笔怎么核到一手？', tags: '78 笔 · 四维 · 可审计' },
-          { view: 'pipeline', icon: 'pipeline', tone: 'data', no: '04', title: '数据工作流', q: '数据怎么变可信？', tags: '采集 · 治理 · 建模' },
-          { view: 'foundation', icon: 'model', tone: 'data', no: '05', title: '数据模型', q: '底层结构长什么样？', tags: `${glossary('本体')} · ${glossary('reconciliation')}` },
-          { view: 'methods', icon: 'methods', tone: 'data', no: '06', title: '来源与方法', q: '数据凭什么可发布？', tags: `分级 · ${glossary('release gate')}` },
-          { view: 'library', icon: 'library', tone: 'data', no: '07', title: '来源资料库', q: '原始材料在哪看？', tags: '58 篇原始材料' },
+          { view: 'landscape', icon: 'trust', tone: 'data', no: '02', title: '自建管线分析', q: '每笔怎么核到一手？', tags: '78 笔 · 四维 · 可审计' },
+          { view: 'pipeline', icon: 'pipeline', tone: 'data', no: '03', title: '数据工作流', q: '数据怎么变可信？', tags: '采集 · 治理 · 建模' },
+          { view: 'foundation', icon: 'model', tone: 'data', no: '04', title: '数据模型', q: '底层结构长什么样？', tags: `${glossary('本体')} · ${glossary('reconciliation')}` },
+          { view: 'methods', icon: 'methods', tone: 'data', no: '05', title: '来源与方法', q: '数据凭什么可发布？', tags: `分级 · ${glossary('release gate')}` },
+          { view: 'library', icon: 'library', tone: 'data', no: '06', title: '来源资料库', q: '原始材料在哪看？', tags: '58 篇原始材料' },
         ],
       },
     ];
@@ -7389,8 +7387,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     // 说明七个页面怎么串、各自回答什么，消除“为什么突然有个 AI 页”的困惑。
     const stages = [
       { n: '1', kicker: '看见 · SEE', tone: 'insight', title: '市场长什么样', body: '先用外部宽口径全景给全局感，看清近 5 年买方、结构、模态与地域的大势。', page: '01 交易情报（Deal Intelligence）' },
-      { n: '2', kicker: '看懂 · 敢用 · REASON', tone: 'thesis', title: '异常怎么变成判断', body: '数据全 ≠ 能直接下结论。AI Thesis 把异常信号编排成可审计的推理结构，不替你拍板、也不乱编。', page: '02 AI Thesis' },
-      { n: '3', kicker: '相信 · TRUST', tone: 'data', title: '凭什么信这些数', body: '自建管道逐笔回一手来源核实、可追溯可审计；再往下是采集、治理、建模、来源的全链路底座。', page: '03 自建管线分析 → 04–07 数据底座' },
+      { n: '2', kicker: '看懂 · 敢用 · REASON', tone: 'thesis', title: '异常怎么变成判断', body: '数据全 ≠ 能直接下结论。同一页的「启示」区把异常信号编排成可审计的推理结构——事实 / 推断 / 反方 / 未知 / 行动五格分离，不替你拍板、也不乱编。', page: '01 交易情报 · ⑤ 启示' },
+      { n: '3', kicker: '相信 · TRUST', tone: 'data', title: '凭什么信这些数', body: '自建管道逐笔回一手来源核实、可追溯可审计；再往下是采集、治理、建模、来源的全链路底座。', page: '02 自建管线分析 → 03–06 数据底座' },
     ];
     const steps = stages.map(s => `<article class="guide-step guide-${s.tone}">
         <header><span class="guide-num">${s.n}</span><span class="guide-kicker">${s.kicker}</span></header>
@@ -8465,6 +8463,33 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       <p class="sr-only" id="app-live-region" aria-live="polite">已进入来源与方法。</p>`;
   }
 
+  // AI 结构化 Thesis 示例（嵌入交易情报 ⑤ 启示区；数据 = 自建管线证据集，只读呈现）
+  window.ConvergenceThesisDemo = {
+    render() {
+      const result = M.buildThesisWorkspace('BNT327', T);
+      const blocked = result.status === 'BLOCKED_NO_VERIFIED_COHORT';
+      return `<section class="lp-panel lp-wide ci-thesis-demo" aria-label="AI 结构化 Thesis 示例">
+        <div class="lp-panel-head">
+          <span class="lp-kicker">AI 结构化 Thesis · 示例<span class="lp-badge">只读示例 · 主题 BNT327（PD-1×VEGF）</span></span>
+          <h2>AI 如何把证据编排成可审计的推理</h2>
+        </div>
+        <p class="ci-gloss">本示例由 AI 在自建管线证据集上实时生成：事实 / 推断 / 反方假设 / 未知 / 行动五格分离，每个结论都挂可比交易证据；没有已验证可比 cohort 时宁可拒绝生成（BLOCKED），不硬编一个像样的答案。</p>
+        <div class="thesis-hero ${blocked ? 'is-blocked' : ''}" style="margin-top:10px">
+          <div><span class="status-label ${blocked ? 'status-blocked' : ''}">${result.status}</span><h2>${C.escapeHtml(result.title)}</h2><p>${C.escapeHtml(result.decision_thesis || '')}</p></div>
+          <div class="thesis-scope">${scopeBadge()}<span>${result.release_level}</span></div>
+        </div>
+        <section class="reasoning-grid" aria-label="结构化 Thesis 五格">
+          <article class="reasoning-card fact"><span>Fact / 已验证事实</span><p>${C.escapeHtml(result.fact)}</p></article>
+          <article class="reasoning-card inference"><span>Inference / 投资解释</span><p>${C.escapeHtml(result.inference)}</p></article>
+          <article class="reasoning-card counter"><span>Counter-thesis / 反方假设</span><p>${C.escapeHtml(result.counter_thesis)}</p></article>
+          <article class="reasoning-card unknown"><span>Unknown / 未知项</span><ul>${result.unknowns.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ul></article>
+          <article class="reasoning-card action"><span>Action / 建议行动</span><ol>${result.actions.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></article>
+        </section>
+        ${renderThesisComparables(result)}
+      </section>`;
+    }
+  };
+
   function renderBody() {
     if (state.view === 'live') {
       setTimeout(function () { if (window.LivePulse) window.LivePulse.mount(); }, 0);
@@ -8481,7 +8506,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   function renderCurrent() {
-    if (state.view === 'marketwide') state.view = 'live'; // 市场全景已并入「交易情报」，旧链接重定向
+    if (state.view === 'marketwide' || state.view === 'thesis') state.view = 'live'; // 市场全景 / AI Thesis 已并入「交易情报」，旧链接重定向
     const meta = viewMeta[state.view];
     element('viewEyebrow').textContent = meta.eyebrow;
     element('viewTitle').textContent = meta.title;
@@ -10127,6 +10152,9 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       // AI 洞察引擎
       + '<section class="lp-panel lp-wide">' + panelHead('AI 洞察引擎', '汇编层分析产出 · 演示', '五大赛道深潜：摘要、异常预警与买方匹配')
       + aiEngine() + '</section>'
+
+      // AI 结构化 Thesis · 示例（由主脚本 window.ConvergenceThesisDemo 渲染，数据 = 自建管线证据集）
+      + (window.ConvergenceThesisDemo ? window.ConvergenceThesisDemo.render() : '')
 
       // 双层互证
       + '<section class="lp-panel lp-wide">' + panelHead('双层互证', 'Cross-Validation', '研报说的，实时数据认不认？')
