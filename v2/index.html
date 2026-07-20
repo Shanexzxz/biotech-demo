@@ -9335,17 +9335,17 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   ];
   // 四笔代表性交易结构解剖（公司公告口径；仅 SSGJ-707 有里程碑细分公开拆分，其余按「首付/里程碑」两段呈现）
   var STRUCT_DEALS = [
-    { who: 'GSK × 恒瑞（12 项目批量授权）', year: '2025', total: 12.0, note: '',
-      segs: [ { k: '首付款', v: 0.5, color: '#2DD4BF', desc: '签约即付' },
-              { k: '里程碑及或有对价', v: 11.5, color: '#60A5FA', desc: '按 12 个项目分别达成约定条件支付' } ] },
-    { who: 'BMS × 百利天恒 BL-B01D1', year: '2023', total: 8.4, note: '',
-      segs: [ { k: '首付款', v: 0.8, color: '#2DD4BF', desc: '签约即付' },
-              { k: '里程碑及或有对价', v: 7.6, color: '#60A5FA', desc: '达成临床 / 注册 / 商业化条件支付' } ] },
-    { who: 'Summit × 康方生物 依沃西 AK112', year: '2022', total: 5.0, note: '',
+    { who: 'Summit × 康方生物 依沃西 AK112', year: '2022', total: 5.0, med: 14.1, note: '',
       segs: [ { k: '首付款', v: 0.5, color: '#2DD4BF', desc: '签约即付' },
               { k: '里程碑及或有对价', v: 4.5, color: '#60A5FA', desc: '达成约定条件支付' } ] },
-    { who: '辉瑞 × 三生制药 SSGJ-707（PD-1/VEGF 双抗）', year: '2025', total: 6.0,
-      note: '另有梯度销售分成（Tiered Royalty，约低双位数 %）｜医药魔方口径首付包 $15 亿 = $12.5 亿首付 + $1 亿股权 + $1.5 亿市场选择权',
+    { who: 'BMS × 百利天恒 BL-B01D1', year: '2023', total: 8.4, med: 12.4, note: '',
+      segs: [ { k: '首付款', v: 0.8, color: '#2DD4BF', desc: '签约即付' },
+              { k: '里程碑及或有对价', v: 7.6, color: '#60A5FA', desc: '达成临床 / 注册 / 商业化条件支付' } ] },
+    { who: 'GSK × 恒瑞（12 项目批量授权）', year: '2025', total: 12.0, med: 8.9, note: '',
+      segs: [ { k: '首付款', v: 0.5, color: '#2DD4BF', desc: '签约即付' },
+              { k: '里程碑及或有对价', v: 11.5, color: '#60A5FA', desc: '按 12 个项目分别达成约定条件支付' } ] },
+    { who: '辉瑞 × 三生制药 SSGJ-707（PD-1/VEGF 双抗）', year: '2025', total: 6.0, med: 8.9,
+      note: '竞价溢价的极端值：$12.5 亿首付创中国资产纪录，为当年中位水平的 2.3 倍——头部稀缺资产遭买方竞价时，首付溢价与中位趋势背离｜另有梯度销售分成（Tiered Royalty，约低双位数 %）｜医药魔方口径首付包 $15 亿 = $12.5 亿首付 + $1 亿股权 + $1.5 亿市场选择权',
       segs: [ { k: '首付款', v: 1.25, color: '#2DD4BF', desc: '签约即付 · 创中国资产纪录' },
               { k: '开发里程碑', v: 0.9, color: '#60A5FA', desc: '关键临床读出触发' },
               { k: '注册里程碑', v: 1.1, color: '#A78BFA', desc: 'FDA/EMA 获批触发' },
@@ -9362,7 +9362,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         return '<span><i style="background:' + seg.color + '"></i><b>' + seg.k + ' $' + seg.v + 'B</b><small>' + seg.desc + '</small></span>';
       }).join('');
       return '<div class="ci-struct">'
-        + '<div class="ci-struct-head"><strong>' + esc(d.who) + '</strong><span>' + d.year + ' · 总额 $' + d.total + 'B · 首付占比 ' + upPct.toFixed(1) + '%</span></div>'
+        + '<div class="ci-struct-head"><strong>' + esc(d.who) + '</strong><span>' + d.year + ' · 总额 $' + d.total + 'B · 首付占比 ' + upPct.toFixed(1) + '%<em style="font-style:normal;color:var(--muted)">（当年中位 ' + d.med + '%）</em></span></div>'
         + '<div class="ci-struct-bar">' + bar + '</div>'
         + '<div class="ci-struct-labels">' + labels + '</div>'
         + (d.note ? '<div class="ci-gloss" style="margin:6px 0 0">' + esc(d.note) + '</div>' : '')
@@ -10121,6 +10121,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="ci-sub-h" style="margin-top:14px">四笔代表性交易的结构解剖：同一时代，首付占比 4%–21%</div>'
       + '<div class="ci-gloss">统一按公告口径拆分——仅 SSGJ-707 有里程碑细分的公开拆分，其余按「首付 / 里程碑」两段呈现，不为整齐而编造细分。首付占比越低，风险越往后端移（期权式锁定）</div>'
       + dealStructRows()
+      + '<div class="ci-gloss" style="margin:8px 2px 0">如何与中位趋势并读：4 笔均为当年规模最大的头部交易，其中 3 笔首付占比低于当年中位；辉瑞 SSGJ-707 为竞价溢价的极端值。中位交易风险后移与头部资产首付溢价同时为真——K 型分化正是 2025 年的市场特征。</div>'
       + '<p class="lp-note">「摘青苗」结构：2025 年临床前至 I 期资产占中国出海交易 68–70%；NewCo 模式累计 14 起（2025H1 5 起）——买方用期权式结构锁定早期资产。'
       + '中国出海口径首付占比中位数同样逐年走低（约 14% → 6.5%，公开盘点 62 笔可比交易、中位首付 $1.6 亿），下行斜率较全球口径更陡。</p></section>'
 
