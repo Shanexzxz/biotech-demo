@@ -9136,6 +9136,16 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-toc a.ci-toc-live:hover{border-color:var(--cyan);color:var(--cyan);}'
     + '.ci-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0;}'
     + '@media(max-width:1100px){.ci-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}'
+    + '.ci-struct{margin-top:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);}'
+    + '.ci-struct-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap;margin-bottom:8px;}'
+    + '.ci-struct-head strong{font-size:13px;color:var(--text-strong);}'
+    + '.ci-struct-head span{font-size:11.5px;color:var(--muted);white-space:nowrap;}'
+    + '.ci-struct-bar{display:flex;height:22px;border-radius:5px;overflow:hidden;}'
+    + '.ci-struct-bar i{display:block;height:100%;}'
+    + '.ci-struct-labels{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:8px;}'
+    + '.ci-struct-labels span{display:inline-flex;align-items:baseline;gap:6px;font-size:11px;color:var(--muted);}'
+    + '.ci-struct-labels i{width:9px;height:9px;border-radius:2px;align-self:center;flex-shrink:0;}'
+    + '.ci-struct-labels b{color:var(--text-strong);font-size:11.5px;}'
     + '.ci-gloss{margin:2px 0 8px;font-size:11px;line-height:1.6;color:var(--muted);}'
     + '.ci-takeaways{margin:14px 0 6px;padding:16px 18px;border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:var(--radius);background:color-mix(in srgb,var(--cyan) 4%,var(--surface));}'
     + '.ci-takeaways-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap;}'
@@ -9289,16 +9299,42 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     { k: 'reg', label: '注册里程碑', color: '#FBBF24' },
     { k: 'comm', label: '商业化里程碑', color: '#64748B' }
   ];
-  // 辉瑞 × 三生 SSGJ-707 解剖（公司公告 + 医药魔方）
-  var ANATOMY = {
-    total: 6.0,
-    segs: [
-      { k: '首付款', v: 1.25, color: '#2DD4BF', desc: '签约即付 · 创中国资产纪录' },
-      { k: '开发里程碑', v: 0.9, color: '#60A5FA', desc: '关键临床读出触发' },
-      { k: '注册里程碑', v: 1.1, color: '#A78BFA', desc: 'FDA/EMA 获批触发' },
-      { k: '商业化里程碑', v: 2.75, color: '#FBBF24', desc: '销售额梯度触发' }
-    ]
-  };
+  // 四笔代表性交易结构解剖（公司公告口径；仅 SSGJ-707 有里程碑细分公开拆分，其余按「首付/里程碑」两段呈现）
+  var STRUCT_DEALS = [
+    { who: 'GSK × 恒瑞（12 项目批量授权）', year: '2025', total: 12.0, note: '',
+      segs: [ { k: '首付款', v: 0.5, color: '#2DD4BF', desc: '签约即付' },
+              { k: '里程碑及或有对价', v: 11.5, color: '#60A5FA', desc: '按 12 个项目分别达成约定条件支付' } ] },
+    { who: 'BMS × 百利天恒 BL-B01D1', year: '2023', total: 8.4, note: '',
+      segs: [ { k: '首付款', v: 0.8, color: '#2DD4BF', desc: '签约即付' },
+              { k: '里程碑及或有对价', v: 7.6, color: '#60A5FA', desc: '达成临床 / 注册 / 商业化条件支付' } ] },
+    { who: 'Summit × 康方生物 依沃西 AK112', year: '2022', total: 5.0, note: '',
+      segs: [ { k: '首付款', v: 0.5, color: '#2DD4BF', desc: '签约即付' },
+              { k: '里程碑及或有对价', v: 4.5, color: '#60A5FA', desc: '达成约定条件支付' } ] },
+    { who: '辉瑞 × 三生制药 SSGJ-707（PD-1/VEGF 双抗）', year: '2025', total: 6.0,
+      note: '另有梯度销售分成（Tiered Royalty，约低双位数 %）｜医药魔方口径首付包 $15 亿 = $12.5 亿首付 + $1 亿股权 + $1.5 亿市场选择权',
+      segs: [ { k: '首付款', v: 1.25, color: '#2DD4BF', desc: '签约即付 · 创中国资产纪录' },
+              { k: '开发里程碑', v: 0.9, color: '#60A5FA', desc: '关键临床读出触发' },
+              { k: '注册里程碑', v: 1.1, color: '#A78BFA', desc: 'FDA/EMA 获批触发' },
+              { k: '商业化里程碑', v: 2.75, color: '#FBBF24', desc: '销售额梯度触发' } ] }
+  ];
+  function dealStructRows() {
+    return STRUCT_DEALS.map(function (d) {
+      var upPct = d.segs[0].v / d.total * 100;
+      var bar = d.segs.map(function (seg) {
+        var w = Math.max(1.2, seg.v / d.total * 100);
+        return '<i style="width:' + w.toFixed(2) + '%;background:' + seg.color + '" title="' + seg.k + ' $' + seg.v + 'B（' + Math.round(seg.v / d.total * 100) + '%）"></i>';
+      }).join('');
+      var labels = d.segs.map(function (seg) {
+        return '<span><i style="background:' + seg.color + '"></i><b>' + seg.k + ' $' + seg.v + 'B</b><small>' + seg.desc + '</small></span>';
+      }).join('');
+      return '<div class="ci-struct">'
+        + '<div class="ci-struct-head"><strong>' + esc(d.who) + '</strong><span>' + d.year + ' · 总额 $' + d.total + 'B · 首付占比 ' + upPct.toFixed(1) + '%</span></div>'
+        + '<div class="ci-struct-bar">' + bar + '</div>'
+        + '<div class="ci-struct-labels">' + labels + '</div>'
+        + (d.note ? '<div class="ci-gloss" style="margin:6px 0 0">' + esc(d.note) + '</div>' : '')
+        + '</div>';
+    }).join('');
+  }
   // 模态份额斜坡 2021 → 2025（DealForma 口径合成）
   var SLOPE = [
     { n: '小分子', a: 32, b: 21, c: '#94A3B8' }, { n: '单克隆抗体', a: 26, b: 15, c: '#60A5FA' },
@@ -9610,51 +9646,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   // C4c 辉瑞 × 三生解剖条
-  // 四笔代表性交易首付比例对比（公司公告公开口径）
-  var DEAL_STRUCTS = [
-    { who: 'GSK × 恒瑞（12 项目批量授权）', year: '2025', up: 0.5, total: 12.0 },
-    { who: 'BMS × 百利天恒 BL-B01D1', year: '2023', up: 0.8, total: 8.4 },
-    { who: 'Summit × 康方 依沃西 AK112', year: '2022', up: 0.5, total: 5.0 },
-    { who: '辉瑞 × 三生 SSGJ-707', year: '2025', up: 0.9, total: 6.0 }
-  ];
-  function chartDealStructures() {
-    var W = 860, rowH = 34, H = DEAL_STRUCTS.length * rowH + 8;
-    var mL = 246, mR = 176, barW = W - mL - mR, maxPct = 16;
-    var out = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block" role="img" aria-label="四笔代表性交易首付占比对比">';
-    DEAL_STRUCTS.forEach(function (d, i) {
-      var pct = d.up / d.total * 100;
-      var y = 6 + i * rowH;
-      var w = Math.max(3, pct / maxPct * barW);
-      out += '<text x="' + (mL - 10) + '" y="' + (y + 15) + '" text-anchor="end" style="font-size:11.5px;fill:var(--text-strong)">' + d.who + '</text>';
-      out += '<text x="' + (mL - 10) + '" y="' + (y + 28) + '" text-anchor="end" style="font-size:10px;fill:var(--muted)">' + d.year + '</text>';
-      out += '<rect x="' + mL + '" y="' + y + '" width="' + barW + '" height="20" rx="4" fill="var(--surface-2)" stroke="var(--line)"/>';
-      out += '<rect x="' + mL + '" y="' + y + '" width="' + w.toFixed(1) + '" height="20" rx="4" fill="#2DD4BF" fill-opacity="0.9"><title>首付 $' + d.up + 'B（' + pct.toFixed(1) + '%）</title></rect>';
-      out += '<text x="' + (mL + w + 8) + '" y="' + (y + 14) + '" style="font-size:11px;font-weight:700;fill:var(--text-strong)">首付 ' + pct.toFixed(1) + '%</text>';
-      out += '<text x="' + (mL + w + 8) + '" y="' + (y + 27) + '" style="font-size:10px;fill:var(--muted)">$' + d.up + 'B / 总 $' + d.total + 'B</text>';
-    });
-    return out + '</svg>';
-  }
-
-  function chartAnatomy() {
-    var W = 720, H = 96, mL = 4, mR = 4, barY = 8, bh = 30;
-    var iw = W - mL - mR;
-    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block">';
-    var x = mL;
-    ANATOMY.segs.forEach(function (seg, i) {
-      var w = (seg.v / ANATOMY.total) * iw;
-      s += '<rect x="' + x + '" y="' + barY + '" width="' + w + '" height="' + bh + '" rx="' + (i === 0 || i === ANATOMY.segs.length - 1 ? 4 : 0) + '" fill="' + seg.color + '" fill-opacity="0.85">'
-        + '<title>' + seg.k + ' $' + seg.v + 'B（' + Math.round(seg.v / ANATOMY.total * 100) + '%）</title></rect>';
-      var cx = x + w / 2;
-      s += '<text x="' + cx + '" y="' + (barY + bh / 2 + 4) + '" text-anchor="middle" style="font-size:11px;font-weight:700;fill:rgba(0,0,0,.6);pointer-events:none;">$' + seg.v + 'B</text>';
-      s += '<text x="' + cx + '" y="' + (barY + bh + 16) + '" text-anchor="middle" style="' + TICKB + '">' + seg.k + '</text>';
-      s += '<text x="' + cx + '" y="' + (barY + bh + 30) + '" text-anchor="middle" style="' + TICK + '">' + seg.desc + '</text>';
-      x += w;
-    });
-    s += '<text x="' + mL + '" y="' + (H - 4) + '" style="' + TICK + '">另有梯度销售分成（Tiered Royalty，约低双位数 %）｜医药魔方口径首付包 $15 亿 = $12.5 亿首付 + $1 亿股权 + $1.5 亿市场选择权</text>';
-    s += '</svg>';
-    return s;
-  }
-
   // C5 模态份额斜坡图（2021 → 2025）
   function chartSlope() {
     var W = 340, H = 300, mT = 18, mB = 14, x1 = 96, x2 = W - 108;
@@ -10085,10 +10076,9 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div><div class="ci-sub-h">聚合交易价值的结构构成（100% 堆叠）</div><div style="max-width:460px;margin:0 auto">' + chartStack() + '</div>'
       + '<div class="lp-legend" style="margin-top:6px">' + MIX_SEGS.map(function (g) { return '<span><i style="background:' + g.color + '"></i>' + esc(g.label) + '</span>'; }).join('') + '</div>'
       + '<div class="ci-gloss">首付款＝签约即付（确定对价）；里程碑＝达成约定临床 / 注册 / 商业化条件才支付（或有对价）——灰蓝系占比越高，风险越往后端移</div></div></div>'
-      + '<div class="ci-sub-h" style="margin-top:14px">四笔代表性交易的结构对比：同一时代，首付比例 4%–15%</div>'
-      + '<div style="max-width:860px;margin:0 auto">' + chartDealStructures() + '</div>'
-      + '<div class="ci-gloss">首付越低，买方越倾向于「期权式锁定」——大额对价押注在临床/注册里程碑上；批量授权把单笔首付摊得最薄</div><div class="ci-sub-h" style="margin-top:14px">单笔细拆：辉瑞 × 三生制药 SSGJ-707（PD-1/VEGF 双抗 · 2025.05 · 总额 $6.0B）</div>'
-      + '<div style="max-width:860px;margin:0 auto">' + chartAnatomy() + '</div>'
+      + '<div class="ci-sub-h" style="margin-top:14px">四笔代表性交易的结构解剖：同一时代，首付占比 4%–21%</div>'
+      + '<div class="ci-gloss">统一按公告口径拆分——仅 SSGJ-707 有里程碑细分的公开拆分，其余按「首付 / 里程碑」两段呈现，不为整齐而编造细分。首付占比越低，风险越往后端移（期权式锁定）</div>'
+      + dealStructRows()
       + '<p class="lp-note">「摘青苗」结构：2025 年临床前至 I 期资产占中国出海交易 68–70%；NewCo 模式累计 14 起（2025H1 5 起）——买方用期权式结构锁定早期资产。'
       + '中国出海口径首付占比中位数同样逐年走低（约 14% → 6.5%，公开盘点 62 笔可比交易、中位首付 $1.6 亿），下行斜率较全球口径更陡。</p></section>'
 
