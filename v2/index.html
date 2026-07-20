@@ -9136,6 +9136,14 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-toc a.ci-toc-live:hover{border-color:var(--cyan);color:var(--cyan);}'
     + '.ci-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:12px 0;}'
     + '@media(max-width:1100px){.ci-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}'
+    + '.ci-spynav{position:sticky;top:calc(var(--topbar) + 8px);z-index:70;display:flex;gap:4px;align-items:center;overflow-x:auto;scrollbar-width:none;padding:6px;margin:12px 0 2px;border:1px solid var(--line);border-radius:999px;background:color-mix(in srgb,var(--bg-raised) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}'
+    + '.ci-spynav::-webkit-scrollbar{display:none;}'
+    + '.ci-spynav-chip{flex-shrink:0;padding:4px 12px;border:1px solid transparent;border-radius:999px;background:none;color:var(--muted);font-size:12px;cursor:pointer;white-space:nowrap;transition:background 0.15s ease;}'
+    + '.ci-spynav-chip:hover{color:var(--text-strong);}'
+    + '.ci-spynav-chip.on{background:var(--text-strong);color:var(--surface);font-weight:600;}'
+    + '.ci-spynav-appendix{margin-left:auto;border-color:var(--line);font-size:11px;}'
+    + '.ci-zone{scroll-margin-top:calc(var(--topbar) + 56px);}'
+    + '@media(max-width:760px){.ci-spynav{top:calc(var(--topbar) + 4px);border-radius:14px;}.ci-spynav-chip{padding:4px 10px;font-size:11px;}.ci-spynav-appendix{display:none;}}'
     + '.ci-struct{margin-top:8px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);}'
     + '.ci-struct-head{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap;margin-bottom:5px;}'
     + '.ci-struct-head strong{font-size:12.5px;color:var(--text-strong);}'
@@ -10044,6 +10052,14 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '</div>'
 
       + '<div class="lp-grid">'
+      + '<nav class="ci-spynav" aria-label="本页主线进度">'
+      + '<button type="button" class="ci-spynav-chip">① 时机</button>'
+      + '<button type="button" class="ci-spynav-chip">② 热点</button>'
+      + '<button type="button" class="ci-spynav-chip">③ 定价</button>'
+      + '<button type="button" class="ci-spynav-chip">④ 玩家</button>'
+      + '<button type="button" class="ci-spynav-chip">⑤ 启示</button>'
+      + '<button type="button" class="ci-spynav-chip ci-spynav-appendix" data-spy-appendix>▾ 附录 · API 验证</button>'
+      + '</nav>'
       + '<div class="ci-zone"><span class="ci-zone-tag">① 时机 · 市场周期</span><span class="ci-zone-q">现在是什么周期位置？该出手还是观望</span></div>'
       // C1 剪刀差
       + '<section class="lp-panel lp-wide">' + panelHead('宏观剪刀差', 'DealForma · IQVIA 合成', '量减价增：买方更少、更贵、更挑剔')
@@ -10125,13 +10141,57 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   /* ---------- mount：AI 标签页交互（事件委托，防重复绑定） ---------- */
+  // 主线进度导航：scroll-spy 高亮当前区（每次渲染后重挂，事件走委托）
+  function setupSpy(body) {
+    var nav = body.querySelector('.ci-spynav');
+    if (!nav) return;
+    var chips = [].slice.call(nav.querySelectorAll('.ci-spynav-chip'));
+    var zones = [].slice.call(body.querySelectorAll('#ciLayerCurated .ci-zone'));
+    if (window.__ciSpyScroll) { window.removeEventListener('scroll', window.__ciSpyScroll); window.__ciSpyScroll = null; }
+    if (!zones.length) return;
+    var ticking = false;
+    var update = function () {
+      if (!nav.isConnected) { window.removeEventListener('scroll', window.__ciSpyScroll); return; }
+      ticking = false;
+      var y = window.scrollY + Math.round(window.innerHeight * 0.38);
+      var idx = -1;
+      zones.forEach(function (z, i) {
+        if (z.getBoundingClientRect().top + window.scrollY <= y) idx = i;
+      });
+      chips.forEach(function (c, i) { c.classList.toggle('on', i === idx); });
+      var on = nav.querySelector('.ci-spynav-chip.on');
+      if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+    window.__ciSpyScroll = function () {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+    };
+    window.addEventListener('scroll', window.__ciSpyScroll, { passive: true });
+    update();
+  }
+
   function mount() {
     var body = document.getElementById('viewBody');
-    if (!body || body.__ciBound) return;
+    if (!body) return;
+    setupSpy(body);
+    if (body.__ciBound) return;
     body.__ciBound = true;
     body.addEventListener('click', function (e) {
       var t = e.target;
-      if (!t || !t.classList || !t.classList.contains('ci-tab')) return;
+      if (!t || !t.classList) return;
+      var chip = t.closest ? t.closest('.ci-spynav-chip') : null;
+      if (chip) {
+        if (chip.hasAttribute('data-spy-appendix')) {
+          var d = document.getElementById('lpLayerLive');
+          if (d) { d.open = true; d.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+          return;
+        }
+        var zones = [].slice.call(body.querySelectorAll('#ciLayerCurated .ci-zone'));
+        var chips = [].slice.call(body.querySelectorAll('.ci-spynav-chip'));
+        var idx = chips.indexOf(chip);
+        if (idx >= 0 && zones[idx]) zones[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      if (!t.classList.contains('ci-tab')) return;
       var id = t.getAttribute('data-ci-topic');
       var cur = AI_TOPICS.filter(function (x) { return x.id === id; })[0];
       if (!cur) return;
