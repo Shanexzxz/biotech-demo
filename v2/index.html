@@ -5169,6 +5169,18 @@ input:focus-visible,
 .glossary-term:hover,
 .glossary-term:focus-visible,
 .glossary-term.is-open { border-bottom-color: var(--cyan); outline: none; }
+
+/* ===== 终检体验修复：移动端横向滚动渐隐提示 + 关键触控目标加高 ===== */
+@media (max-width: 760px) {
+  .lp-scroll, .compact-table-wrap, .evidence-table-wrap, .vr-table-wrap,
+  .lineage-scroll, .odag-scroll, .mw-deal-table-wrap, .matrix-scroll {
+    -webkit-mask-image: linear-gradient(to right, #000 90%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 90%, transparent 100%);
+  }
+  .lib-open, .lib-deal-link { display: inline-block; padding: 7px 2px; }
+  .table-link, .profile-link { padding: 6px 4px; }
+}
+
 .glossary-term::after {
   content: attr(data-glossary);
   position: absolute;
@@ -6533,7 +6545,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
             <span class="seg-contingent" style="width:${seg.ct.toFixed(1)}%"></span>
           </span>
           <span class="structure-ratio">${hasSeg ? (hasRatio ? `${(row.median_upfront_ratio * 100).toFixed(0)}%` : '未披露') : '无可比'}</span>
-          <span class="structure-meta"><span class="coverage-dot" data-coverage="${coverage >= 0.75 ? 'high' : coverage >= 0.4 ? 'mid' : 'low'}"></span>${row.comparable_count} / ${row.count} 可比 · 中位 ${formatMoney(row.median_total)}${royaltyBadge}</span>
+          <span class="structure-meta"><span class="coverage-dot" data-coverage="${coverage >= 0.75 ? 'high' : coverage >= 0.4 ? 'mid' : 'low'}"></span>${row.comparable_count} / ${row.count} 可比 · ${row.total_is_mean ? '均值' : '中位'} ${formatMoney(row.median_total)}${royaltyBadge}</span>
         </button>`;
     }).join('');
     return `
@@ -6772,7 +6784,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 
   // 热门靶点（按近 5 年 BD 热度）
   const targets = [
-    { target: 'PD-1 x VEGF', deals: 6, note: '三生×辉瑞 / BioNTech×BMS / 荣昌×艾伯维', modality: '双抗' },
+    { target: 'PD-1 x VEGF', deals: 6, note: '近 5 年热度样本（全市场口径 12 笔见「交易情报」页）：三生×辉瑞 / BioNTech×BMS / 荣昌×艾伯维', modality: '双抗' },
     { target: 'GLP-1 / GIP / GCG', deals: 6, note: '联邦×诺和 / 翰森×再生元 / 石药×AZ', modality: 'GLP-1/多肽' },
     { target: 'Claudin18.2', deals: 5, note: '康诺亚×AZ / 信诺维×安斯泰来 / 科伦×默沙东', modality: 'ADC' },
     { target: 'HER2 / HER3 / B7-H3', deals: 5, note: '映恩×BioNTech / 三款 ADC 打包×默沙东', modality: 'ADC' },
@@ -6840,6 +6852,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         count: a.china_lic_count,
         comparable_count: a.china_lic_count,
         median_total: a.china_lic_value * 1000 / a.china_lic_count,
+        total_is_mean: true,
         median_upfront: a.china_lic_value * 1000 / a.china_lic_count * up,
         median_upfront_ratio: up,
         median_upfront_seg: up,
@@ -7172,111 +7185,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     </section>`;
   }
 
-  function signalStateLabel(signal) {
-    if (signal.release_state === 'BLOCKED') return '阻断';
-    if (signal.release_state === 'WATCH') return '观察';
-    return '可用';
-  }
-
-  function renderSignalInbox(activeSignal) {
-    // 边界声明（dimension=BOUNDARY）不是可行动的分析信号，而是"系统不能回答什么"的诚实约束。
-    // 它不该与分析信号平级混排、更不该置顶——拆出为顶部背景约束条，信号列表只留可决策的分析信号。
-    const actionSignals = signals.filter(signal => signal.dimension !== 'BOUNDARY');
-    const boundarySignals = signals.filter(signal => signal.dimension === 'BOUNDARY');
-    const boundaryBanner = boundarySignals.map(signal => `<button type="button" class="boundary-note${signal.id === (activeSignal && activeSignal.id) ? ' is-selected' : ''}" data-select-signal="${signal.id}" aria-label="分析边界：${C.escapeHtml(signal.title)}">
-        <span class="boundary-flag">分析边界</span>
-        <span class="boundary-copy"><strong>${C.escapeHtml(signal.title)}</strong><small>${C.escapeHtml(signal.inference)}</small></span>
-        <span class="boundary-state">${signalStateLabel(signal)}</span>
-      </button>`).join('');
-    return `<section class="signal-inbox" id="signal-inbox" aria-labelledby="signal-inbox-title">
-      <header><div><span class="eyebrow">AI 主动洞察 · 证据编排 · EVIDENCE-ORCHESTRATED</span><h2 id="signal-inbox-title">AI 信号</h2><p class="signal-lead">点击信号，整页切换为该主题的结构化 Thesis；AI 负责证据编排，不改变 ${glossary('release gate')}。</p></div><span class="signal-count">${actionSignals.length}</span></header>
-      ${boundaryBanner ? `<div class="boundary-band" aria-label="分析边界约束">${boundaryBanner}</div>` : ''}
-      <div class="signal-list-label">可行动分析信号</div>
-      <div class="signal-list signal-list-row">${actionSignals.map((signal, index) => `<button type="button" class="signal-card${signal.id === (activeSignal && activeSignal.id) ? ' is-selected' : ''}" data-select-signal="${signal.id}">
-        <span class="signal-rank">${String(index + 1).padStart(2, '0')}</span>
-        <span class="signal-copy"><strong>${C.escapeHtml(signal.title)}</strong><span>${C.escapeHtml(signal.fact)}</span><small>${signal.release_level} · ${C.escapeHtml(signal.coverage)} · 更新 ${C.escapeHtml(signal.freshness)}</small></span>
-        <span class="signal-state state-${signal.release_state.toLowerCase()}">${signalStateLabel(signal)}</span>
-      </button>`).join('')}</div>
-    </section>`;
-  }
-
-  // 样本内可发布占比：把"能诚实发布的"(样本内结构占比)与"不能发布的"(全球份额)并置，
-  // 让边界从纯免责声明升级为"这是我能给的 + 这是我不能给的"。
-  function renderDisclosedShare(b) {
-    const bars = b.rows.map(r => `<div class="dshare-row">
-      <span class="dshare-key">${C.escapeHtml(r.key)}</span>
-      <span class="dshare-track"><span class="dshare-fill" style="width:${r.pct}%"></span></span>
-      <span class="dshare-val">${r.count} 笔 · ${r.pct}%</span>
-    </div>`).join('');
-    return `<article class="disclosed-share-block">
-      <span>能诚实发布的 · 样本内结构占比</span>
-      <strong>分母 = ${C.escapeHtml(b.denominator_label)}（可逐笔追溯），非全球普查。</strong>
-      <div class="dshare-list">${bars}</div>
-      <div class="dshare-split">
-        <div class="dshare-can"><b>可发布</b><small>样本内占比（我这批交易里 X 占多少）</small></div>
-        <div class="dshare-cannot"><b>不可发布</b><small>全球市场份额 / 同比（需全球分母，当前 Blocked）</small></div>
-      </div>
-      <small class="dshare-note">${C.escapeHtml(b.note)}</small>
-    </article>`;
-  }
-
-  // 第三方引用口径的市场定位：用公开可引用的行业口径(医药魔方 NextPharma 等)作分母,
-  // 回答"样本在该口径下覆盖率/定位", 明确标注来源+口径边界+误差, 把边界从 Blocked 变为有产出。
-  function renderReferencedMarket(rm) {
-    const rows = rm.benchmarks.map(b => `<div class="refmkt-row">
-      <div class="refmkt-scope"><strong>${C.escapeHtml(b.scope)}</strong><span class="refmkt-src">来源：${C.escapeHtml(b.source_name)}（${C.escapeHtml(b.via)}，${C.escapeHtml(b.source_discovery_id)}）</span></div>
-      <div class="refmkt-nums">
-        <span class="refmkt-cell"><b>${C.escapeHtml(b.denominator_label)}</b><small>引用口径分母</small></span>
-        <span class="refmkt-cell"><b>${b.our_sample} 笔</b><small>我方样本命中</small></span>
-        <span class="refmkt-cell refmkt-pct"><b>${b.coverage_pct}%</b><small>样本覆盖率(估算)</small></span>
-      </div>
-    </div>`).join('');
-    return `<article class="referenced-market-block">
-      <span>基于第三方引用口径的市场定位 · 可引用但带误差</span>
-      <strong>我们没有商业库授权，改用公开可引用的行业口径作分母，回答样本在市场中的位置。</strong>
-      <div class="refmkt-list">${rows}</div>
-      <small class="refmkt-method">${C.escapeHtml(rm.method)}</small>
-      <small class="refmkt-error"><b>数据源限制与误差：</b>${C.escapeHtml(rm.error_note)}</small>
-    </article>`;
-  }
-
-  function renderDecisionDock() {
-    const signal = signals.find(item => item.id === state.selectedSignal);
-    if (!state.decisionDockOpen || !signal) {
-      // 未选信号时不渲染冗余触发钮（信号卡本身即入口）；选了信号但收起时给一个重新展开入口
-      if (!state.selectedSignal) return '';
-      return `<button type="button" class="decision-dock-trigger" id="decisionDockTrigger">展开决策坞 · 事实 → 行动</button>`;
-    }
-    const hasEvidence = signal.evidence_deal_ids && signal.evidence_deal_ids.length;
-    // 带第三方引用口径的市场定位信号：用"事实 / 定位口径 / 影响 / 下一步"叙事，
-    // 不再是"缺口 / 解锁条件"的免责声明——因为已用医药魔方等权威口径把年度趋势答出来了。
-    const hasMarketContext = signal.referenced_market && signal.referenced_market.available;
-    const eyebrow = hasMarketContext ? '市场定位 · MARKET POSITIONING · 第三方口径' : '交易到退出 · CAPITAL-TO-EXIT';
-    const dockClass = hasMarketContext ? 'decision-dock is-market' : 'decision-dock';
-    if (hasMarketContext) {
-      return `<section class="${dockClass}" id="decision-dock" aria-labelledby="decision-dock-title">
-        <header><div><span class="eyebrow">${eyebrow}</span><h2 id="decision-dock-title">市场定位 · ${C.escapeHtml(signal.title)}</h2></div><button type="button" class="quiet-button" id="closeDecisionDock">收起</button></header>
-        <div class="decision-spine">
-          <article><span>01 · 已答口径</span><strong>${C.escapeHtml(signal.fact)}</strong></article>
-          ${signal.disclosed_breakdown ? renderDisclosedShare(signal.disclosed_breakdown) : ''}
-          ${signal.referenced_market && signal.referenced_market.available ? renderReferencedMarket(signal.referenced_market) : ''}
-          <article><span>02 · 对决策的影响</span><strong>${C.escapeHtml(signal.inference)}</strong><small>反方：${C.escapeHtml(signal.counter_thesis)}</small></article>
-          <article><span>03 · 口径限制与未知</span><strong>覆盖率为定位性估算，非精确市场份额。</strong><small>未知：${C.escapeHtml(signal.unknowns.join('；'))}</small></article>
-          <article><span>04 · 下一步</span><strong>${C.escapeHtml(signal.action)}</strong></article>
-        </div>
-      </section>`;
-    }
-    return `<section class="${dockClass}" id="decision-dock" aria-labelledby="decision-dock-title">
-      <header><div><span class="eyebrow">${eyebrow}</span><h2 id="decision-dock-title">决策坞 · ${C.escapeHtml(signal.title)}</h2></div><button type="button" class="quiet-button" id="closeDecisionDock">收起</button></header>
-      <div class="decision-spine">
-        <article><span>01 · 历史事实</span><strong>${C.escapeHtml(signal.fact)}</strong>${hasEvidence ? `<button type="button" id="openSignalEvidence">查看 ${signal.evidence_deal_ids.length} 笔证据</button>` : '<small class="dock-no-evidence">此信号无披露交易证据</small>'}</article>
-        <article><span>02 · 投资解释</span><strong>${C.escapeHtml(signal.inference)}</strong><small>反方：${C.escapeHtml(signal.counter_thesis)}</small></article>
-        <article><span>03 · 12–36M 条件情景</span><strong>只在可验证触发条件下形成 Bull / Base / Bear，不给未经校准的单点概率。</strong><small>未知：${C.escapeHtml(signal.unknowns.join('；'))}</small></article>
-        <article><span>04 · 资产行动</span><strong>${C.escapeHtml(signal.action)}</strong><button type="button" id="openFullThesis">打开完整 Thesis</button></article>
-      </div>
-    </section>`;
-  }
-
   function renderConviction(result) {
     if (!result.conviction) return '';
     return `<div class="conviction-grid" aria-label="可拆解 Conviction">${result.conviction.map(item => `<article>
@@ -7327,6 +7235,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     '本体': '本体：把交易、资产、靶点、条款、来源等实体及其关系结构化的模型，是“底层数据如何变成结论”的骨架。',
     'ADC': 'ADC（抗体偶联药物）：把细胞毒药物用连接子挂到抗体上、精准递送到肿瘤细胞的一类技术模态。',
     'Direct Comp': '直接可比：模态、靶点、阶段等关键维度足够接近、可用于估值锚定的同类交易。',
+    'LOE': 'LOE（专利独占期丧失）：原研药专利到期、仿制药进场导致的收入悬崖，是大药企外部补管线的主要动因。',
+    'NewCo': 'NewCo（为交易新设的海外公司）：卖方把资产注入新设公司，买方以股权 + 里程碑锁定权益的新型交易结构。',
+    'headline potential': 'headline potential（公告名义总额）：含或有里程碑的公告上限金额，不等于确定会付的钱。',
+    'POC': 'POC（概念验证）：药物在人体中首次证明机制有效的关键临床节点，通常是交易的定价分水岭。',
   };
   function glossary(term, label) {
     const def = GLOSSARY[term];
@@ -7393,132 +7305,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       </section>
       ${groups.map(groupBlock).join('')}
       <p class="sr-only" id="app-live-region" aria-live="polite">已显示设计思路，七个页面按洞察能力与数据能力两组组织。</p>`;
-  }
-
-  function renderSystemGuide() {
-    // 首页系统导读条：给合伙人一条“看见→看懂·敢用→相信”的阅读主线，
-    // 说明七个页面怎么串、各自回答什么，消除“为什么突然有个 AI 页”的困惑。
-    const stages = [
-      { n: '1', kicker: '看见 · SEE', tone: 'insight', title: '市场长什么样', body: '先用外部宽口径全景给全局感，看清近 5 年买方、结构、模态与地域的大势。', page: '01 交易情报（Deal Intelligence）' },
-      { n: '2', kicker: '看懂 · 敢用 · REASON', tone: 'thesis', title: '异常怎么变成判断', body: '数据全 ≠ 能直接下结论。同一页的「启示」区把异常信号编排成可审计的推理结构——事实 / 推断 / 反方 / 未知 / 行动五格分离，不替你拍板、也不乱编。', page: '01 交易情报 · ⑤ 启示' },
-      { n: '3', kicker: '相信 · TRUST', tone: 'data', title: '凭什么信这些数', body: '自建管道逐笔回一手来源核实、可追溯可审计；再往下是采集、治理、建模、来源的全链路底座。', page: '02 自建管线分析 → 03–06 数据底座' },
-    ];
-    const steps = stages.map(s => `<article class="guide-step guide-${s.tone}">
-        <header><span class="guide-num">${s.n}</span><span class="guide-kicker">${s.kicker}</span></header>
-        <strong>${s.title}</strong>
-        <p>${s.body}</p>
-        <footer>${s.page}</footer>
-      </article>`).join('<span class="guide-arrow" aria-hidden="true">→</span>');
-    return `<details class="system-guide" open>
-      <summary><span class="guide-eyebrow">这个系统怎么读 · HOW TO READ</span><span class="guide-summary-line">三步看懂：看见市场 → 看懂并敢用 → 凭什么相信</span></summary>
-      <div class="guide-flow">${steps}</div>
-      <p class="guide-note">两组导航按“能力”组织：<strong>洞察能力</strong>展示把外部数据讲成全景的可视化力，<strong>数据能力</strong>展示自建管道的可信度与工程力。二者刻意对照，不是重复。</p>
-    </details>`;
-  }
-
-  function renderThesisIntro() {
-    // AI Thesis 说明卡：把隐含在交互里的分析范式显性化，
-    // 让合伙人不点交互也能 get 到“这不是套壳 GPT，是可审计推理”。
-    const pillars = [
-      { title: '从信号进入', body: '不给现成结论，从异常信号出发，让判断由你主导。' },
-      { title: glossary('证据门控'), body: `没有已验证可比 cohort 就拒绝生成（${glossary('BLOCKED')}），绝不硬编一个像样的答案。` },
-      { title: '五格分离 + 显式留白', body: '事实 / 推断 / 反方假设 / 未知 / 行动分开摆，未解锁的私有能力如实标注。' },
-    ];
-    const cards = pillars.map(p => `<article class="thesis-pillar"><strong>${p.title}</strong><p>${p.body}</p></article>`).join('');
-    return `<section class="thesis-intro" aria-label="AI Thesis 说明">
-      <div class="thesis-intro-lead">
-        <span class="guide-eyebrow">这一页体现什么 · WHAT THIS SHOWS</span>
-        <h2>不是“AI 替你下结论”，而是“AI 把证据编排成可审计的推理”</h2>
-        <p>前面的数据回答“市场什么样”，但要从一个异常推理出投资判断，需要一层把证据结构化、又守住诚实底线的能力。这就是 AI Thesis 想展示的差异化——区别于直接吐结论的套壳 GPT。</p>
-      </div>
-      <div class="thesis-pillars">${cards}</div>
-    </section>`;
-  }
-
-  function renderMarketWide() {
-    if (!MW) return '<p class="empty-state">全面版数据模块未加载。</p>';
-    const hl = MW.headline();
-    const buyers = MW.buyerActivity().map(row => ({ ...row, segment: MW.buyerSegment(row.buyer) }));
-    const pulse = MW.structurePulse();
-    const matrix = MW.modalityYearMatrixForChart();
-    const flows = MW.originFlowsForChart();
-    const fmtB = v => (v === null || v === undefined) ? '未披露' : (v >= 1 ? '$' + (Number.isInteger(v) ? v : v.toFixed(1)) + 'B' : '$' + Math.round(v * 1000) + 'M');
-    const dealRows = MW.deals.slice().sort((a, b) => (b.total || 0) - (a.total || 0)).slice(0, 16).map(d => `<tr>
-        <td>${C.escapeHtml(d.date)}</td>
-        <td><strong>${C.escapeHtml(d.seller)}</strong> → ${C.escapeHtml(d.buyer)}</td>
-        <td>${C.escapeHtml(d.target)}<span class="mw-modality">${C.escapeHtml(d.modality)}</span></td>
-        <td><span class="tag ${d.type === 'M_AND_A' ? 'tag-type' : 'tag-stage'}">${d.type === 'M_AND_A' ? 'M&amp;A' : 'Licensing'}</span></td>
-        <td class="numeric">${fmtB(d.upfront)}</td>
-        <td class="numeric">${fmtB(d.total)}</td>
-        <td class="mw-source">${C.escapeHtml(d.source)}</td>
-      </tr>`).join('');
-    const targetRows = MW.targets.map((t, i) => `<li><span>${i + 1}</span><strong>${C.escapeHtml(t.target)}</strong><em>${t.deals} 笔</em><small>${C.escapeHtml(t.note)}</small></li>`).join('');
-    const archetypeCards = MW.buyerArchetypes.map(a => `<article class="mw-archetype tone-${a.tone}">
-        <header><strong>${C.escapeHtml(a.archetype)}</strong><b class="mw-tsr">${C.escapeHtml(a.tsr)}<small>5Y TSR</small></b></header>
-        <p>${C.escapeHtml(a.desc)}</p>
-        <div class="mw-examples">${a.examples.map(e => `<span>${C.escapeHtml(e)}</span>`).join('')}</div>
-        <footer>来源 · ${C.escapeHtml(a.source)}</footer>
-      </article>`).join('');
-    return `
-      <section class="mw-demo-banner" role="note" aria-label="数据诚实边界">
-        <span class="mw-flag">公开口径汇编 · DEMO</span>
-        <p><strong>本页是「洞察能力」的展示：</strong>数据来自微信公众号与公开行业媒体盘点文章的汇编（医药魔方 NextPharma、动脉网、药智、Clarivate、EY、IQVIA、Bain 等），追求覆盖广度、更接近真实市场规模，用来呈现可视化与分析视角；<strong>未逐笔回一手来源核实、与数据管线解耦</strong>，存在口径差异与误差，仅供 demo。想看每笔可回溯、可审计的严谨版，见「数据能力」组的「自建管线分析」页。</p>
-      </section>
-      <section class="market-regime-band" aria-label="全面版规模概览">
-        <div>
-          <div class="regime-kicker"><span class="scope-badge scope-referenced">公开口径</span><span class="status-label status-referenced">近 5 年全景 · 广度优先</span></div>
-          <h2>近 5 年（2021–2026）全球医药 BD 与 M&amp;A 全面全景（公开口径汇编）</h2>
-          <p>汇编 ${hl.total_deals} 笔代表性交易 + 逐年市场口径；覆盖中国出海、全球并购、模态与靶点流向、资产地域走廊四个维度。2025 年中国 license-out 达 ${hl.china_lic_2025_count} 笔 / $${hl.china_lic_2025_value.toFixed(0)}B，金额约占全球 ${hl.china_share_2025}%（医药魔方 / Clarivate 口径）。</p>
-        </div>
-        <dl class="regime-metrics">
-          <div><dt>汇编交易</dt><dd>${hl.total_deals}<small class="metric-split">代表性案例</small></dd></div>
-          <div><dt>2025 中国出海</dt><dd>${hl.china_lic_2025_count}<small class="metric-split">$${hl.china_lic_2025_value.toFixed(0)}B headline</small></dd></div>
-          <div><dt>中国份额</dt><dd>${hl.china_share_2025}%<small class="metric-split">占全球 BD 金额</small></dd></div>
-          <div><dt>数据源</dt><dd>${MW.sources.length}<small class="metric-split">公开渠道</small></dd></div>
-        </dl>
-      </section>
-      <div class="landscape-layout">
-        <article class="intel-panel intel-panel-hero" id="mw-buyer-panel">
-          ${renderPanelHeading('01', '买方活跃度（广度版）', buyers[0] ? `${buyers[0].buyer} 出现 ${buyers[0].deals} 次；气泡大小＝已披露首付款，颜色＝买方国别与类型。右上为高频大额买手。` : '', 'Public compilation')}
-          <div class="hero-split">
-            <div class="hero-chart">${C.renderBuyerScatter(buyers, null)}</div>
-            <div class="hero-table mw-archetypes">
-              <h3 class="mw-sub-title">连续收购者 vs 超大并购型 · 股东回报对比</h3>
-              ${archetypeCards}
-            </div>
-          </div>
-        </article>
-        <article class="intel-panel intel-panel-wide" id="mw-modality-panel">
-          ${renderPanelHeading('03', '模态与靶点流向', `资金从传统技术流向前沿模态：${glossary('ADC')} → 双抗/多抗 → GLP-1、siRNA、TCE。颜色越深＝该模态该年越热。`, 'Count · not share')}
-          <div class="modality-split">
-            <div class="modality-matrix-col">${C.renderModalityMatrix(matrix, null)}</div>
-            <div class="modality-target-col panel-subsection"><h3>近 5 年热门靶点 Top 5</h3><ol class="target-list mw-target-list">${targetRows}</ol></div>
-          </div>
-        </article>
-        <section class="intelligence-grid intelligence-grid-duo" aria-label="交易结构与资产地域">
-          <article class="intel-panel dimension-structure" id="mw-structure-panel">
-            ${renderPanelHeading('02', '交易结构演变', `中国出海 ${glossary('Upfront')} 中位占比逐年走低（14%→6.5%），买方越来越 milestone-heavy、风险共担。`, 'Licensing')}
-            ${C.renderStructurePulse(pulse)}
-          </article>
-          <article class="intel-panel" id="mw-origin-panel">
-            ${renderPanelHeading('04', '资产地域流向', '中国 → 美国是最大走廊；不用世界地图飞线，按来源地→买方区排序。', 'Asset origin')}
-            ${C.renderOriginFlows(flows, null)}
-            <p class="chart-note">China-out 占全球 out-licensing 比例从 2020 约 5% 升至 2025 H1 约 32%（Clarivate 口径）。</p>
-          </article>
-        </section>
-      </div>
-      <section class="mw-deal-table-section" aria-label="代表性交易汇编">
-        <header><span class="eyebrow">代表性交易汇编 · TOP DEALS（按总额）</span><h2>近 5 年代表性交易（每笔标注公开来源）</h2></header>
-        <div class="mw-deal-table-wrap"><table class="compact-table mw-deal-table">
-          <thead><tr><th>时间</th><th>卖方 → 买方</th><th>靶点 / 模态</th><th>类型</th><th class="numeric">首付</th><th class="numeric">总额</th><th>来源</th></tr></thead>
-          <tbody>${dealRows}</tbody>
-        </table></div>
-      </section>
-      <footer class="landscape-boundary-note" aria-label="数据边界">
-        <span class="boundary-flag">公开口径</span>
-        <p><strong>本页为 demo 汇编，不作为可发布的权威市场份额。</strong>数据源：${MW.sources.join(' · ')}。逐笔一手核实、可追溯的正式口径见「自建管线分析」页。</p>
-      </footer>
-      <p class="sr-only" id="app-live-region" aria-live="polite">已显示市场全景（外部数据 · 公开口径汇编 demo）。</p>`;
   }
 
   function renderLandscape() {
@@ -7632,60 +7418,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         </header>
         <div class="shortlist-body">${rows}</div>
       </section>`;
-  }
-
-  function renderThesis() {
-    // 阅读优先重构：合伙人打开即读完整内容，交互只是可选深化
-    const actionSignals = signals.filter(item => item.dimension !== 'BOUNDARY');
-    // 未选信号时默认展开第一个可行动信号（仅展示层联动，不改 URL 状态）
-    const activeSignal = signals.find(item => item.id === state.selectedSignal) || actionSignals.find(item => signalThesisQuery(item)) || actionSignals[0] || null;
-    const effectiveQuery = state.selectedSignal
-      ? state.thesisQuery
-      : ((activeSignal && signalThesisQuery(activeSignal)) || state.thesisQuery);
-    const result = M.buildThesisWorkspace(effectiveQuery, T);
-    const blocked = result.status === 'BLOCKED_NO_VERIFIED_COHORT';
-    // 带第三方引用口径的信号：把「可发布/不可发布」与「市场定位」并入证据区，不再开决策坞
-    const hasMarketCtx = activeSignal && activeSignal.referenced_market && activeSignal.referenced_market.available;
-    const marketCtxBlocks = hasMarketCtx
-      ? `${activeSignal.disclosed_breakdown ? renderDisclosedShare(activeSignal.disclosed_breakdown) : ''}${renderReferencedMarket(activeSignal.referenced_market)}`
-      : '';
-    return `
-      <details class="thesis-intro-fold">
-        <summary><span>这一页怎么看</span><small>AI 把证据编排成可审计的推理：选题 → 看答案 → 查证据，三步读完</small></summary>
-        <div class="thesis-intro-fold-body">
-          <p><b>从信号进入</b>——不给现成结论，从异常信号出发；<b>${glossary('证据门控')}</b>——没有已验证可比 cohort 就拒绝生成（${glossary('BLOCKED')}），绝不硬编一个像样的答案；<b>五格分离 + 显式留白</b>——事实 / 推断 / 反方假设 / 未知 / 行动分开摆，未解锁的私有能力如实标注。</p>
-        </div>
-      </details>
-      ${renderSignalInbox(activeSignal)}
-      <div class="thesis-presets-row"><span class="query-presets-label">换个主题看看</span><button type="button" data-thesis-preset="BNT327">BNT327</button><button type="button" data-thesis-preset="ADC">ADC</button><button type="button" data-thesis-preset="China-originated">China-originated</button></div>
-
-      <section class="thesis-result" id="thesis-workspace" aria-label="当前主题的结构化 Thesis">
-        <div class="thesis-zone-head"><span class="step-tag">② 当前 Thesis · 答案</span><span class="thesis-topic">主题 · ${C.escapeHtml(effectiveQuery)}</span></div>
-        <section class="thesis-hero ${blocked ? 'is-blocked' : ''}">
-          <div><span class="status-label ${blocked ? 'status-blocked' : ''}">${result.status}</span><h2>${C.escapeHtml(result.title)}</h2><p>${C.escapeHtml(result.decision_thesis || '证据门槛尚未满足，当前不生成投资结论。')}</p></div>
-          <div class="thesis-scope">${scopeBadge()}<span>${result.release_level}</span></div>
-        </section>
-        ${renderConviction(result)}
-      </section>
-
-      <section class="thesis-evidence-flow" aria-label="证据与推理">
-        <div class="thesis-zone-head"><span class="step-tag">③ 证据与推理 · 凭什么这么说</span></div>
-        ${marketCtxBlocks ? `<div class="thesis-market-ctx">${marketCtxBlocks}</div>` : ''}
-        ${renderThesisComparables(result)}
-        <section class="reasoning-grid" aria-label="结构化 Thesis">
-          <article class="reasoning-card fact"><span>Fact / 已验证事实</span><p>${C.escapeHtml(result.fact)}</p></article>
-          <article class="reasoning-card inference"><span>Inference / 投资解释</span><p>${C.escapeHtml(result.inference)}</p></article>
-          <article class="reasoning-card counter"><span>Counter-thesis / 反方假设</span><p>${C.escapeHtml(result.counter_thesis)}</p></article>
-          <article class="reasoning-card unknown"><span>Unknown / 未知项</span><ul>${result.unknowns.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ul></article>
-          <article class="reasoning-card action"><span>Action / 建议行动</span><ol>${result.actions.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></article>
-        </section>
-        ${result.scenarios.length ? `<section class="scenario-section"><header><span class="eyebrow">12–36 MONTHS · CONDITIONAL, NOT FORECAST</span><h2>Bull / Base / Bear 条件情景</h2></header><div class="scenario-grid">${result.scenarios.map(scenario => `<article><strong>${scenario.name}</strong><p>${C.escapeHtml(scenario.condition)}</p><span>领先指标 · ${C.escapeHtml(scenario.indicator)}</span><small>失效条件 · ${C.escapeHtml(scenario.invalidation)}</small></article>`).join('')}</div></section>` : ''}
-        ${renderBuyerShortlist(result)}
-        <section class="private-context-lock"><div><span class="scope-badge scope-private">Private</span><h2>基金私有上下文（Private Fund Context）未解锁</h2><p>接入基金 Pipeline、CRM、Mandate 与关系数据后，才显示 Potential Strategic Buyers、Portfolio Fit 和 Buyer Whitespace。</p></div><span>受数据范围限制 · LOCKED BY DATA SCOPE</span></section>
-      </section>
-      ${blocked ? `<section class="verification-queue"><h2>下一步核验 · Next verification</h2><ol>${result.next_verification.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></section>` : ''}
-      ${renderEvidenceDrawer()}
-      <p class="sr-only" id="app-live-region" aria-live="polite">已进入 AI Thesis 工作区。</p>`;
   }
 
   function ontologyGraphType(entityId) {
@@ -8511,8 +8243,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       return window.LivePulse ? window.LivePulse.render() : '<p class="empty-state">交易情报模块未加载。</p>';
     }
     if (state.view === 'overview') return renderOverview();
-    if (state.view === 'marketwide') return renderMarketWide();
-    if (state.view === 'thesis') return renderThesis();
     if (state.view === 'pipeline') return renderPipeline();
     if (state.view === 'foundation') return renderFoundation();
     if (state.view === 'library') return renderLibrary();
@@ -8649,8 +8379,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
         const patch = {
           view: 'thesis',
           selectedSignal: button.dataset.selectSignal,
-          decisionDockOpen: false,
-          scrollToId: 'thesis-workspace',
+          decisionDockOpen: true,
+          scrollToId: 'decision-dock',
         };
         const query = signalThesisQuery(signal);
         if (query) patch.thesisQuery = query;
@@ -9193,6 +8923,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-struct-bar i{display:block;height:100%;}'
     + '.ci-struct-labels{display:flex;flex-wrap:wrap;gap:2px 16px;margin-top:5px;}'
     + '.ci-struct-labels span{display:inline-flex;align-items:baseline;gap:6px;font-size:11px;color:var(--muted);}'
+    + '.ci-struct-labels small{font-size:10px;}'
     + '.ci-struct-labels i{width:8px;height:8px;border-radius:2px;align-self:center;flex-shrink:0;}'
     + '.ci-struct-labels b{color:var(--text-strong);font-size:11px;}'
     + '.ci-gloss{margin:2px 0 8px;font-size:11px;line-height:1.6;color:var(--muted);}'
@@ -9501,7 +9232,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       ],
       summary: [
         'BBB 穿梭是 CNS 交易回暖的「卖铲人」：平台型交易结构（多靶点 option + 研究合作）占 83%，单笔首付低但期权密度高。',
-        '罗氏 Brain Shuttle 与 Denali ATV 双平台进入临床 2/3 期读出密集期，AI 预测首个 POC 成功将触发 3–5 笔跟随交易，复制 ADC 在 2020 年的「平台验证→扫货」路径。',
+        '罗氏 Brain Shuttle 与 Denali ATV 双平台进入临床 2/3 期读出密集期，AI 预测首个 POC（概念验证）成功将触发 3–5 笔跟随交易，复制 ADC 在 2020 年的「平台验证→扫货」路径。',
         '当前估值尚未计入罕见病酶替代疗法外溢，属低拥挤、高期权价值的「预期差」区域。'
       ],
       anomalies: [
@@ -9829,7 +9560,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     },
     {
       dim: '中国崛起',
-      cur: '中国资产占 MNC 引进 40%；2025 license-out 总额 $135.7B 全球第一，占全球交易额 52%',
+      cur: '中国资产占 MNC 引进 40%；2025 license-out 总额 $135.7B 全球第一，占全球 BD 金额 49%',
       curSrc: 'IQVIA · 医药魔方 NextPharma',
       live: '含中国中心试验占比 17.8% → 25.1%（2021→2025），临床 1 期占比 32.5%',
       liveSrc: 'CT.gov 实时 · 下篇「地域崛起」',
@@ -10141,7 +9872,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="ci-gloss">统一按公告口径拆分——仅 SSGJ-707 有里程碑细分的公开拆分，其余按「首付 / 里程碑」两段呈现，不为整齐而编造细分。首付占比越低，风险越往后端移（期权式锁定）</div>'
       + dealStructRows()
       + '<div class="ci-gloss" style="margin:8px 2px 0">如何与中位趋势并读：4 笔均为当年规模最大的头部交易，其中 3 笔首付占比低于当年中位；辉瑞 SSGJ-707 为竞价溢价的极端值。中位交易风险后移与头部资产首付溢价同时为真——K 型分化正是 2025 年的市场特征。</div>'
-      + '<p class="lp-note">「摘青苗」结构：2025 年临床前至 I 期资产占中国出海交易 68–70%；NewCo 模式累计 14 起（2025H1 5 起）——买方用期权式结构锁定早期资产。'
+      + '<p class="lp-note">「摘青苗」结构：2025 年临床前至 I 期资产占中国出海交易 68–70%；NewCo（为交易新设海外公司、以股权 + 里程碑锁定资产）模式累计 14 起（2025H1 5 起）——买方用期权式结构锁定早期资产。'
       + '中国出海口径首付占比中位数同样逐年走低（约 14% → 6.5%，公开盘点 62 笔可比交易、中位首付 $1.6 亿），下行斜率较全球口径更陡。</p></section>'
 
       + stagePanel()
@@ -10613,7 +10344,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<span class="da-badge">交易解剖室 · DEAL ANATOMY</span>'
       + '<p class="da-intro"><strong>数字只回答「多少钱」，解剖回答「为什么值这个钱」。</strong>'
       + '以下 ' + deals.length + ' 笔代表性交易，每笔按三层拆解公开市场逻辑——'
-      + '<strong>买方动因</strong>（战略缺口与 LOE 压力）、<strong>市场解读</strong>（定价信号与结构含义）、<strong>传导与验证</strong>（对同赛道资产的定价外溢与事后兑现）。点击任意一行展开。</p>'
+      + '<strong>买方动因</strong>（战略缺口与 LOE 压力，LOE = 专利到期导致的收入悬崖）、<strong>市场解读</strong>（定价信号与结构含义）、<strong>传导与验证</strong>（对同赛道资产的定价外溢与事后兑现）。点击任意一行展开。</p>'
       + '</div></div>'
       + group(cn, '中国资产 License-out')
       + group(ma, '全球 M&A')
@@ -10813,10 +10544,16 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     var el = $('lpProgress');
     if (el) el.textContent = '实时拉取公共 API · ' + Math.min(stats.done, stats.total) + '/' + stats.total + ' 查询';
   }
-  function finishAll() {
+  function finishAll(failures) {
     var el = $('lpProgress');
     var now = new Date();
     var hh = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+    if (failures > 0) {
+      if (el) el.innerHTML = '⚠ ' + failures + ' 组查询拉取失败（网络或限流）· 可点对应面板「重试」 · ' + hh;
+      var st0 = $('viewStatus');
+      if (st0) st0.innerHTML = '<span class="lp-badge" style="opacity:.7">部分降级</span><span class="freshness">部分实时数据拉取失败 · ' + hh + '</span>';
+      return;
+    }
     if (el) el.innerHTML = '<span class="lp-badge"><span class="lp-dot"></span>LIVE</span>&nbsp;实时拉取完成 · ' + hh + ' · 缓存 12h';
     var st = $('viewStatus');
     if (st) st.innerHTML = '<span class="lp-badge"><span class="lp-dot"></span>LIVE 数据</span><span class="freshness">实时拉取于 ' + hh + ' · ClinicalTrials.gov + openFDA</span>';
@@ -10933,6 +10670,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     ]).then(function (pair) {
       var gl = pair[0];
       var fda = pair[1].map(function (r) { return r.ok ? r.v : null; });
+      if (gl.every(function (v) { return v == null; }) && fda.every(function (v) { return v == null; })) throw new Error('macro: all queries failed');
       store.macro = { global: gl, fda: fda };
       var el = $('lpChartMacro');
       if (el) barLineChart(el,
@@ -10962,6 +10700,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       var series = MODALITIES.map(function (m, mi) {
         return { label: m.label, color: m.color, values: rs.slice(mi * 6, mi * 6 + 6).map(function (r) { return r.ok ? r.v : null; }) };
       });
+      if (series.every(function (sr) { return sr.values.every(function (v) { return v == null; }); })) throw new Error('modality: all queries failed');
       store.modality = series;
       var el = $('lpChartModality');
       if (el) lineChart(el, series, { h: 260, unitL: '试验启动（项/年）' });
@@ -10993,6 +10732,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       var cn = rs.slice(0, 6).map(function (r) { return r.ok ? r.v : null; });
       var cn1 = rs.slice(6, 12).map(function (r) { return r.ok ? r.v : null; });
       var gl1 = rs.slice(12).map(function (r) { return r.ok ? r.v : null; });
+      if (cn.every(function (v) { return v == null; }) && cn1.every(function (v) { return v == null; }) && gl1.every(function (v) { return v == null; })) throw new Error('china: all queries failed');
       store.china = { cn: cn, cn1: cn1, gl1: gl1 };
       var share = cn.map(function (v, i) {
         var g = gl[i];
@@ -11025,12 +10765,13 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       tasks.push(function () { return fetchJson(ctUrl(p0 + ' AND (' + t.term + ') AND AREA[LeadSponsorClass]INDUSTRY')).then(function (j) { return j.totalCount; }); });
     });
     return pool(tasks, 8, function () { tick(); }).then(function (rs) {
+      if (rs.every(function (r) { return !r.ok; })) throw new Error('targets: all queries failed');
       var rows = TARGETS.map(function (t, i) {
         var cur = rs[i * 2].ok ? rs[i * 2].v : 0;
         var prev = rs[i * 2 + 1].ok ? rs[i * 2 + 1].v : 0;
         return { label: t.label, cur: cur, prev: prev, delta: prev ? (cur / prev - 1) * 100 : null };
       }).sort(function (a, b) { return b.cur - a.cur; });
-      var max = rows[0] ? rows[0].cur : 1;
+      var max = rows[0] && rows[0].cur > 0 ? rows[0].cur : 1;
       var el = $('lpTargets');
       if (el) {
         el.innerHTML = rows.map(function (r) {
@@ -11240,20 +10981,27 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
 
   function runAll() {
     var jobs = [
-      ['lpChartMacro', loadMacro],
-      ['lpChartModality', loadModality],
-      ['lpChartChina', loadChina],
-      ['lpTargets', loadTargets],
-      ['lpSponsors', loadSponsors],
-      ['lpWatchlist', loadWatchlist],
-      [null, loadFda],
+      ['lpChartMacro', loadMacro, ['lpKpiGlobal']],
+      ['lpChartModality', loadModality, ['lpKpiAdc']],
+      ['lpChartChina', loadChina, ['lpKpiChina']],
+      ['lpTargets', loadTargets, []],
+      ['lpSponsors', loadSponsors, []],
+      ['lpWatchlist', loadWatchlist, []],
+      [null, loadFda, ['lpKpiFda']],
     ];
-    var pending = jobs.length;
+    var pending = jobs.length, failures = 0;
     jobs.forEach(function (pair) {
-      var elId = pair[0], fn = pair[1];
+      var elId = pair[0], fn = pair[1], kpis = pair[2] || [];
       fn()
-        .catch(function () { if (elId) panelError(elId, fn); })
-        .finally(function () { if (--pending === 0) finishAll(); });
+        .catch(function () {
+          failures++;
+          if (elId) panelError(elId, fn);
+          kpis.forEach(function (kId) {
+            var k = $(kId);
+            if (k) { k.querySelector('.v').textContent = '—'; k.querySelector('.d').textContent = '拉取失败 · 可点面板重试'; }
+          });
+        })
+        .finally(function () { if (--pending === 0) finishAll(failures); });
     });
   }
 
