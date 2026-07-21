@@ -152,6 +152,8 @@ assert(!html.includes('L3 · 宏观引用层'), 'internal L3 taxonomy is still r
 assert(!html.includes('13 个外部基准 · 78 笔具名样本'), 'research-process counts remain in the reader-facing status bar');
 assert(!html.includes('r3-hero-metrics'), 'duplicate hero metrics are still rendered');
 assert(!html.includes('r3-thesis-band'), 'duplicate three-column thesis band is still rendered');
+assert(html.includes('市场回暖，但并非所有资产受益'), 'compact market thesis is missing');
+assert(!html.includes('市场回暖，但回暖的不是'), 'legacy oversized hero thesis is still reader-facing');
 assert(!html.includes('r3-benchmark-list'), 'legacy benchmark card grid is still rendered');
 assert(!html.includes('r3-findings-grid'), 'duplicate finding card grid is still rendered');
 assert(!html.includes('ci-takeaways'), 'second 60-second conclusion block is still rendered');
@@ -191,7 +193,7 @@ assert(!html.includes('证据 → 五格推理'), 'standalone thesis demo entry 
   '量的熊市',
   '生存方式',
 ].forEach(token => assert(!html.includes(token), `institutional tone regression: ${token}`));
-assert(html.includes('./research.css?v=3.2'), 'research stylesheet cache key was not updated');
+assert(html.includes('./research.css?v=3.3'), 'research stylesheet cache key was not updated');
 assert(!css.includes('.r3-benchmark-item'), 'legacy benchmark card styles are still present');
 assert(!css.includes('.r3-finding-card'), 'legacy finding card styles are still present');
 assert(!html.includes('<span class="ci-flag">研报汇编 · CURATED</span>'), 'curated-report methodology note is still reader-facing');
