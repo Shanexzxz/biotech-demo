@@ -70,6 +70,17 @@ const benchmarks = parseCsv(fs.readFileSync(files.benchmarks, 'utf8'));
 const findings = parseCsv(fs.readFileSync(files.findings, 'utf8'));
 const scenarios = parseCsv(fs.readFileSync(files.scenarios, 'utf8'));
 
+const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)]
+  .map(match => match[1])
+  .filter(source => source.trim());
+inlineScripts.forEach((source, index) => {
+  try {
+    new vm.Script(source, { filename: `index.inline.${index + 1}.js` });
+  } catch (error) {
+    throw new Error(`index.html inline script ${index + 1} has invalid JavaScript: ${error.message}`);
+  }
+});
+
 assert(benchmarks.length === 13, `expected 13 research benchmarks, got ${benchmarks.length}`);
 assert(findings.length === 4, `expected 4 research findings, got ${findings.length}`);
 assert(scenarios.length === 3, `expected 3 research scenarios, got ${scenarios.length}`);
@@ -100,7 +111,7 @@ findings.forEach((row, index) => assert(normalizeSentence(mirrored.findings[inde
   'function renderIntelligenceOutlook()',
   './research-data.js',
   './research.css',
-  'DEAL EVIDENCE · 逐笔交易下钻',
+  'DEAL EVIDENCE · 交易证据',
   '交易情报',
   'r3-structure-board',
   'r3-risk-bar',
@@ -152,6 +163,31 @@ assert(html.includes('美欧联盟投资额中的中国份额'), 'origin shift v
 assert(html.includes('<strong>市场结论</strong><p>市场回暖表现为总额上升与交易笔数下降并存'), 'market synthesis is missing');
 assert(!html.includes('合伙人判断'), 'role-based AI-style synthesis label is still reader-facing');
 assert(!html.includes('钱回来了'), 'colloquial AI-style synthesis copy is still reader-facing');
+[
+  '<b>这意味着</b>',
+  'AI 洞察引擎',
+  'AI 结构化 Thesis',
+  '谁在扫货',
+  '高频扫货型',
+  '孤注一掷型',
+  '「赛道税」',
+  '「摘青苗」',
+  '四件外衣',
+  '钱已投票',
+  '管线在投票',
+  '口径诚实边界',
+  '交易解剖室',
+  'AI 摘要',
+  '潜在买方匹配',
+  '>置信度<',
+  '此刻正在发生的研发投票',
+  '申办方战力榜',
+  '真金白银大买手',
+  '不硬编一个像样的答案',
+  '60 秒结论',
+  '量的熊市',
+  '生存方式',
+].forEach(token => assert(!html.includes(token), `institutional tone regression: ${token}`));
 assert(html.includes('./research.css?v=3.2'), 'research stylesheet cache key was not updated');
 assert(!css.includes('.r3-benchmark-item'), 'legacy benchmark card styles are still present');
 assert(!css.includes('.r3-finding-card'), 'legacy finding card styles are still present');
@@ -177,6 +213,7 @@ console.log(JSON.stringify({
   benchmarks: benchmarks.length,
   findings: findings.length,
   scenarios: scenarios.length,
+  inlineScripts: inlineScripts.length,
   reportBytes: fs.statSync(files.report).size,
   indexBytes: fs.statSync(files.html).size,
 }, null, 2));
