@@ -149,7 +149,9 @@ assert(!html.includes('<div class="ci-kpis">'), 'duplicate six-KPI grid is still
 assert(!intelligenceLeadBlock.includes('12.2%'), 'TSR benchmark is still duplicated above the player section');
 assert(html.includes('签约首付占 6%，非首付部分占 94%'), 'risk allocation visual is missing its accessible summary');
 assert(html.includes('美欧联盟投资额中的中国份额'), 'origin shift visual is missing its denominator label');
-assert(html.includes('合伙人判断'), 'partner-level synthesis is missing');
+assert(html.includes('<strong>市场结论</strong><p>市场回暖表现为总额上升与交易笔数下降并存'), 'market synthesis is missing');
+assert(!html.includes('合伙人判断'), 'role-based AI-style synthesis label is still reader-facing');
+assert(!html.includes('钱回来了'), 'colloquial AI-style synthesis copy is still reader-facing');
 assert(html.includes('./research.css?v=3.2'), 'research stylesheet cache key was not updated');
 assert(!css.includes('.r3-benchmark-item'), 'legacy benchmark card styles are still present');
 assert(!css.includes('.r3-finding-card'), 'legacy finding card styles are still present');
