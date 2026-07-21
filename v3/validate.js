@@ -163,6 +163,9 @@ assert(html.includes('美欧联盟投资额中的中国份额'), 'origin shift v
 assert(html.includes('<strong>市场结论</strong><p>市场回暖表现为总额上升与交易笔数下降并存'), 'market synthesis is missing');
 assert(!html.includes('合伙人判断'), 'role-based AI-style synthesis label is still reader-facing');
 assert(!html.includes('钱回来了'), 'colloquial AI-style synthesis copy is still reader-facing');
+assert(!html.includes('ConvergenceThesisDemo'), 'standalone thesis demo module is still wired into V3');
+assert(!html.includes('结构化投资论点 · 示例'), 'standalone thesis demo copy is still reader-facing');
+assert(!html.includes('证据 → 五格推理'), 'standalone thesis demo entry is still present in the data workflow');
 [
   '<b>这意味着</b>',
   'AI 洞察引擎',

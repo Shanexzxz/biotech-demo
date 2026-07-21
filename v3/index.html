@@ -7203,19 +7203,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     </article>`).join('')}</div>`;
   }
 
-  function renderThesisComparables(result) {
-    if (!result.comparable_ids.length) return '';
-    const rows = result.comparable_ids.map(id => {
-      const deal = T.deals.find(item => item.deal_id === id);
-      const econ = economics.get(id);
-      const type = result.direct_comparable_ids.includes(id) ? 'Direct' : 'Adjacent';
-      return `<tr><td><span class="tag ${type === 'Direct' ? 'tag-verified' : 'tag-partial'}">${type}</span></td><td><strong>${C.escapeHtml(deal.asset_name)}</strong><span>${C.escapeHtml(deal.target)}</span></td><td>${C.escapeHtml(deal.buyer_or_partner)}</td><td>${C.escapeHtml(deal.stage_at_announcement)}</td><td class="numeric">${C.formatMoney(econ && econ.has_upfront_disclosure ? econ.upfront : null)}</td><td><button type="button" data-open-evidence="${id}">证据</button></td></tr>`;
-    }).join('');
-    return `<section class="thesis-comparables"><header><div><span class="eyebrow">可比证据集 · COMPARABLE EVIDENCE SET</span><h2>可比交易证据集</h2></div><span>${result.direct_comparable_ids.length} ${glossary('Direct Comp', 'Direct')} · ${result.adjacent_comparable_ids.length} Adjacent</span></header>
-      <div class="compact-table-wrap"><table class="compact-table"><thead><tr><th>Comp</th><th>Asset / Target</th><th>Buyer</th><th>Stage</th><th>Upfront</th><th>Lineage</th></tr></thead><tbody>${rows}</tbody></table></div>
-    </section>`;
-  }
-
   function renderActiveFilterChips() {
     const labels = {
       year: '时间', type: '类型', stage: '阶段', origin: '来源', modality: '模态',
@@ -7933,7 +7920,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
           <header><span class="stage-no">04</span><div><h3>业务逻辑数据库 · 服务最终分析</h3><span>沉淀为可复用的决策数据资产</span></div></header>
           <div class="stage-body">
             <article class="pipe-block serve-block" data-goto-view="landscape"><strong>自建管线分析（四维视图）</strong><p>买方活跃度 · 交易结构 · 模态靶点 · 资产地域</p></article>
-            <article class="pipe-block serve-block" data-goto-view="live"><strong>结构化投资论点示例</strong><p>证据 → 五格推理 → 可比交易（见交易情报 ⑤ 启示）</p></article>
             <article class="pipe-block serve-block" data-goto-view="foundation"><strong>数据模型与审计</strong><p>${glossary('ontology')} / ${glossary('reconciliation')} / 核对责任链</p></article>
           </div>
         </section>
@@ -8357,33 +8343,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       </details>
       <p class="sr-only" id="app-live-region" aria-live="polite">已进入来源与方法。</p>`;
   }
-
-  // 结构化投资论点示例（嵌入交易情报 ⑤ 启示区；数据 = 自建管线证据集，只读呈现）
-  window.ConvergenceThesisDemo = {
-    render() {
-      const result = M.buildThesisWorkspace('BNT327', T);
-      const blocked = result.status === 'BLOCKED_NO_VERIFIED_COHORT';
-      return `<section class="lp-panel lp-wide ci-thesis-demo" aria-label="结构化投资论点示例">
-        <div class="lp-panel-head">
-          <span class="lp-kicker">结构化投资论点 · 示例<span class="lp-badge">只读示例 · 主题 BNT327（PD-1×VEGF）</span></span>
-          <h2>从证据到投资论点的结构化推导</h2>
-        </div>
-        <p class="ci-gloss">示例基于自建管线证据集，将已验证事实、投资解释、反方假设、未知项和建议行动分列，并附可比交易证据；缺少可验证可比样本时不生成结论。</p>
-        <div class="thesis-hero ${blocked ? 'is-blocked' : ''}" style="margin-top:10px">
-          <div><span class="status-label ${blocked ? 'status-blocked' : ''}">${result.status}</span><h2>${C.escapeHtml(result.title)}</h2><p>${C.escapeHtml(result.decision_thesis || '')}</p></div>
-          <div class="thesis-scope">${scopeBadge()}<span>${result.release_level}</span></div>
-        </div>
-        <section class="reasoning-grid" aria-label="结构化投资论点五格">
-          <article class="reasoning-card fact"><span>Fact / 已验证事实</span><p>${C.escapeHtml(result.fact)}</p></article>
-          <article class="reasoning-card inference"><span>Inference / 投资解释</span><p>${C.escapeHtml(result.inference)}</p></article>
-          <article class="reasoning-card counter"><span>Counter-thesis / 反方假设</span><p>${C.escapeHtml(result.counter_thesis)}</p></article>
-          <article class="reasoning-card unknown"><span>Unknown / 未知项</span><ul>${result.unknowns.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ul></article>
-          <article class="reasoning-card action"><span>Action / 建议行动</span><ol>${result.actions.map(item => `<li>${C.escapeHtml(item)}</li>`).join('')}</ol></article>
-        </section>
-        ${renderThesisComparables(result)}
-      </section>`;
-    }
-  };
 
   function renderBody() {
     if (state.view === 'live') {
@@ -10160,9 +10119,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="lp-panel lp-wide">' + panelHead('专题赛道分析', '代表性交易汇编 · 结构化分析', '五大赛道：交易特征、异常信号与潜在买方')
       + '<div class="ci-gloss" style="margin:0 2px 8px">基于本页代表性交易汇编，对五个重点赛道的交易密度、条款变化与买方适配进行结构化比较。</div>'
       + aiEngine() + '</section>'
-
-      // 结构化投资论点示例（由主脚本 window.ConvergenceThesisDemo 渲染，数据 = 自建管线证据集）
-      + (window.ConvergenceThesisDemo ? window.ConvergenceThesisDemo.render() : '')
 
       // 双层对读
       + '<section class="lp-panel lp-wide">' + panelHead('双层对读', 'Evidence Comparison', '研报判断与实时研发信号放在一起看')
