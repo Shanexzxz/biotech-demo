@@ -8946,6 +8946,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-share-val{font-size:11.5px;color:var(--muted);white-space:nowrap;}'
     + '.ci-svg{width:100%;height:auto;display:block;}'
     + '.ci-ax{font-size:10px;fill:var(--muted);}'
+    + '.ci-sowhat{grid-column:1/-1;display:flex;gap:10px;align-items:baseline;margin:6px 0 2px;padding:10px 14px;border-left:3px solid var(--amber);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--amber) 8%,var(--surface));font-size:12.5px;line-height:1.65;color:var(--text-strong);}'
+    + '.ci-sowhat>b{flex:none;color:var(--amber);font-size:11px;font-weight:700;letter-spacing:.06em;}'
+    + '.ci-sowhat:where([data-theme="dark"] *){background:rgba(251,191,36,.09);}'
+    + '.ci-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;white-space:nowrap;}'
+    + '.ci-status i{width:8px;height:8px;border-radius:50%;flex:none;}'
     + '@media(max-width:760px){.ci-share-row{grid-template-columns:70px 1fr auto;gap:6px;}.ci-share-label{font-size:11px;}.ci-share-val{font-size:10.5px;}}'
     + '.ci-kpi{padding:13px 16px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface);}'
     + '.ci-kpi .k{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;align-items:baseline;}'
@@ -9500,18 +9505,96 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   // C7 靶点热度表
+  /* ---------- 交易节奏：98 笔按季度聚合（笔数堆叠柱 + 总额线） ---------- */
+  function chartTempo() {
+    var MW = window.ConvergenceMarketWide;
+    var qs = {};
+    MW.deals.forEach(function (d) {
+      var y = +d.date.slice(0, 4), mo = +d.date.slice(5, 7);
+      var key = y + 'Q' + (Math.floor((mo - 1) / 3) + 1);
+      if (!qs[key]) qs[key] = { lic: 0, ma: 0, total: 0 };
+      if (d.type === 'M_AND_A') qs[key].ma++; else qs[key].lic++;
+      qs[key].total += d.total;
+    });
+    var keys = Object.keys(qs).sort();
+    var W = 680, H = 210, PL = 30, PR = 44, PT = 24, PB = 24;
+    var cw = (W - PL - PR) / keys.length;
+    var maxN = 1, maxT = 1;
+    keys.forEach(function (k) { var q = qs[k]; maxN = Math.max(maxN, q.lic + q.ma); maxT = Math.max(maxT, q.total); });
+    function yN(n) { return H - PB - n / maxN * (H - PT - PB); }
+    function yT(t) { return H - PB - t / maxT * (H - PT - PB); }
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" class="ci-svg" style="width:100%;height:auto;display:block" role="img" aria-label="季度交易节奏">';
+    [0, 30, 60].forEach(function (t) {
+      s += '<line x1="' + PL + '" y1="' + yT(t) + '" x2="' + (W - PR) + '" y2="' + yT(t) + '" style="' + GRID + '"/>';
+      s += '<text x="' + (W - PR + 6) + '" y="' + (yT(t) + 3.5) + '" style="' + TICK + '">$' + t + 'B</text>';
+    });
+    var pts = [];
+    keys.forEach(function (k, i) {
+      var q = qs[k];
+      var x = PL + i * cw, bx = x + cw * 0.16, bw = cw * 0.68;
+      var yTop = yN(q.lic + q.ma), yLic = yN(q.lic);
+      s += '<rect x="' + bx.toFixed(1) + '" y="' + yLic.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(0, H - PB - yLic).toFixed(1) + '" fill="#2DD4BF" rx="1.5"><title>' + k + '：License ' + q.lic + ' 笔 · M&A ' + q.ma + ' 笔 · 总额 $' + q.total.toFixed(1) + 'B</title></rect>';
+      if (q.ma) s += '<rect x="' + bx.toFixed(1) + '" y="' + yTop.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(0, yLic - yTop).toFixed(1) + '" fill="#60A5FA" rx="1.5"/>';
+      pts.push((x + cw / 2).toFixed(1) + ',' + yT(q.total).toFixed(1));
+      if (k.slice(4) === 'Q1') {
+        s += '<text x="' + (x + cw / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" class="ci-ax">' + k.slice(0, 4) + '</text>';
+      } else if (i === keys.length - 1) {
+        s += '<text x="' + (x + cw / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" class="ci-ax">' + k.slice(2) + '*</text>';
+      }
+    });
+    s += '<polyline points="' + pts.join(' ') + '" fill="none" stroke="var(--amber)" stroke-width="2"/>';
+    pts.forEach(function (p) { var xy = p.split(','); s += '<circle cx="' + xy[0] + '" cy="' + xy[1] + '" r="2.2" fill="var(--amber)"/>'; });
+    // 标注 2025Q4–2026Q1 高位平台
+    var i25 = keys.indexOf('2025Q4');
+    if (i25 >= 0) {
+      var xa = PL + i25 * cw + cw / 2;
+      s += '<text x="' + Math.min(xa, W - PR - 120).toFixed(1) + '" y="14" style="font-size:10.5px;font-weight:700;fill:var(--amber)">连续两季 $56B+</text>';
+    }
+    return s + '</svg>';
+  }
+
+  /* ---------- 潜在买家扫描：LOE 悬崖 × 在华动作（定性汇编） ---------- */
+  var BUYER_SCAN = [
+    { b: '默沙东', gap: 'K 药 2028 LOE——全球最大单品悬崖（年销约 $29B）', acts: '科伦博泰 ADC 系列（2022 起多笔）、礼新 LM-299（2024）', st: '连续出手', c: '#2DD4BF' },
+    { b: 'BMS', gap: 'O 药 / Revlimid / Eliquis 2026–28 连环 LOE', acts: '百利天恒 BL-B01D1 $8.4B（2023）', st: '已重仓', c: '#2DD4BF' },
+    { b: '辉瑞', gap: 'Seagen 整合 + 依沃西类对自家肿瘤线的冲击', acts: '三生 SSGJ-707 $6.05B（2025）', st: '已重仓', c: '#2DD4BF' },
+    { b: 'GSK', gap: '呼吸 / HIV 管线换代', acts: '恒瑞 12 项目批量 $12.5B（2025）、翰森（2023）', st: '已重仓', c: '#2DD4BF' },
+    { b: 'AZ', gap: '肿瘤 + 代谢双线补强', acts: '石药、诚益 ECC5004、收购亘喜生物', st: '连续出手', c: '#60A5FA' },
+    { b: '诺华', gap: '心肾 + 小核酸平台布局', acts: '舶望 siRNA $4.2B（2024）、百济替雷利珠（2021，后退回）', st: '连续出手', c: '#60A5FA' },
+    { b: '艾伯维', gap: 'Humira 后时代自研换代中', acts: '先声 SIM0500 三抗（2025）', st: '初步出手', c: '#FBBF24' },
+    { b: '赛诺菲', gap: '免疫炎症基本盘加固', acts: '中小额多笔（信达 2022 等）', st: '初步出手', c: '#FBBF24' },
+    { b: '诺和诺德', gap: '代谢领域防御（对礼来）', acts: '联邦制药 UBT251 $2B（2025）', st: '初步出手', c: '#FBBF24' },
+    { b: '罗氏', gap: '肿瘤基本盘老化、诊断反哺慢', acts: '未见大额样本内动作', st: '观望', c: '#94A3B8' },
+    { b: '礼来', gap: 'GLP-1 自研强势、暂无悬崖', acts: '未见大额中国引进', st: '观望', c: '#94A3B8' },
+    { b: '强生', gap: '自研 + 美国并购为主', acts: '未见大额样本内动作', st: '观望', c: '#94A3B8' }
+  ];
+  function buyerScan() {
+    var rows = BUYER_SCAN.map(function (r) {
+      return '<tr><td><strong>' + esc(r.b) + '</strong></td>'
+        + '<td style="color:var(--muted);font-size:11px">' + esc(r.gap) + '</td>'
+        + '<td style="color:var(--muted);font-size:11px">' + esc(r.acts) + '</td>'
+        + '<td><span class="ci-status"><i style="background:' + r.c + '"></i>' + r.st + '</span></td></tr>';
+    }).join('');
+    return '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
+      + '<th>买方</th><th>LOE / 战略缺口</th><th>2021–26H1 在华动作（代表交易）</th><th>状态</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
   function targetsTable() {
     var rows = TARGETS.map(function (t) {
       var color = t.heat >= 80 ? 'var(--amber)' : 'var(--cyan)';
+      var crowd = t.d >= 12 ? ['拥挤', 'var(--amber)'] : t.d >= 6 ? ['升温', 'var(--cyan)'] : ['早期', 'var(--muted)'];
       return '<tr><td><strong>' + esc(t.t) + '</strong></td><td style="color:var(--muted)">' + esc(t.m) + '</td>'
-        + '<td class="num">' + t.d + '</td><td class="num">$' + t.v + 'B</td>'
+        + '<td class="num">' + t.d + '</td>'
+        + '<td style="text-align:center"><span class="ci-status"><i style="background:' + crowd[1] + '"></i>' + crowd[0] + '</span></td>'
+        + '<td class="num">$' + t.v + 'B</td>'
         + '<td style="min-width:120px"><div class="lp-track"><div class="lp-fill" style="width:' + t.heat + '%;background:' + color + '"></div></div></td>'
         + '<td class="num" style="color:' + color + ';font-weight:700">' + t.heat + '</td>'
         + '<td style="text-align:center;color:' + (t.up ? 'var(--green)' : 'var(--muted)') + ';font-weight:700">' + (t.up ? '↑' : '→') + '</td>'
         + '<td style="color:var(--muted);font-size:11px">' + esc(t.sig) + '</td></tr>';
     }).join('');
     return '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
-      + '<th>靶点赛道</th><th>模态</th><th style="text-align:right">交易数</th><th style="text-align:right">总价值</th>'
+      + '<th>靶点赛道</th><th>模态</th><th style="text-align:right">交易数</th><th style="text-align:center">拥挤度</th><th style="text-align:right">总价值</th>'
       + '<th>热度指数</th><th></th><th style="text-align:center">趋势</th><th>关键信号</th>'
       + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
   }
@@ -9805,7 +9888,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="ci-banner" role="note">'
       + '<span class="ci-flag">研报汇编 · CURATED</span>'
       + '<p><strong>口径诚实边界：</strong>宏观锚点（总额、占比、TSR、首付中位数区间）校准自上述公开来源；标的级明细为演示用途的合成数据。'
-      + '本层为周期性研报快照（最新至 2026H1），不实时刷新——实时性由下篇公共 API 层负责。</p></section>'
+      + '本层为周期性研报快照（最新至 2026H1），不实时刷新——实时性由下篇公共 API 层负责。'
+      + '<br><strong>覆盖度自评：</strong>98 笔为 2021–2026H1 代表性交易汇编（头部规模 + 结构代表性优先），覆盖中国出海大额交易的主要样本，但非全量库（2025 全年中国 License-out 全市场约 157 笔）；所有结论按可比口径陈述，不外推到未收录样本。</p></section>'
 
       + '<section class="ci-takeaways" aria-label="给决策者的 60 秒结论">'
       + '<div class="ci-takeaways-head"><span class="ci-takeaways-badge">60 秒结论 · 给决策者</span><span class="ci-takeaways-sub">细节在下方五个决策区，每区独立标注来源、可单独核验</span></div>'
@@ -9844,6 +9928,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<p class="lp-note">2026H1▲ 为半年数据。交易数量连续第 4 年收缩，平均单笔价值五年近翻倍——买方策略从「铺量」转向「重仓确定性」。'
       + '另据医药魔方：2026Q1 中国出海交易 $59.6B，单季已超 2024 全年。</p></section>'
 
+      + '<section class="lp-panel lp-wide">' + panelHead('交易节奏', '98 笔汇编按季度聚合', '2023Q4 单点爆发 → 2025 起持续高位平台')
+      + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>License（笔数）</span><span><i style="background:#60A5FA"></i>M&A（笔数）</span><span><i style="background:var(--amber)"></i>季度总额（右轴）</span></div>'
+      + '<div style="max-width:880px;margin:0 auto">' + chartTempo() + '</div>'
+      + '<p class="lp-note">2023Q4 为百利天恒 × BMS 等集中签约的单点爆发；2025 起进入持续高位平台期——连续 5 个季度 ≥5 笔，2025Q4–2026Q1 连续两季总额 $56B+ 创样本纪录。节奏本身即信号：买方已从「择机捡漏」转为「排队锁定」。末季标 * 为不完整季度。</p></section>'
+      + '<div class="ci-sowhat"><b>这意味着</b><span>量的熊市 + 价的牛市同时成立——卖方窗口比账面数字更窄，确定性资产的议价权在卖方手里；观望的成本是一年比一年贵的入场价。</span></div>'
       + '<div class="ci-zone"><span class="ci-zone-tag">② 热点 · 钱往哪流</span><span class="ci-zone-q">钱在往哪个领域、模态、靶点流——你的组合在主航道上吗</span></div>'
       // C5 模态斜坡 + C2 中国占比
       + '<section class="lp-panel">' + panelHead('模态流向', 'DealForma 合成', '交易价值份额：2021 → 2025')
@@ -9859,8 +9948,9 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       // C7 靶点热度
       + '<section class="lp-panel lp-wide">' + panelHead('靶点热度', 'DealForma · 公司公告', '八大竞价赛道：热度、趋势与关键信号')
       + targetsTable()
-      + '<p class="lp-note">琥珀色 = 热度 ≥80 的白热化赛道。热度指数综合交易密度、首付溢价与买方竞价家数（汇编层测算）。</p></section>'
+      + '<p class="lp-note">琥珀色 = 热度 ≥80 的白热化赛道。热度指数综合交易密度、首付溢价与买方竞价家数（汇编层测算）；拥挤度按样本内同靶点交易笔数分档（≥12 拥挤 / 6–11 升温 / ≤5 早期）。</p></section>'
 
+      + '<div class="ci-sowhat"><b>这意味着</b><span>主航道高度收敛——「肿瘤 × ADC/双抗 × 临床前至 1 期」是拥挤区、也是流动性最好的退出区；冷门领域资产想成交，需要自带「下一个共识」的叙事能力。</span></div>'
       + '<div class="ci-zone"><span class="ci-zone-tag">③ 定价 · 交易怎么算钱</span><span class="ci-zone-q">首付、结构、阶段——谈判桌上的定价锚</span></div>'
       // C4 交易结构
       + '<section class="lp-panel lp-wide">' + panelHead('交易结构', 'William Blair · 公司公告', '风险后移：首付占比腰斩，里程碑成为定价主角')
@@ -9880,6 +9970,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       // 代表性交易汇编（自原「市场全景」页迁入）
       + topDealsPanel()
 
+      + '<div class="ci-sowhat"><b>这意味着</b><span>谈判桌上的锚已经变了——首付换确定性、里程碑换总额；卖方想要更高首付，就得拿出「多家竞得起」的头部资产，否则按期权价成交。</span></div>'
       + '<div class="ci-zone"><span class="ci-zone-tag">④ 玩家 · 谁在买</span><span class="ci-zone-q">谁在扫货、谁在跟我抢资产</span></div>'
       // C3 买方象限
       + '<section class="lp-panel lp-wide">' + panelHead('买方画像', 'DealForma · 公司公告', '四象限：谁在买、怎么买——气泡大小 = 平均首付占比')
@@ -9896,6 +9987,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<p class="lp-note">悬停或点按流带可查看各走廊的分项金额。'
       + '另据 Clarivate：China-out 占全球 out-licensing 比例从 2020 年约 5% 升至 2025H1 约 32%；中国 → 美国为最大走廊。</p></section>'
 
+      + '<section class="lp-panel lp-wide">' + panelHead('潜在买家扫描', 'LOE 悬崖 × 在华动作', '谁还没出手？——未来 12–24 个月的新增需求方')
+      + buyerScan()
+      + '<p class="lp-note">供给端看卖方管线、需求端看买方悬崖：悬崖最深且尚未重仓的买家（罗氏、礼来、强生），是未来 12–24 个月最可能的新增需求方。状态为基于本页 98 笔汇编 + 公开报道的定性判断（汇编层人工归类，非实时扫描）。</p></section>'
+      + '<div class="ci-sowhat"><b>这意味着</b><span>程序化买家（默沙东、AZ、诺华）竞价纪律最强、复购概率最高，是卖方首选接触对象；观望中的 LOE 重压买家则是下一波行情的增量——跟踪他们的出手信号比跟踪卖方管线更有前瞻性。</span></div>'
       + '<div class="ci-zone"><span class="ci-zone-tag">⑤ 启示 · 市场含义</span><span class="ci-zone-q">98 笔汇编背后的公开市场逻辑与启示</span></div>'
       // 交易解剖室（自原「市场全景」页迁入，38 笔逐笔公开市场逻辑）
       + '</div>'
@@ -9916,6 +10011,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<p class="lp-note">互证方法：同一维度下，汇编层给「交易端结果」，实时层给「研发端先行指标」；方向一致则结论加强，背离则标注预警。实时层数值快照 2026-07-17，最新值见下篇对应面板。</p></section>'
       + '</div>'
 
+      + '<div class="ci-sowhat"><b>这意味着</b><span>中国资产的定价权正在从「成本优势」转向「临床数据话语权」——能讲清全球 III 期故事的资产拿溢价，其余按期权价成交；对投资机构的含义是：押注点应放在数据读出前夜，而非交易官宣之后。</span></div>'
       + '<div class="lp-foot"><strong>汇编层来源清单：</strong>Bain M&amp;A Report 2026（TSR 对比）· IQVIA Biopharma M&amp;A Outlook 2026（中国资产占比 40%、平均单笔价值）· DealForma（交易结构/模态/地域口径）· '
       + 'William Blair Q1 2025 Review（首付中位数 $47M 与 IQR 区间）· 医药魔方 NextPharma（2025 中国 License-out $135.7B 全球第一、首付款 $70 亿 +226% 首超一级市场融资、摘青苗 68–70%、NewCo 14 起、2026Q1 $59.6B）· '
       + '摩根士丹利（研发差距 3.7 年、成本 36–40%、入组 1.5–2.5×）· 公司公告（辉瑞×三生、AZ×石药、GSK×恒瑞等）。宏观锚点校准自公开来源，标的级明细为演示合成数据；不构成投资建议。</div>'
