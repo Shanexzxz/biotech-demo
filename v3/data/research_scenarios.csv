@@ -1,0 +1,4 @@
+scenario_id,sequence,label,time_window,trigger,expected_market,asset_implication,leading_indicators,invalidation,probability_status
+RS-BASE,1,基准：高选择性延续,2026H2-2028,专利悬崖与 Firepower 持续但资本市场只部分修复,总额保持强势而笔数有限；后期和 best-in-class 稀缺溢价延续；授权继续 milestone-heavy,硬数据和全球开发路径决定 upfront；me-too 与拥挤资产折价,季度 M&A 金额与笔数分化|upfront ratio 维持中低个位数|Phase 2/3 资产竞价,H2 连续两个季度金额与笔数同时显著下滑且 IPO/融资继续恶化,CONDITIONAL_NOT_PROBABILISTIC
+RS-BULL,2,上行：流动性向中段扩散,2026H2-2028,IPO 与后续融资重开、监管可见度改善、临床读出成功率上行,竞价从近商业化资产扩散到临床早中期平台；更多 non-contingent 与 co-development,有差异化机制和可全球开发数据的早期资产获得更高确定性现金,IPO 数量与融资广度|中位 upfront 上升|多买家竞价和跨境 co-co 增加,融资重开只集中在少数 AI 或大型项目且中位条款不改善,CONDITIONAL_NOT_PROBABILISTIC
+RS-BEAR,3,下行：风险再次后移,2026H2-2028,关键临床失败、地缘或监管收紧、药价和融资压力叠加,大额 M&A 仍可能脉冲出现但广度收缩；option / NewCo / CVR 比例上升,早期资产 headline 维持但 upfront 和控制权走弱；现金跑道成为谈判约束,交易撤回率|独家期权与 CVR 使用|中国跨境审批与合规周期|biotech cash runway,高质量跨境交易持续缩短签约周期且 upfront/非或有付款同步上升,CONDITIONAL_NOT_PROBABILISTIC
