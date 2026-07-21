@@ -102,15 +102,16 @@ findings.forEach((row, index) => assert(normalizeSentence(mirrored.findings[inde
   './research.css',
   'DEAL EVIDENCE · 逐笔交易下钻',
   '交易情报',
-  'r3-benchmark-list',
-  'r3-benchmark-source',
-  'r3-finding-points',
+  'r3-structure-board',
+  'r3-risk-bar',
+  'r3-structure-conclusion',
   'r3-source-handoff',
   'lib-role-research',
   '在来源资料库查看报告链接',
 ].forEach(token => assert(html.includes(token), `index.html is missing ${token}`));
 
 const intelligenceSourceBlock = html.slice(html.indexOf('function researchPublisherName'), html.indexOf('function renderOverview'));
+const intelligenceLeadBlock = html.slice(html.indexOf('function renderIntelligenceLead'), html.indexOf('function renderIntelligenceOutlook'));
 assert(!intelligenceSourceBlock.includes('target="_blank"'), 'transaction intelligence research block still links directly to reports');
 assert(!intelligenceSourceBlock.includes('打开原始出处'), 'transaction intelligence still exposes an original-source link');
 assert(!intelligenceSourceBlock.includes('benchmark.caveat'), 'transaction intelligence still renders methodology caveats on benchmark cards');
@@ -138,6 +139,20 @@ assert(!css.includes('.r3-source-register'), 'legacy source register styles are 
 assert(!html.includes('披露不足时保留 Unknown'), 'internal unknown-handling principle is still reader-facing');
 assert(!html.includes('L3 · 宏观引用层'), 'internal L3 taxonomy is still reader-facing');
 assert(!html.includes('13 个外部基准 · 78 笔具名样本'), 'research-process counts remain in the reader-facing status bar');
+assert(!html.includes('r3-hero-metrics'), 'duplicate hero metrics are still rendered');
+assert(!html.includes('r3-thesis-band'), 'duplicate three-column thesis band is still rendered');
+assert(!html.includes('r3-benchmark-list'), 'legacy benchmark card grid is still rendered');
+assert(!html.includes('r3-findings-grid'), 'duplicate finding card grid is still rendered');
+assert(!html.includes('ci-takeaways'), 'second 60-second conclusion block is still rendered');
+assert(!html.includes('四个结论，直接落到资产筛选与条款判断'), 'duplicate finding section title is still reader-facing');
+assert(!html.includes('<div class="ci-kpis">'), 'duplicate six-KPI grid is still rendered');
+assert(!intelligenceLeadBlock.includes('12.2%'), 'TSR benchmark is still duplicated above the player section');
+assert(html.includes('签约首付占 6%，非首付部分占 94%'), 'risk allocation visual is missing its accessible summary');
+assert(html.includes('美欧联盟投资额中的中国份额'), 'origin shift visual is missing its denominator label');
+assert(html.includes('合伙人判断'), 'partner-level synthesis is missing');
+assert(html.includes('./research.css?v=3.2'), 'research stylesheet cache key was not updated');
+assert(!css.includes('.r3-benchmark-item'), 'legacy benchmark card styles are still present');
+assert(!css.includes('.r3-finding-card'), 'legacy finding card styles are still present');
 assert(!html.includes('<span class="ci-flag">研报汇编 · CURATED</span>'), 'curated-report methodology note is still reader-facing');
 assert(!html.includes('<strong>覆盖度自评：</strong>'), 'coverage self-assessment is still reader-facing');
 assert(html.includes('class="ci-buyer-spend"'), 'buyer spend chart is missing its layout container');

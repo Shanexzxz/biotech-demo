@@ -5255,7 +5255,7 @@ input:focus-visible,
 .mw-deal-table tbody tr:hover { background: var(--cyan-soft); }
 
   </style>
-  <link rel="stylesheet" href="./research.css?v=3.1">
+  <link rel="stylesheet" href="./research.css?v=3.2">
 </head>
 <body>
   <a class="skip-link" href="#mainContent">跳到主要内容</a>
@@ -7308,66 +7308,51 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     }));
   }
 
-  function researchEvidenceSources(ids, benchmarkById) {
-    return [...new Set(ids.map(id => benchmarkById.get(id)).filter(Boolean).map(benchmark => benchmark.source))];
-  }
-
-  function renderIntelligenceMetric(id, benchmarkById) {
-    const benchmark = benchmarkById.get(id);
-    if (!benchmark) return '';
-    return `<article class="r3-benchmark-item">
-      <div class="r3-benchmark-value"><strong>${C.escapeHtml(benchmark.value)}</strong><span>${C.escapeHtml(benchmark.period)}</span></div>
-      <div class="r3-benchmark-copy">
-        <h3>${C.escapeHtml(benchmark.metric)}</h3>
-        <p><b>${C.escapeHtml(benchmark.comparison)}</b></p>
-        <span class="r3-benchmark-source">${C.escapeHtml(benchmark.source)}</span>
-      </div>
-    </article>`;
-  }
-
   function renderIntelligenceLead() {
-    const benchmarkById = new Map(R.benchmarks.map(row => [row.id, row]));
-    const metricIds = ['RB-001', 'RB-007', 'RB-008', 'RB-009', 'RB-010', 'RB-011', 'RB-006', 'RB-012'];
-    const findingCards = R.findings.map((finding, index) => {
-      const evidenceSources = researchEvidenceSources(finding.evidence, benchmarkById);
-      return `<article class="r3-finding-card">
-      <header><span class="r3-finding-no">0${index + 1}</span><div><small>${C.escapeHtml(finding.theme)}</small><h3>${C.escapeHtml(finding.title)}</h3></div></header>
-      <p class="r3-finding-thesis"><span>结论</span>${C.escapeHtml(finding.inference)}</p>
-      <dl class="r3-finding-points r3-finding-decision">
-        <div class="r3-action"><dt>启示</dt><dd>${C.escapeHtml(finding.action)}</dd></div>
-      </dl>
-      <footer><details class="r3-evidence-disclosure"><summary>引用报告（${evidenceSources.length}）</summary><div class="r3-evidence-links">${evidenceSources.map(source => `<span>${C.escapeHtml(source)}</span>`).join('')}</div></details></footer>
-    </article>`;
-    }).join('');
     return `
       <section class="r3-hero" aria-labelledby="r3-hero-title">
         <div class="r3-hero-copy">
           <span class="eyebrow">交易情报 · 2021–2026 H1 GLOBAL BIOPHARMA BD</span>
           <h2 id="r3-hero-title">市场回暖，但回暖的不是<span class="r3-keep">“所有资产”</span></h2>
-          <p>总额上行、笔数收缩、首付款占比低位并存：资本正向稀缺资产集中，风险继续后移。中国已成为结构性创新供给池，但 headline value、已支付现金和最终兑现价值必须分开。</p>
+          <p>市场总额回升没有扩散为全面流动性：交易向少数资产集中，风险通过非首付对价后移，中国创新供给的全球权重同步上升。</p>
         </div>
-        <dl class="r3-hero-metrics">
-          <div><dt>2025 M&amp;A 总额</dt><dd>$240B<small>同比 +81%，但交易笔数 -12%</small></dd></div>
-          <div><dt>2026 H1 授权 upfront</dt><dd>6%<small>Headline value 与确定性现金继续分离</small></dd></div>
-          <div><dt>中国创新药对外授权</dt><dd>$110B<small>约值 · 81 笔 · 2026 H1</small></dd></div>
-          <div><dt>连续收购者年均 TSR</dt><dd>12.2%<small>不活跃收购者 0.3% · 2012–2022</small></dd></div>
-        </dl>
       </section>
 
-      <section class="r3-thesis-band" aria-label="六十秒投资结论">
-        <article><span>01 · CAPITAL</span><strong>$240B 与笔数 -12% 并存：回暖集中于少数大额资产</strong></article>
-        <article><span>02 · RISK</span><strong>Upfront 仅 6%：Headline value 不等于确定性现金</strong></article>
-        <article><span>03 · ORIGIN</span><strong>对外授权约 $110B：中国供给重要性已结构性提升</strong></article>
-      </section>
-
-      <section class="r3-section" aria-labelledby="r3-benchmark-title">
-        <header><div><span class="eyebrow">MARKET CONTEXT · 8 项外部基准</span><h2 id="r3-benchmark-title">金额更大、交易更少、确定性现金更低</h2></div></header>
-        <div class="r3-benchmark-list">${metricIds.map(id => renderIntelligenceMetric(id, benchmarkById)).join('')}</div>
-      </section>
-
-      <section class="r3-section" aria-labelledby="r3-findings-title">
-        <header><div><span class="eyebrow">DECISION READOUT · 研究结论</span><h2 id="r3-findings-title">四个结论，直接落到资产筛选与条款判断</h2></div></header>
-        <div class="r3-findings-grid">${findingCards}</div>
+      <section class="r3-structure" aria-labelledby="r3-structure-title">
+        <header><div><span class="eyebrow">MARKET STRUCTURE · 三个关键信号</span><h2 id="r3-structure-title">金额更大、交易更少、确定性现金更低</h2></div><p>先看市场结果；下方再用交易节奏、条款结构与买方行为逐层验证。</p></header>
+        <div class="r3-structure-board">
+          <article class="r3-structure-card r3-capital">
+            <header><span>01 · CAPITAL</span><h3>资金正在集中</h3></header>
+            <div class="r3-structure-flow" aria-label="生命科学并购总额从 2024 年 1300 亿美元升至 2025 年 2400 亿美元">
+              <div class="r3-structure-point"><small>2024 M&amp;A</small><strong>$130B</strong></div>
+              <div class="r3-structure-arrow"><b>+81%</b><span>→</span></div>
+              <div class="r3-structure-point"><small>2025 M&amp;A</small><strong>$240B</strong></div>
+            </div>
+            <div class="r3-structure-signals"><span>总额 <b>+81%</b></span><span>交易笔数 <b class="r3-negative">−12%</b></span></div>
+            <p class="r3-structure-pulse"><span>2026 H1 Biopharma M&amp;A</span><strong>$96B / 80 笔</strong></p>
+            <footer class="r3-structure-source">EY M&amp;A Firepower 2026 · J.P. Morgan / DealForma</footer>
+          </article>
+          <article class="r3-structure-card r3-risk">
+            <header><span>02 · RISK</span><h3>风险继续后移</h3></header>
+            <div class="r3-risk-total"><span>2026 H1 授权披露总额</span><strong>$166.7B</strong></div>
+            <div class="r3-risk-bar" role="img" aria-label="签约首付占 6%，非首付部分占 94%"><i class="r3-upfront"></i><i class="r3-non-upfront"></i></div>
+            <div class="r3-risk-labels"><span><b>6%</b> 签约首付</span><span><b>94%</b> 非首付部分</span></div>
+            <p class="r3-structure-pulse"><span>FY2025</span><strong>$250.2B / 516 笔 · upfront 7%</strong></p>
+            <footer class="r3-structure-source">J.P. Morgan Biopharma Deal Report · DealForma</footer>
+          </article>
+          <article class="r3-structure-card r3-origin">
+            <header><span>03 · ORIGIN</span><h3>中国供给权重上升</h3></header>
+            <div class="r3-structure-flow" aria-label="中国占美欧联盟投资额份额从 2020 年 4% 升至 2025 年 34%">
+              <div class="r3-structure-point"><small>2020 份额</small><strong>4%</strong></div>
+              <div class="r3-structure-arrow"><b>8.5×</b><span>→</span></div>
+              <div class="r3-structure-point"><small>2025 份额</small><strong>34%</strong></div>
+            </div>
+            <div class="r3-structure-signals"><span>美欧联盟投资额中的中国份额</span></div>
+            <p class="r3-structure-pulse"><span>2026 H1 中国创新药对外授权</span><strong>约 $110B / 81 笔</strong></p>
+            <footer class="r3-structure-source">EY M&amp;A Firepower 2026 · 国家药监局 / 国家医保局</footer>
+          </article>
+          <div class="r3-structure-conclusion"><strong>合伙人判断</strong><p>钱回来了，但没有同比例转化为广泛流动性和确定性现金；稀缺资产、中国供给与可执行的交易能力正在获得更高权重。</p></div>
+        </div>
       </section>
 
       <section class="r3-analysis-divider" aria-labelledby="r3-deal-evidence-title">
@@ -9089,13 +9074,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-struct-labels i{width:8px;height:8px;border-radius:2px;align-self:center;flex-shrink:0;}'
     + '.ci-struct-labels b{color:var(--text-strong);font-size:11px;}'
     + '.ci-gloss{margin:2px 0 8px;font-size:11px;line-height:1.6;color:var(--muted);}'
-    + '.ci-takeaways{margin:14px 0 6px;padding:16px 18px;border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:var(--radius);background:color-mix(in srgb,var(--cyan) 4%,var(--surface));}'
-    + '.ci-takeaways-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap;}'
-    + '.ci-takeaways-badge{padding:2px 10px;border-radius:999px;background:var(--text-strong);color:var(--surface);font-size:11.5px;font-weight:600;letter-spacing:0.03em;white-space:nowrap;}'
-    + '.ci-takeaways-sub{font-size:11.5px;color:var(--muted);}'
-    + '.ci-takeaways-list{margin:0;padding-left:18px;display:grid;gap:7px;}'
-    + '.ci-takeaways-list li{font-size:13px;line-height:1.65;color:var(--text);}'
-    + '.ci-takeaways-list b{color:var(--cyan);margin-right:2px;}'
     + '.ci-zone{display:flex;align-items:baseline;gap:10px;margin:18px 0 8px;grid-column:1/-1;}'
     + '.ci-zone-tag{padding:2px 10px;border-radius:999px;background:var(--text-strong);color:var(--surface);font-size:11.5px;font-weight:600;white-space:nowrap;}'
     + '.ci-zone-q{font-size:12px;color:var(--muted);}'
@@ -10069,20 +10047,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="ci-layer-head">'
       + '<div class="ci-eyebrow">交易证据 I · 市场与结构 · Curated Intelligence</div>'
       + '<h2>把宏观判断落到交易结构</h2>'
-      + '<p>这一层承接上方报告结论：宏观锚点来自 Bain、EY、J.P. Morgan / DealForma 与政府公开资料，部分条款分布和标的级明细为合成演示。分析动线自顶向下：<strong style="color:var(--text)">60 秒结论 → 时机 → 热点 → 定价 → 玩家 → 启示</strong>。后续公共 API 提供研发活动的另一观察角度；两层分母不同，仅作方向性对读，不据此推断因果。</p>'
+      + '<p>这一层继续向下：先解释买方为何必须交易，再用交易节奏、治疗领域、条款结构与买方行为验证顶部判断。分析动线为：<strong style="color:var(--text)">时机 → 热点 → 定价 → 玩家 → 启示</strong>。</p>'
       + '</div>'
 
-      + '<section class="ci-takeaways" aria-label="给决策者的 60 秒结论">'
-      + '<div class="ci-takeaways-head"><span class="ci-takeaways-badge">60 秒结论 · 给决策者</span><span class="ci-takeaways-sub">细节在下方五个决策区，每区独立标注来源、可单独核验</span></div>'
-      + '<ol class="ci-takeaways-list">'
-      + '<li><b>时机</b>：EY 估计 Top25 药企 2032 增长缺口 $370B，行业 Firepower $2.1T；国家药监局统计 2026H1 中国创新药对外授权约 $110B / 81 笔。</li>'
-      + '<li><b>热点</b>：肿瘤仍占 41%，但 2025–26 起代谢（GLP-1）与心血管 siRNA 快速放量；ADC+双抗交易价值份额 12%→34%。</li>'
-      + '<li><b>定价</b>：License 买早期（62% 为平台/临床前/1 期）、M&A 买成熟（90% 为临床 2 期及以后）；首付占比中位数五年腰斩至 8.9%，里程碑成为定价主角。</li>'
-      + '<li><b>玩家</b>：EY：2025 中国占美欧联盟潜在投资额 34%；Bain：连续收购者年均 TSR 12.2%，不活跃收购者 0.3%（相关性，不是单笔因果）。</li>'
-      + '<li><b>启示</b>：窗口期在 2026–27——早期中国资产正被期权式结构批量锁定；持有同领域、同阶段资产的一方，估值锚正在上移。</li>'
-      + '</ol></section>'
-
-      // KPI ×6
+      // 需求引擎：解释买方为什么必须持续交易
       + '<section class="lp-panel lp-wide">' + panelHead('需求引擎', 'EY · Bain · 公司公告', 'BD 已从「增长选项」变成「生存方式」')
       + '<div class="ci-kpis" style="grid-template-columns:repeat(3,minmax(0,1fr));margin:0 0 8px">'
       + '<div class="ci-kpi"><div class="k"><span>Top25 药企增长缺口 · 2032</span><span class="ci-src">EY</span></div><div class="v">$370B</div><div class="d">$100B by 2028 · 预测值，受管线读出与政策影响</div></div>'
@@ -10090,14 +10058,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="ci-kpi"><div class="k"><span>交易达到 ≥100% 预期收入目标</span><span class="ci-src">EY</span></div><div class="v">32%</div><div class="d">调查口径 · 执行与整合能力决定兑现</div></div>'
       + '</div>'
       + note2('买方的需求是结构性的：悬崖到期不等人、账上现金创纪录、自研产出率持续走低——三重压力决定了 BD 预算只增不减', ['EY：仅 32% 的交易完全达成收入预期；买方在已有治疗领域内的交易成功率显著更高——这解释了为何热门赛道竞价愈演愈烈']) + '</section>'
-      + '<div class="ci-kpis">'
-      + '<div class="ci-kpi"><div class="k"><span>R&D 授权交易总额 · 2025</span><span class="ci-src">DealForma</span></div><div class="v">$250.2B</div><div class="d"><span class="up">2016 年来新高</span> · 另有 M&A $240B（+81%，EY）</div></div>'
-      + '<div class="ci-kpi"><div class="k"><span>平均单笔价值 · 2025</span><span class="ci-src">IQVIA</span></div><div class="v">$641M</div><div class="d"><span class="up">+35.5%</span> · 数量 −7.5%——「量减价增」剪刀差</div></div>'
-      + '<div class="ci-kpi"><div class="k"><span>首付款中位占比 · 2025</span><span class="ci-src">William Blair</span></div><div class="v">8.9%</div><div class="d"><span class="dn">−1.9pp</span> · 2021 年为 15.6%，风险持续后移</div></div>'
-      + '<div class="ci-kpi"><div class="k"><span>中国占美欧联盟投资额 · 2025</span><span class="ci-src">EY</span></div><div class="v">34%</div><div class="d">2020 为 4% · 不是全球 BD 份额</div></div>'
-      + '<div class="ci-kpi"><div class="k"><span>中国创新药对外授权 · 2026H1</span><span class="ci-src">国家药监局</span></div><div class="v">约 $110B</div><div class="d">81 笔 · headline value，不等于已到账现金</div></div>'
-      + '<div class="ci-kpi"><div class="k"><span>覆盖治疗领域 / 国家 · 2026H1</span><span class="ci-src">国家药监局</span></div><div class="v">10 / 20</div><div class="d">官方统计覆盖范围 · 不是完整逐笔交易清单</div></div>'
-      + '</div>'
 
       + '<div class="ci-spynav-wrap"><nav class="ci-spynav" aria-label="本页主线进度">'
       + '<button type="button" class="ci-spynav-chip">① 时机</button>'
