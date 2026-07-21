@@ -9060,13 +9060,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--violet);text-transform:uppercase;}'
     + '.ci-layer-head h2{margin:6px 0 6px;font-size:21px;font-weight:760;color:var(--text-strong);letter-spacing:-.02em;}'
     + '.ci-layer-head p{margin:0;font-size:12.5px;line-height:1.65;color:var(--muted);}'
-    + '.ci-banner{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;margin:12px 0;'
-    + 'border:1px solid color-mix(in srgb, var(--violet) 40%, transparent);border-left:3px solid var(--violet);'
-    + 'border-radius:var(--radius-sm);background:color-mix(in srgb, var(--violet) 8%, var(--surface));}'
-    + '.ci-flag{flex-shrink:0;padding:3px 10px;border-radius:999px;background:color-mix(in srgb, var(--violet) 18%, var(--surface));'
-    + '@media(max-width:760px){.ci-banner{flex-direction:column;gap:8px;}.ci-flag{align-self:flex-start;}}'
-    + 'color:var(--violet);font-size:11px;font-weight:600;letter-spacing:.04em;white-space:nowrap;}'
-    + '.ci-banner p{margin:0;font-size:12px;line-height:1.6;color:var(--text);}'
     + '.ci-toc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 14px;padding:9px 12px;'
     + 'border:1px dashed var(--line-strong);border-radius:var(--radius-sm);font-size:11.5px;color:var(--muted);}'
     + '.ci-toc a{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:999px;text-decoration:none;'
@@ -9113,6 +9106,16 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-share-track{display:flex;height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden;}'
     + '.ci-share-track i{display:block;height:100%;}'
     + '.ci-share-val{font-size:11.5px;color:var(--muted);white-space:nowrap;}'
+    + '.ci-buyer-spend{display:grid;gap:2px;max-width:680px;margin:0 auto;}'
+    + '.ci-buyer-spend-row{display:grid;grid-template-columns:64px minmax(120px,1fr) 62px minmax(160px,1.25fr);gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);}'
+    + '.ci-buyer-spend-row:last-child{border-bottom:0;}'
+    + '.ci-buyer-spend-name{font-size:12px;font-weight:650;color:var(--text-strong);white-space:nowrap;}'
+    + '.ci-buyer-spend-track{display:block;height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden;}'
+    + '.ci-buyer-spend-track i{display:block;height:100%;border-radius:inherit;}'
+    + '.ci-buyer-spend-row.is-undisclosed .ci-buyer-spend-track{background:repeating-linear-gradient(135deg,var(--surface-2) 0,var(--surface-2) 4px,var(--line-strong) 4px,var(--line-strong) 6px);}'
+    + '.ci-buyer-spend-value{font-size:11.5px;font-weight:650;color:var(--text-strong);text-align:right;white-space:nowrap;}'
+    + '.ci-buyer-spend-row.is-undisclosed .ci-buyer-spend-value{color:var(--muted);font-weight:500;}'
+    + '.ci-buyer-spend-note{font-size:10.5px;line-height:1.35;color:var(--muted);}'
     + '.ci-svg{width:100%;height:auto;display:block;}'
     + '.ci-ax{font-size:10px;fill:var(--muted);}'
     + '.ci-sowhat{grid-column:1/-1;display:flex;gap:10px;align-items:baseline;margin:6px 0 2px;padding:10px 14px;border-left:3px solid var(--amber);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--amber) 8%,var(--surface));font-size:12.5px;line-height:1.65;color:var(--text-strong);}'
@@ -9125,6 +9128,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;white-space:nowrap;}'
     + '.ci-status i{width:8px;height:8px;border-radius:50%;flex:none;}'
     + '@media(max-width:760px){.ci-share-row{grid-template-columns:70px 1fr auto;gap:6px;}.ci-share-label{font-size:11px;}.ci-share-val{font-size:10.5px;}}'
+    + '@media(max-width:760px){.ci-buyer-spend-row{grid-template-columns:52px minmax(90px,1fr) 58px;gap:5px 8px;}.ci-buyer-spend-note{grid-column:2/-1;}.ci-buyer-spend-name,.ci-buyer-spend-value{font-size:10.5px;}}'
     + '.ci-kpi{padding:13px 16px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);background:var(--surface);}'
     + '.ci-kpi .k{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;align-items:baseline;}'
     + '.ci-kpi .v{margin-top:4px;font-size:23px;font-weight:700;color:var(--text-strong);font-variant-numeric:tabular-nums;letter-spacing:-.02em;}'
@@ -10068,12 +10072,6 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<p>这一层承接上方报告结论：宏观锚点来自 Bain、EY、J.P. Morgan / DealForma 与政府公开资料，部分条款分布和标的级明细为合成演示。分析动线自顶向下：<strong style="color:var(--text)">60 秒结论 → 时机 → 热点 → 定价 → 玩家 → 启示</strong>。后续公共 API 提供研发活动的另一观察角度；两层分母不同，仅作方向性对读，不据此推断因果。</p>'
       + '</div>'
 
-      + '<section class="ci-banner" role="note">'
-      + '<span class="ci-flag">研报汇编 · CURATED</span>'
-      + '<p><strong>口径诚实边界：</strong>宏观锚点（总额、占比、TSR、首付中位数区间）校准自上述公开来源；标的级明细为演示用途的合成数据。'
-      + '本层为周期性研报快照（最新至 2026H1），不实时刷新；页面后部另列公共 API 的即时研发信号。'
-      + '<br><strong>覆盖度自评：</strong>104 笔为 2021–2026H1 代表性交易汇编（头部规模 + 结构代表性优先），覆盖中国出海大额交易的主要样本，但非全量库（2025 全年中国 License-out 全市场约 157 笔）；所有结论按可比口径陈述，不外推到未收录样本。</p></section>'
-
       + '<section class="ci-takeaways" aria-label="给决策者的 60 秒结论">'
       + '<div class="ci-takeaways-head"><span class="ci-takeaways-badge">60 秒结论 · 给决策者</span><span class="ci-takeaways-sub">细节在下方五个决策区，每区独立标注来源、可单独核验</span></div>'
       + '<ol class="ci-takeaways-list">'
@@ -10185,10 +10183,11 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + note2('中国 → 美国为最大走廊；China-out 占全球 out-licensing 从 2020 年约 5% 升至 2025H1 约 32%（Clarivate）', ['悬停或点按流带可查看各走廊的分项金额']) + '</section>'
 
       + '<section class="lp-panel lp-wide">' + panelHead('买方支出榜', '公司公告汇总 · 2024–2025Q2', '买家高度集中：前五贡献 52.5% 支出')
-      + '<div style="max-width:640px;margin:0 auto">'
+      + '<div class="ci-buyer-spend" role="list" aria-label="买方支出金额比较">'
       + [['诺华', 27.1, '20 笔'], ['罗氏', 23.5, '19 笔'], ['BMS', 19.0, '8 笔 · 单笔均值最高'], ['礼来', null, '26 笔 · 频率最高'], ['默沙东', null, 'Verona $10B + Cidara $9.2B + Terns $6.7B（2026）']].map(function (r) {
-        var pct = r[1] ? Math.round(r[1] / 27.1 * 100) : 8;
-        return '<div class="ci-share-row"><span class="ci-share-name">' + r[0] + '</span><span class="ci-share-bar"><i style="width:' + pct + '%;background:#60A5FA"></i></span><span class="ci-share-val">' + (r[1] ? '$' + r[1] + 'B' : '—') + '</span><span class="ci-share-note">' + r[2] + '</span></div>';
+        var disclosed = r[1] !== null;
+        var pct = disclosed ? Math.round(r[1] / 27.1 * 100) : 0;
+        return '<div class="ci-buyer-spend-row' + (disclosed ? '' : ' is-undisclosed') + '" role="listitem"><span class="ci-buyer-spend-name">' + r[0] + '</span><span class="ci-buyer-spend-track"><i style="width:' + pct + '%;background:#60A5FA"></i></span><span class="ci-buyer-spend-value">' + (disclosed ? '$' + r[1] + 'B' : '未披露') + '</span><span class="ci-buyer-spend-note">' + r[2] + '</span></div>';
       }).join('') + '</div>'
       + note2('买家高度集中——前五贡献 52.5% 支出；2026H1 新领跑者：Gilead $12.7B、礼来 $10.8B', ['BMS 单笔均值最高（$19B / 8 笔）——缺口最大的买家出手最重', '竞价回归：诺华收购 Avidity 从 $7.4B 加价至 $12B（+62%）；辉瑞为 Metsera 报价翻倍——好资产没有折价窗口']) + '</section>'
       + '<section class="lp-panel lp-wide">' + panelHead('潜在买家扫描', 'LOE 悬崖 × 在华动作', '谁还没出手？——未来 12–24 个月的新增需求方')

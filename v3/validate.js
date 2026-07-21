@@ -138,6 +138,14 @@ assert(!css.includes('.r3-source-register'), 'legacy source register styles are 
 assert(!html.includes('披露不足时保留 Unknown'), 'internal unknown-handling principle is still reader-facing');
 assert(!html.includes('L3 · 宏观引用层'), 'internal L3 taxonomy is still reader-facing');
 assert(!html.includes('13 个外部基准 · 78 笔具名样本'), 'research-process counts remain in the reader-facing status bar');
+assert(!html.includes('<span class="ci-flag">研报汇编 · CURATED</span>'), 'curated-report methodology note is still reader-facing');
+assert(!html.includes('<strong>覆盖度自评：</strong>'), 'coverage self-assessment is still reader-facing');
+assert(html.includes('class="ci-buyer-spend"'), 'buyer spend chart is missing its layout container');
+assert(html.includes('class="ci-buyer-spend-track"'), 'buyer spend chart is missing visible bar tracks');
+assert(html.includes("var disclosed = r[1] !== null;"), 'buyer spend chart does not preserve undisclosed values');
+assert(!html.includes('ci-share-name'), 'buyer spend chart still uses the undefined name class');
+assert(!html.includes('ci-share-bar'), 'buyer spend chart still uses the undefined bar class');
+assert(!html.includes('ci-share-note'), 'buyer spend chart still uses the undefined note class');
 assert(!report.includes('下载'), 'report still exposes download copy');
 assert(!report.includes('风险调整价值'), 'report still exposes the internal risk-adjusted value framework');
 assert(!report.includes('本项目的落地方式'), 'report still exposes internal implementation guidance');
