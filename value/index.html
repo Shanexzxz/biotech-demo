@@ -1,0 +1,1773 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="AI 在 VC/PE 机构中的价值：一份面向机构决策者的五分钟简报。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230b3658'/%3E%3Cpath d='M7 7h8v8H7zm10 0h8v8h-8zM7 17h8v8H7zm10 0h8v8h-8z' fill='%237fd1ff'/%3E%3C/svg%3E">
+  <title>AI 在 VC/PE 机构中的价值｜管理层简报</title>
+  <style>
+    :root {
+      --ink: #102334;
+      --ink-strong: #071b2d;
+      --blue: #0875c1;
+      --blue-deep: #0b3658;
+      --blue-pale: #eaf4fa;
+      --sky: #cfe9f7;
+      --paper: #ffffff;
+      --canvas: #eef2f4;
+      --mist: #f5f7f8;
+      --muted: #5d6b75;
+      --quiet: #7f8a92;
+      --line: #d8e0e5;
+      --line-strong: #aebcc6;
+      --max: 1480px;
+      --rail: 224px;
+      --shadow: 0 18px 50px rgba(16, 35, 52, .09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 82px;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    .reading-progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      z-index: 100;
+      width: 0;
+      height: 3px;
+      background: var(--blue);
+      transition: width 80ms linear;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      border-bottom: 1px solid rgba(16, 35, 52, .13);
+      background: rgba(255, 255, 255, .96);
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-inner {
+      display: flex;
+      width: min(var(--max), 100%);
+      height: 64px;
+      margin: 0 auto;
+      padding: 0 34px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink-strong);
+      font-size: 11px;
+      font-weight: 760;
+      letter-spacing: .14em;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 22px;
+      height: 22px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      transform: rotate(45deg);
+    }
+
+    .brand-mark i {
+      display: block;
+      background: var(--blue);
+    }
+
+    .brand-mark i:nth-child(2),
+    .brand-mark i:nth-child(3) {
+      background: var(--blue-deep);
+    }
+
+    .top-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: var(--quiet);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .top-meta span + span {
+      padding-left: 20px;
+      border-left: 1px solid var(--line);
+    }
+
+    .hero-shell {
+      width: min(var(--max), 100%);
+      margin: 0 auto;
+      padding: 36px 34px 0;
+    }
+
+    .hero {
+      display: grid;
+      min-height: 560px;
+      grid-template-columns: minmax(0, 1.48fr) minmax(340px, .62fr);
+      overflow: hidden;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(48px, 5vw, 78px) clamp(42px, 5.4vw, 86px) 42px;
+    }
+
+    .eyebrow,
+    .chapter-kicker,
+    .card-kicker {
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      max-width: 890px;
+      margin: 20px 0 26px;
+      color: var(--ink-strong);
+      font-size: clamp(48px, 5.4vw, 82px);
+      font-weight: 700;
+      letter-spacing: -.055em;
+      line-height: 1.03;
+    }
+
+    .hero h1 span {
+      color: var(--blue);
+    }
+
+    .hero-lede {
+      max-width: 780px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(18px, 1.55vw, 24px);
+      line-height: 1.55;
+    }
+
+    .process-line {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 54px;
+      border-top: 1px solid var(--line-strong);
+    }
+
+    .process-step {
+      position: relative;
+      padding: 18px 20px 0 0;
+      color: var(--ink-strong);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .process-step::before {
+      position: absolute;
+      top: -4px;
+      left: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
+      content: "";
+    }
+
+    .process-step:not(:last-child)::after {
+      position: absolute;
+      top: 22px;
+      right: 10px;
+      color: var(--line-strong);
+      content: "→";
+      font-weight: 400;
+    }
+
+    .process-step small {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--quiet);
+      font-size: 9px;
+      letter-spacing: .08em;
+    }
+
+    .hero-thesis {
+      position: relative;
+      display: flex;
+      min-height: 100%;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      padding: 46px 40px 42px;
+      background: var(--blue-deep);
+      color: white;
+    }
+
+    .hero-thesis::before,
+    .hero-thesis::after {
+      position: absolute;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .hero-thesis::before {
+      top: -90px;
+      right: -78px;
+      width: 270px;
+      height: 270px;
+    }
+
+    .hero-thesis::after {
+      right: 34px;
+      bottom: 104px;
+      width: 96px;
+      height: 96px;
+    }
+
+    .thesis-index {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      color: var(--sky);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .hero-thesis blockquote {
+      position: relative;
+      z-index: 1;
+      margin: 40px 0;
+      font-size: clamp(24px, 2vw, 32px);
+      font-weight: 620;
+      letter-spacing: -.025em;
+      line-height: 1.44;
+    }
+
+    .hero-thesis blockquote strong {
+      color: #7fd1ff;
+    }
+
+    .thesis-foot {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, .32);
+      color: rgba(255, 255, 255, .76);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .disclaimer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 15px 2px 18px;
+      color: var(--quiet);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .disclaimer b {
+      color: var(--ink);
+    }
+
+    .mobile-jump {
+      display: none;
+    }
+
+    .report-shell {
+      display: grid;
+      width: min(var(--max), 100%);
+      grid-template-columns: var(--rail) minmax(0, 1fr);
+      margin: 0 auto 70px;
+      padding: 0 34px;
+      gap: 34px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 86px;
+      padding: 24px 4px 20px 0;
+    }
+
+    .toc-title {
+      margin: 0 0 15px;
+      color: var(--quiet);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .toc-list {
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--line-strong);
+      list-style: none;
+    }
+
+    .toc a {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
+      padding: 12px 4px 12px 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+      text-decoration: none;
+      transition: color 160ms ease, padding-left 160ms ease;
+    }
+
+    .toc a span {
+      color: var(--quiet);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible,
+    .toc a.active {
+      padding-left: 5px;
+      color: var(--blue);
+    }
+
+    .toc a.active span {
+      color: var(--blue);
+    }
+
+    .report {
+      min-width: 0;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .chapter {
+      padding: clamp(54px, 5vw, 78px) clamp(38px, 5vw, 72px);
+      scroll-margin-top: 80px;
+    }
+
+    .chapter + .chapter {
+      border-top: 1px solid var(--line);
+    }
+
+    .chapter-head {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 24px;
+      margin-bottom: 34px;
+    }
+
+    .chapter-number {
+      padding-top: 7px;
+      border-top: 3px solid var(--blue);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 820;
+      letter-spacing: .12em;
+    }
+
+    .chapter-kicker {
+      margin: 0 0 10px;
+    }
+
+    .chapter h2 {
+      max-width: 930px;
+      margin: 0 0 13px;
+      color: var(--ink-strong);
+      font-size: clamp(31px, 3vw, 45px);
+      font-weight: 700;
+      letter-spacing: -.045em;
+      line-height: 1.13;
+    }
+
+    .chapter-intro {
+      max-width: 900px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .lead-statement {
+      margin: 0 0 30px 96px;
+      padding: 17px 21px;
+      border-left: 4px solid var(--blue);
+      background: var(--blue-pale);
+      color: var(--ink-strong);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .four-up {
+      display: grid;
+      gap: 15px;
+    }
+
+    .four-up {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .info-card {
+      min-width: 0;
+      padding: 22px;
+      border-top: 2px solid var(--ink-strong);
+      background: var(--mist);
+    }
+
+    .info-card.accent {
+      border-top-color: var(--blue);
+      background: var(--blue-pale);
+    }
+
+    .card-index {
+      display: block;
+      margin-bottom: 24px;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .1em;
+    }
+
+    .info-card h3 {
+      margin: 0 0 9px;
+      color: var(--ink-strong);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .info-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .info-card.compact {
+      min-height: 155px;
+      padding: 19px;
+    }
+
+    .info-card.compact .card-index {
+      margin-bottom: 17px;
+    }
+
+    .bullet-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .bullet-list li {
+      position: relative;
+      padding-left: 17px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.58;
+    }
+
+    .bullet-list li::before {
+      position: absolute;
+      top: .63em;
+      left: 0;
+      width: 5px;
+      height: 5px;
+      background: var(--blue);
+      content: "";
+    }
+
+    .scenario-chapter .chapter-head {
+      margin-bottom: 26px;
+    }
+
+    .lifecycle-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      border: 1px solid var(--line);
+      background: var(--line);
+    }
+
+    .lifecycle-stage {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      background: white;
+    }
+
+    .stage-head {
+      min-height: 92px;
+      padding: 16px 17px;
+      background: var(--blue-deep);
+      color: white;
+    }
+
+    .lifecycle-stage:nth-child(2) .stage-head {
+      background: var(--blue);
+    }
+
+    .lifecycle-stage:nth-child(3) .stage-head {
+      background: var(--ink-strong);
+    }
+
+    .lifecycle-stage:nth-child(4) .stage-head {
+      background: #4e6879;
+    }
+
+    .stage-seq {
+      display: block;
+      margin-bottom: 16px;
+      color: rgba(255, 255, 255, .62);
+      font-size: 8px;
+      font-weight: 820;
+      letter-spacing: .1em;
+    }
+
+    .stage-head h3 {
+      margin: 0;
+      color: white;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .stage-body {
+      display: grid;
+      gap: 10px;
+      padding: 15px 16px 13px;
+    }
+
+    .stage-block {
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .stage-block:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .stage-block b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--ink-strong);
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .stage-block p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.43;
+    }
+
+    .stage-example {
+      margin: 0 16px 13px;
+      padding: 8px 9px;
+      background: var(--blue-pale);
+      color: var(--ink-strong);
+      font-size: 8px;
+      font-weight: 620;
+      line-height: 1.4;
+    }
+
+    .practice-note {
+      margin: auto 0 0;
+      padding: 10px 16px 12px;
+      border-top: 1px solid var(--line);
+      background: var(--mist);
+      color: var(--muted);
+      font-size: 8px;
+      line-height: 1.42;
+    }
+
+    .practice-note b {
+      color: var(--ink-strong);
+    }
+
+    .practice-note a {
+      color: var(--blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+
+    .architecture-base {
+      margin-top: 9px;
+      border: 1px solid var(--line-strong);
+      background: white;
+    }
+
+    .base-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 9px 13px;
+      background: var(--ink-strong);
+      color: white;
+    }
+
+    .base-heading strong {
+      font-size: 11px;
+      letter-spacing: .06em;
+    }
+
+    .base-heading span {
+      color: rgba(255, 255, 255, .64);
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: .08em;
+    }
+
+    .base-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .base-card {
+      padding: 13px 15px;
+    }
+
+    .base-card + .base-card {
+      border-left: 1px solid var(--line);
+    }
+
+    .base-card b {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--blue);
+      font-size: 11px;
+    }
+
+    .base-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.48;
+    }
+
+    .source-note {
+      margin: 8px 0 0;
+      color: var(--quiet);
+      font-size: 8px;
+      line-height: 1.45;
+    }
+
+    .foundation-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 22px;
+      border-top: 1px solid var(--line-strong);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .foundation-item {
+      padding: 18px 20px;
+    }
+
+    .foundation-item + .foundation-item {
+      border-left: 1px solid var(--line);
+    }
+
+    .foundation-item b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink-strong);
+      font-size: 13px;
+    }
+
+    .foundation-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.58;
+    }
+
+    .chapter-close {
+      margin: 22px 0 0;
+      color: var(--ink-strong);
+      font-size: 14px;
+      font-weight: 620;
+      line-height: 1.65;
+    }
+
+    .loop {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-top: 2px solid var(--ink-strong);
+      border-bottom: 1px solid var(--line-strong);
+    }
+
+    .loop-step {
+      position: relative;
+      min-height: 220px;
+      padding: 26px 22px 22px 0;
+    }
+
+    .loop-step + .loop-step {
+      padding-left: 22px;
+      border-left: 1px solid var(--line);
+    }
+
+    .loop-step:not(:last-child)::after {
+      position: absolute;
+      top: 33px;
+      right: -9px;
+      z-index: 2;
+      display: grid;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: white;
+      color: var(--blue);
+      content: "→";
+      font-size: 9px;
+      place-items: center;
+    }
+
+    .loop-step span {
+      display: block;
+      margin-bottom: 38px;
+      color: var(--blue);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .1em;
+    }
+
+    .loop-step h3 {
+      margin: 0 0 9px;
+      color: var(--ink-strong);
+      font-size: 17px;
+      line-height: 1.35;
+    }
+
+    .loop-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.58;
+    }
+
+    .action-title {
+      margin: 26px 0 14px;
+      color: var(--ink-strong);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    .boundary-spectrum {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      border-top: 2px solid var(--ink-strong);
+      background: var(--line);
+    }
+
+    .boundary-zone {
+      min-height: 260px;
+      padding: 24px 22px;
+      background: white;
+    }
+
+    .boundary-zone.ai {
+      background: var(--blue-deep);
+      color: white;
+    }
+
+    .boundary-zone.collab {
+      background: var(--blue-pale);
+    }
+
+    .zone-index {
+      display: block;
+      margin-bottom: 28px;
+      color: var(--blue);
+      font-size: 9px;
+      font-weight: 850;
+      letter-spacing: .1em;
+    }
+
+    .boundary-zone.ai .zone-index {
+      color: #7fd1ff;
+    }
+
+    .boundary-zone h3 {
+      margin: 0 0 13px;
+      color: var(--ink-strong);
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .boundary-zone.ai h3 {
+      color: white;
+    }
+
+    .zone-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .zone-list li {
+      position: relative;
+      padding-left: 14px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .zone-list li::before {
+      position: absolute;
+      top: .62em;
+      left: 0;
+      width: 5px;
+      height: 5px;
+      background: var(--blue);
+      content: "";
+    }
+
+    .boundary-zone.ai .zone-list li {
+      color: rgba(255, 255, 255, .78);
+    }
+
+    .boundary-zone.ai .zone-list li::before {
+      background: #7fd1ff;
+    }
+
+    .boundary-chapter .action-title {
+      margin-top: 24px;
+    }
+
+    .final-word {
+      position: relative;
+      margin: 28px 0 0;
+      padding: 30px 34px;
+      overflow: hidden;
+      background: var(--blue-deep);
+      color: white;
+      font-size: clamp(20px, 1.9vw, 29px);
+      font-weight: 620;
+      letter-spacing: -.02em;
+      line-height: 1.5;
+    }
+
+    .final-word::after {
+      position: absolute;
+      right: -60px;
+      bottom: -105px;
+      width: 250px;
+      height: 250px;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .report-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 24px clamp(38px, 5vw, 72px);
+      border-top: 1px solid var(--line);
+      color: var(--quiet);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .report-footer strong {
+      color: var(--ink-strong);
+      letter-spacing: .08em;
+    }
+
+    .back-to-top {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 80;
+      display: grid;
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--ink-strong);
+      box-shadow: 0 8px 24px rgba(7, 27, 45, .2);
+      color: white;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      place-items: center;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .back-to-top.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .back-to-top:hover {
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 1100px) {
+      :root {
+        --rail: 190px;
+      }
+
+      .four-up {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .lifecycle-map,
+      .base-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .base-card:nth-child(3) {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .base-card:nth-child(4) {
+        border-top: 1px solid var(--line);
+      }
+
+      .hero-copy,
+      .chapter {
+        padding-right: 42px;
+        padding-left: 42px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      html {
+        scroll-padding-top: 122px;
+      }
+
+      .topbar-inner,
+      .hero-shell,
+      .report-shell {
+        padding-right: 18px;
+        padding-left: 18px;
+      }
+
+      .top-meta span:first-child {
+        display: none;
+      }
+
+      .top-meta span + span {
+        padding-left: 0;
+        border-left: 0;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        min-height: 500px;
+        padding: 46px 34px 34px;
+      }
+
+      .hero-thesis {
+        min-height: 340px;
+      }
+
+      .mobile-jump {
+        position: sticky;
+        top: 64px;
+        z-index: 70;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 -18px;
+        padding: 11px 18px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(238, 242, 244, .96);
+        backdrop-filter: blur(10px);
+      }
+
+      .mobile-jump label {
+        color: var(--quiet);
+        font-size: 9px;
+        font-weight: 850;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+
+      .mobile-jump select {
+        min-width: 0;
+        flex: 1;
+        padding: 8px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 0;
+        background: white;
+        color: var(--ink-strong);
+        font-size: 12px;
+      }
+
+      .report-shell {
+        display: block;
+        margin-bottom: 18px;
+      }
+
+      .toc {
+        display: none;
+      }
+
+      .chapter {
+        padding: 50px 34px;
+        scroll-margin-top: 122px;
+      }
+
+      .loop {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .loop-step:nth-child(3) {
+        padding-left: 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .loop-step:nth-child(4) {
+        border-top: 1px solid var(--line);
+      }
+
+      .loop-step:nth-child(2)::after {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner {
+        height: 58px;
+      }
+
+      .brand {
+        font-size: 9px;
+      }
+
+      .brand-mark {
+        width: 18px;
+        height: 18px;
+      }
+
+      .top-meta {
+        font-size: 8px;
+      }
+
+      .hero-shell {
+        padding-top: 18px;
+      }
+
+      .hero-copy {
+        min-height: 500px;
+        padding: 38px 24px 28px;
+      }
+
+      .hero h1 {
+        font-size: clamp(43px, 14vw, 63px);
+      }
+
+      .hero-lede {
+        font-size: 17px;
+      }
+
+      .process-line {
+        grid-template-columns: repeat(2, 1fr);
+        margin-top: 34px;
+      }
+
+      .process-step:nth-child(3),
+      .process-step:nth-child(4) {
+        margin-top: 20px;
+      }
+
+      .process-step:nth-child(2)::after {
+        display: none;
+      }
+
+      .hero-thesis {
+        min-height: 330px;
+        padding: 34px 24px;
+      }
+
+      .hero-thesis blockquote {
+        font-size: 24px;
+      }
+
+      .disclaimer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .mobile-jump {
+        top: 58px;
+      }
+
+      .report-shell {
+        padding: 0;
+      }
+
+      .report {
+        box-shadow: none;
+      }
+
+      .chapter {
+        padding: 44px 22px;
+        scroll-margin-top: 116px;
+      }
+
+      .chapter-head {
+        grid-template-columns: 46px minmax(0, 1fr);
+        gap: 15px;
+        margin-bottom: 28px;
+      }
+
+      .chapter h2 {
+        font-size: 29px;
+      }
+
+      .chapter-intro {
+        font-size: 14px;
+      }
+
+      .lead-statement {
+        margin-left: 0;
+        font-size: 15px;
+      }
+
+      .four-up,
+      .foundation-row,
+      .loop,
+      .boundary-spectrum,
+      .lifecycle-map,
+      .base-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .base-card + .base-card,
+      .base-card:nth-child(3) {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .foundation-item + .foundation-item {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .loop-step,
+      .loop-step + .loop-step,
+      .loop-step:nth-child(3) {
+        min-height: 0;
+        padding: 22px 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+
+      .loop-step:first-child {
+        border-top: 0;
+      }
+
+      .loop-step:not(:last-child)::after {
+        display: none;
+      }
+
+      .loop-step span {
+        margin-bottom: 20px;
+      }
+
+      .final-word {
+        padding: 26px 22px;
+        font-size: 21px;
+      }
+
+      .report-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 22px;
+      }
+
+      .back-to-top {
+        right: 14px;
+        bottom: 14px;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 14mm;
+      }
+
+      html,
+      body {
+        background: white;
+      }
+
+      .reading-progress,
+      .topbar,
+      .toc,
+      .mobile-jump,
+      .back-to-top {
+        display: none !important;
+      }
+
+      .hero-shell,
+      .report-shell {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      .hero,
+      .report {
+        box-shadow: none;
+      }
+
+      .hero {
+        min-height: 0;
+        grid-template-columns: 1.45fr .55fr;
+      }
+
+      .hero-copy,
+      .hero-thesis {
+        padding: 28px;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .hero-lede {
+        font-size: 15px;
+      }
+
+      .disclaimer {
+        padding: 10px 0;
+      }
+
+      .report-shell {
+        display: block;
+      }
+
+      .chapter {
+        min-height: 250mm;
+        padding: 15mm 0 6mm;
+        break-before: page;
+      }
+
+      .chapter-head,
+      .info-card,
+      .lifecycle-map,
+      .architecture-base,
+      .loop,
+      .boundary-spectrum,
+      .final-word {
+        break-inside: avoid;
+      }
+
+      .scenario-chapter {
+        padding-top: 8mm;
+        padding-bottom: 4mm;
+      }
+
+      .scenario-chapter .chapter-head {
+        margin-bottom: 4mm;
+      }
+
+      .scenario-chapter h2 {
+        font-size: 24px;
+      }
+
+      .scenario-chapter .chapter-intro {
+        font-size: 9px;
+        line-height: 1.42;
+      }
+
+      .lifecycle-map {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .lifecycle-stage {
+        break-inside: avoid;
+      }
+
+      .stage-head {
+        min-height: 0;
+        padding: 2.3mm;
+      }
+
+      .stage-seq {
+        margin-bottom: 2mm;
+        font-size: 6px;
+      }
+
+      .stage-head h3 {
+        font-size: 13px;
+      }
+
+      .stage-body {
+        gap: 1.5mm;
+        padding: 2.2mm;
+      }
+
+      .stage-block {
+        padding-bottom: 1.5mm;
+      }
+
+      .stage-block b {
+        margin-bottom: .5mm;
+        font-size: 7.2px;
+      }
+
+      .stage-block p {
+        font-size: 6.6px;
+        line-height: 1.3;
+      }
+
+      .stage-example,
+      .practice-note {
+        margin-right: 2.2mm;
+        margin-left: 2.2mm;
+        padding: 1.4mm;
+        font-size: 6px;
+        line-height: 1.28;
+      }
+
+      .practice-note {
+        margin-right: 0;
+        margin-bottom: 0;
+        margin-left: 0;
+      }
+
+      .architecture-base {
+        margin-top: 2mm;
+      }
+
+      .base-heading,
+      .base-card {
+        padding: 1.7mm 2.5mm;
+      }
+
+      .base-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .base-card,
+      .base-card:nth-child(3),
+      .base-card:nth-child(4) {
+        border-top: 0;
+      }
+
+      .base-card + .base-card {
+        border-left: 1px solid var(--line);
+      }
+
+      .base-card p {
+        font-size: 7px;
+        line-height: 1.34;
+      }
+
+      .source-note {
+        margin-top: 1.5mm;
+        font-size: 6px;
+      }
+
+      .scenario-chapter .chapter-close {
+        margin-top: 2mm;
+        font-size: 8px;
+        line-height: 1.35;
+      }
+
+      .report-footer {
+        padding: 8mm 0 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="返回页面顶部">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span>CAPITAL INTELLIGENCE</span>
+      </a>
+      <div class="top-meta" aria-label="报告信息">
+        <span>Point of View</span>
+        <span>VC / PE × AI · 2026</span>
+      </div>
+    </div>
+  </header>
+
+  <div id="top" class="hero-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <div>
+          <div class="eyebrow">Institutional cognition infrastructure</div>
+          <h1 id="page-title">AI 在 VC/PE<br>机构中的<span>价值</span></h1>
+          <p class="hero-lede">从效率工具，走向机构级认知基础设施</p>
+        </div>
+        <div class="process-line" aria-label="投资核心生产过程">
+          <div class="process-step"><small>01 / INPUT</small>获取信息</div>
+          <div class="process-step"><small>02 / SYNTHESIS</small>形成判断</div>
+          <div class="process-step"><small>03 / DECISION</small>做出决策</div>
+          <div class="process-step"><small>04 / OWNERSHIP</small>管理资产</div>
+        </div>
+      </div>
+      <aside class="hero-thesis" aria-label="核心判断">
+        <div class="thesis-index"><span>核心判断</span><span>01 / 01</span></div>
+        <blockquote>AI 先带来效率提升，最终放大的是机构的<strong>认知生产能力</strong>。</blockquote>
+        <p class="thesis-foot">真正的差异不在于使用了多少工具，而在于能否持续把业务问题、数据、判断标准和反馈连接起来。</p>
+      </aside>
+    </section>
+
+    <div class="disclaimer">
+      <span><b>阅读说明</b>　文中的公司情境和财务数字均为示意案例，不代表真实项目数据。</span>
+      <span>4 CHAPTERS · 5-MINUTE EXECUTIVE BRIEF</span>
+    </div>
+
+    <div class="mobile-jump">
+      <label for="chapter-select">跳转章节</label>
+      <select id="chapter-select" aria-label="选择章节">
+        <option value="01">01 核心价值</option>
+        <option value="02">02 募投管退全景</option>
+        <option value="03">03 探索与验证闭环</option>
+        <option value="04">04 人机边界</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="report-shell">
+    <nav class="toc" aria-label="报告目录">
+      <p class="toc-title">Contents / 目录</p>
+      <ol class="toc-list">
+        <li><a href="#01"><span>01</span>核心价值</a></li>
+        <li><a href="#02"><span>02</span>募投管退全景</a></li>
+        <li><a href="#03"><span>03</span>探索与验证闭环</a></li>
+        <li><a href="#04"><span>04</span>人机边界</a></li>
+      </ol>
+    </nav>
+
+    <main class="report">
+      <section class="chapter" id="01" aria-labelledby="chapter-01-title">
+        <header class="chapter-head">
+          <div class="chapter-number">01</div>
+          <div>
+            <p class="chapter-kicker">Core value</p>
+            <h2 id="chapter-01-title">AI 的价值有两层：提升运行效率，更重要的是放大认知生产能力</h2>
+            <p class="chapter-intro">近端价值，是减少重复工作、压缩协同与交付周期；更深层的价值，是提升机构获取信息、验证假设、调用经验、形成判断和管理资产的整体能力。</p>
+          </div>
+        </header>
+
+        <p class="lead-statement"><strong>运行效率带来即时收益，认知能力决定长期差异。</strong>前者让机构运转得更顺畅，后者让单位专业人员能够调用更多知识、处理更多有效信息并形成更高质量的判断。</p>
+
+        <div class="four-up">
+          <article class="info-card">
+            <span class="card-index">01 / COVERAGE</span>
+            <h3>扩大信息覆盖</h3>
+            <p>持续处理新闻、政策、论文、公司材料、访谈纪要、交易和投后经营信息。</p>
+          </article>
+          <article class="info-card">
+            <span class="card-index">02 / EFFICIENCY</span>
+            <h3>提升运行效率</h3>
+            <p>压缩研究、分析、汇报与协同周期，减少重复录入、材料整理和标准化运营工作。</p>
+          </article>
+          <article class="info-card">
+            <span class="card-index">03 / MEMORY</span>
+            <h3>沉淀组织记忆</h3>
+            <p>让历史项目、专家访谈、IC 观点和投后经验成为可以重新调用的机构知识。</p>
+          </article>
+          <article class="info-card accent">
+            <span class="card-index">04 / QUALITY</span>
+            <h3>增强判断质量</h3>
+            <p>通过证据追溯、跨文件验证、情景推演和反方论证减少遗漏与逻辑跳跃。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="chapter scenario-chapter" id="02" aria-labelledby="chapter-02-title">
+        <header class="chapter-head">
+          <div class="chapter-number">02</div>
+          <div>
+            <p class="chapter-kicker">Fundraising · investing · managing · exiting</p>
+            <h2 id="chapter-02-title">AI 场景全景：募、投、管、退，每个阶段都有可被重构的工作</h2>
+            <p class="chapter-intro">参考 Coatue、SignalFire、Moonfire、EQT、Earlybird 以及医疗方向 RA Capital、Foresite 的公开实践，AI 的机构价值并非集中在投研，而是贯穿资金、项目、资产和机构经营的完整循环。</p>
+          </div>
+        </header>
+
+        <div class="lifecycle-map" aria-label="AI在募投管退四阶段的应用全景">
+          <article class="lifecycle-stage">
+            <header class="stage-head"><span class="stage-seq">01 / FUNDRAISE</span><h3>募</h3></header>
+            <div class="stage-body">
+              <div class="stage-block"><b>LP 市场与目标地图</b><p>连接 LP 类型、配置偏好、历史出资、关键关系和策略匹配度，辅助目标分层与触达顺序。</p></div>
+              <div class="stage-block"><b>基金定位与募资叙事</b><p>把策略、团队、行业观点、组合构建、差异化能力和市场窗口转化为一致叙事。</p></div>
+              <div class="stage-block"><b>业绩、归因与案例材料</b><p>连接基金／项目回报、估值变化、投资与退出案例，形成 PPM、数据室和 Track Record 支撑材料。</p></div>
+              <div class="stage-block"><b>DDQ 与定制问答</b><p>从底层资料生成初稿、定位证据、识别缺口，并针对不同 LP 关注点准备会议简报。</p></div>
+              <div class="stage-block"><b>Pipeline、关系与成交管理</b><p>沉淀会谈、异议、承诺、材料需求和下一步动作；维护 CRM、认购进度、KYC 及交割事项。</p></div>
+              <div class="stage-block"><b>持续 IR 与下一期募资</b><p>生成季度报告、估值解释、组合更新和定制回复，并保持底层数据、历史披露与对外口径一致。</p></div>
+            </div>
+            <p class="stage-example">例：会前自动组合某 LP 的配置偏好、历史问题和最相关案例；会后更新异议、资料需求和跟进动作。</p>
+            <p class="practice-note"><b>公开参照：</b><a href="https://eqtgroup.com/about/digitalization" target="_blank" rel="noreferrer">EQT Investor Portal</a> 强调下一代投资者服务；<a href="https://www.moonfire.com/technology/" target="_blank" rel="noreferrer">Moonfire Launchpad</a> 展示结构化 Fundraising CRM 的应用方式。</p>
+          </article>
+
+          <article class="lifecycle-stage">
+            <header class="stage-head"><span class="stage-seq">02 / INVEST</span><h3>投</h3></header>
+            <div class="stage-body">
+              <div class="stage-block"><b>行业研究与 Thesis</b><p>持续追踪政策、技术、论文、专利、融资、交易和竞争格局，把变化转为影响、假设与行动。</p></div>
+              <div class="stage-block"><b>项目发现与弱信号</b><p>组合招聘、人才迁移、产品、流量、客户、合作、股权和人物网络，识别早期机会。</p></div>
+              <div class="stage-block"><b>初筛与历史比较</b><p>提取团队、产品、客户、融资和财务事实，匹配相似项目、投／弃原因及管理层验证问题。</p></div>
+              <div class="stage-block"><b>智能尽调与证据索引</b><p>跨合同、订单、财务、回款、法务和运营数据核验口径，分析集中度、续约、Cohort 与异常。</p></div>
+              <div class="stage-block"><b>IC、估值与组合构建</b><p>连接逻辑与证据，形成 Bull／Base／Bear Case、反方论证、敏感性和基金层面的配置判断。</p></div>
+              <div class="stage-block"><b>交易执行与决策留痕</b><p>追踪条款、先决条件、补充材料和审批事项，将最终判断、分歧及证据沉淀为机构记录。</p></div>
+            </div>
+            <p class="stage-example">医疗场景可进一步连接疾病机制、分子／靶点、临床试验、监管、医生患者、支付与市场准入证据。</p>
+            <p class="practice-note"><b>公开参照：</b><a href="https://www.coatue.com/ctek/documents/Coatue_-_CTEK_Prospectus__May_1__2026_.pdf" target="_blank" rel="noreferrer">Coatue Mosaic／Brain</a> 连接研究与知识；<a href="https://www.signalfire.com/beacon-ai" target="_blank" rel="noreferrer">SignalFire Beacon</a> 用于机会发现；<a href="https://www.racap.com/techatlas" target="_blank" rel="noreferrer">RA TechAtlas</a> 将科学证据转为投资判断；<a href="https://www.foresitecapital.com/strategy/" target="_blank" rel="noreferrer">Foresite</a> 让投资分析师、MD／PhD 与数据科学家协同覆盖医疗全生命周期。</p>
+          </article>
+
+          <article class="lifecycle-stage">
+            <header class="stage-head"><span class="stage-seq">03 / MANAGE</span><h3>管</h3></header>
+            <div class="stage-body">
+              <div class="stage-block"><b>经营监测与主动预警</b><p>综合预算、Pipeline、客户、产品、组织、现金、融资、舆情、诉讼和竞争动态识别领先信号。</p></div>
+              <div class="stage-block"><b>投前假设与董事会闭环</b><p>持续检验投资逻辑是否成立，追踪董事会问题、关键承诺、风险处置与后续行动。</p></div>
+              <div class="stage-block"><b>价值创造计划</b><p>VC 关注增长、组织和关键客户；PE 深化定价、采购、营运资本、销售效率与 EBITDA 改善。</p></div>
+              <div class="stage-block"><b>人才、客户与生态支持</b><p>进行关键人才搜索、客户／渠道匹配、市场扩张、合作伙伴识别和跨组合资源连接。</p></div>
+              <div class="stage-block"><b>融资与资本配置</b><p>更新现金消耗、融资窗口、跟投与储备策略，比较不同资金方案对项目和基金回报的影响。</p></div>
+              <div class="stage-block"><b>医疗专项运营</b><p>追踪临床方案、试验进度、患者招募、监管路径、CMC、供应商和同类管线数据。</p></div>
+            </div>
+            <p class="stage-example">例：收入增长但转化率、回款和现金安全边际恶化时，系统同步触发客户质量、预算、融资和成本方案。</p>
+            <p class="practice-note"><b>公开参照：</b><a href="https://www.signalfire.com/beacon-ai" target="_blank" rel="noreferrer">Beacon Talent／GTM</a> 支持人才和市场；<a href="https://eqtgroup.com/about/motherbrain" target="_blank" rel="noreferrer">EQT Motherbrain</a> 服务价值创造；<a href="https://www.racap.com/blackbird" target="_blank" rel="noreferrer">RA Blackbird</a> 将跨组合经验用于临床开发。</p>
+          </article>
+
+          <article class="lifecycle-stage">
+            <header class="stage-head"><span class="stage-seq">04 / EXIT</span><h3>退</h3></header>
+            <div class="stage-body">
+              <div class="stage-block"><b>退出准备度诊断</b><p>持续评估业绩质量、组织稳定性、合规、审计、数据完整性和关键风险是否满足退出要求。</p></div>
+              <div class="stage-block"><b>买方、Sponsor 与合作方图谱</b><p>连接战略逻辑、业务互补、历史交易、关键关系和潜在协同，动态维护优先买方名单。</p></div>
+              <div class="stage-block"><b>市场窗口与可比交易</b><p>追踪资本市场、估值水平、监管变化、同类交易和买方动作，识别更合适的退出时点。</p></div>
+              <div class="stage-block"><b>退出情景与回报推演</b><p>比较 IPO、并购、股权转让等路径，并测算不同时间、估值、稀释和交易结构下的回报。</p></div>
+              <div class="stage-block"><b>卖方材料与交易问答</b><p>提前组织经营证据、价值创造结果、数据室、管理层问答和潜在风险处置方案。</p></div>
+              <div class="stage-block"><b>归因、LP 叙事与经验回流</b><p>解释回报来源和关键转折，将退出结果反馈到募资案例、投前假设和下一轮资产管理。</p></div>
+            </div>
+            <p class="stage-example">医疗退出还需连接临床与监管里程碑、管线差异化、潜在药企战略缺口和合作／收购逻辑。</p>
+            <p class="practice-note"><b>公开参照：</b><a href="https://earlybird.com/eagle-eye" target="_blank" rel="noreferrer">Earlybird EagleEye</a> 明确覆盖价值创造与潜在收购方；<a href="https://www.racap.com/techatlas" target="_blank" rel="noreferrer">RA TechAtlas</a> 以大型药企视角绘制策略图，支持合作与退出判断。</p>
+          </article>
+        </div>
+
+        <div class="architecture-base" aria-label="贯穿募投管退的机构运营与数字底座">
+          <div class="base-heading"><strong>机构运营与数字底座｜贯穿募投管退</strong><span>KNOWLEDGE · AUTOMATION · CONTROL · BOUNDARY</span></div>
+          <div class="base-grid">
+            <div class="base-card"><b>机构数据与知识</b><p>连接 LP、项目、人物、基金、交易、文件、会议、观点和指标，统一口径、来源、版本与权限。</p></div>
+            <div class="base-card"><b>工作流与 AI Agents</b><p>把研究、会议、报告、审批、CRM、监控和材料生产连接为可复用流程，而不是分散工具。</p></div>
+            <div class="base-card"><b>运营控制与合规</b><p>追踪任务、异常、敏感信息、对外口径、审批和审计留痕，减少重复操作但保留关键控制。</p></div>
+            <div class="base-card"><b>评估与动态边界</b><p>持续检验准确性、证据、效率、采用度和业务结果，调整 AI 主导、人机协同与人工负责的边界。</p></div>
+          </div>
+        </div>
+
+        <p class="source-note">注：公开机构实践仅用于说明能力边界和组织方式，均来自机构官网或正式公开材料，并不代表对其完整内部流程的判断。</p>
+        <p class="chapter-close">真正的机构级能力，不是让某一个环节多一个工具，而是让募投管退共享数据、知识、工作流与反馈。</p>
+      </section>
+
+      <section class="chapter" id="03" aria-labelledby="chapter-03-title">
+        <header class="chapter-head">
+          <div class="chapter-number">03</div>
+          <div>
+            <p class="chapter-kicker">Explore · validate · compound</p>
+            <h2 id="chapter-03-title">机构级价值来自持续的探索与验证，而不是一次工具选型</h2>
+            <p class="chapter-intro">模型能力、数据条件和业务需求都在变化。把单点机会转化为可复用能力，需要持续完成一套从场景识别到效果复盘的闭环。</p>
+          </div>
+        </header>
+
+        <div class="loop">
+          <article class="loop-step"><span>01 / PRIORITISE</span><h3>发现并排序机会</h3><p>持续观察业务痛点与模型能力，按价值、可行性和风险维护场景机会地图。</p></article>
+          <article class="loop-step"><span>02 / PROTOTYPE</span><h3>拆解并验证工作流</h3><p>明确输入、判断节点、证据要求和人工环节，用真实材料快速构建原型。</p></article>
+          <article class="loop-step"><span>03 / EVALUATE</span><h3>评估质量与边界</h3><p>检验准确性、证据追溯、遗漏风险、数据权限和实际使用体验。</p></article>
+          <article class="loop-step"><span>04 / EMBED</span><h3>嵌入并复盘沉淀</h3><p>把有效能力连接到已有流程，跟踪效果并沉淀可复用标准与组件。</p></article>
+        </div>
+
+        <p class="action-title">持续探索可以形成四类可复用产出</p>
+        <div class="four-up">
+          <article class="info-card compact"><span class="card-index">01</span><h3>场景机会地图</h3><p>看清哪些问题值得优先验证。</p></article>
+          <article class="info-card compact"><span class="card-index">02</span><h3>真实业务原型</h3><p>用项目材料判断价值是否成立。</p></article>
+          <article class="info-card compact"><span class="card-index">03</span><h3>评估与风险标准</h3><p>形成准确性、证据和权限边界。</p></article>
+          <article class="info-card compact accent"><span class="card-index">04</span><h3>可复用工作流</h3><p>把有效方法沉淀为机构能力。</p></article>
+        </div>
+        <p class="chapter-close">当这些工作被持续完成，AI 才会从若干单点工具，逐步成为可复用、可验证、可迭代的机构能力。</p>
+      </section>
+
+      <section class="chapter boundary-chapter" id="04" aria-labelledby="chapter-04-title">
+        <header class="chapter-head">
+          <div class="chapter-number">04</div>
+          <div>
+            <p class="chapter-kicker">Dynamic human–AI boundary</p>
+            <h2 id="chapter-04-title">人机边界不是一条固定线，而是一项需要持续完成的机构工作</h2>
+            <p class="chapter-intro">哪些工作交给 AI、哪些必须由人负责、哪些最适合协同，不宜靠一次工具选型或制度设定决定。随着模型能力、数据条件、风险认识和团队使用方式变化，最优边界也会持续移动。</p>
+          </div>
+        </header>
+
+        <div class="boundary-spectrum" aria-label="动态人机分工边界">
+          <article class="boundary-zone ai">
+            <span class="zone-index">01 / AI-LED</span>
+            <h3>适合由 AI 主导</h3>
+            <ul class="zone-list">
+              <li>大规模阅读、提取、分类与格式转换；</li>
+              <li>跨文件比较、证据定位和异常识别；</li>
+              <li>常规监测、材料初稿与数据更新；</li>
+              <li>规则清晰、结果可复核的重复流程。</li>
+            </ul>
+          </article>
+
+          <article class="boundary-zone collab">
+            <span class="zone-index">02 / COPILOT</span>
+            <h3>适合人机协同</h3>
+            <ul class="zone-list">
+              <li>行业研究、项目初筛与管理层问题设计；</li>
+              <li>尽调核验、情景推演与 IC 准备；</li>
+              <li>投后预警、退出分析和 IR 材料；</li>
+              <li>AI 提供证据与选项，人完成复核、判断和行动。</li>
+            </ul>
+          </article>
+
+          <article class="boundary-zone human">
+            <span class="zone-index">03 / HUMAN-LED</span>
+            <h3>必须由人负责</h3>
+            <ul class="zone-list">
+              <li>识人、建立关系和理解隐性动机；</li>
+              <li>谈判、利益协调与复杂博弈；</li>
+              <li>信息不足时形成非共识判断；</li>
+              <li>关键对外沟通、受托责任与最终决策。</li>
+            </ul>
+          </article>
+        </div>
+
+        <p class="action-title">边界探索需要持续完成四类工作</p>
+        <div class="four-up">
+          <article class="info-card compact"><span class="card-index">01 / TRACK</span><h3>跟踪能力变化</h3><p>持续理解模型、工具、数据连接、安全能力和行业实践出现了哪些新可能。</p></article>
+          <article class="info-card compact"><span class="card-index">02 / TEST</span><h3>用真实材料试验</h3><p>在投资、IR、投后和运营工作流中验证质量、效率、使用体验与实际限制。</p></article>
+          <article class="info-card compact"><span class="card-index">03 / CALIBRATE</span><h3>校准分工与护栏</h3><p>根据证据、准确性、权限和风险，判断由 AI 主导、人机协同还是人负责。</p></article>
+          <article class="info-card compact accent"><span class="card-index">04 / UPDATE</span><h3>更新最优运行状态</h3><p>把有效方法嵌入流程，复盘使用与业务结果，并随能力演进持续调整。</p></article>
+        </div>
+
+        <div class="foundation-row" aria-label="边界探索的三类机构产出">
+          <div class="foundation-item"><b>动态边界清单</b><p>明确每类任务当前最适合的 AI、人机协同与人工责任位置。</p></div>
+          <div class="foundation-item"><b>评价与治理标准</b><p>形成证据、准确性、权限、保密、审批和异常处理要求。</p></div>
+          <div class="foundation-item"><b>机构适配方案</b><p>沉淀适合本机构的数据、工具、工作流和协作方式，并持续更新。</p></div>
+        </div>
+
+        <blockquote class="final-word">目标不是尽可能多地使用 AI，而是随着能力演进，持续找到最适合本机构的人机分工、工具组合与运行状态。</blockquote>
+      </section>
+
+      <footer class="report-footer">
+        <strong>CAPITAL INTELLIGENCE · EXECUTIVE BRIEF</strong>
+        <span>内容来源：AI在VC_PE机构中的价值.md · 管理层精简版</span>
+      </footer>
+    </main>
+  </div>
+
+  <button class="back-to-top" id="back-to-top" aria-label="返回顶部" title="返回顶部">↑</button>
+
+  <script>
+    (() => {
+      const progress = document.getElementById('reading-progress');
+      const backToTop = document.getElementById('back-to-top');
+      const select = document.getElementById('chapter-select');
+      const sections = [...document.querySelectorAll('.chapter')];
+      const links = [...document.querySelectorAll('.toc a')];
+
+      const updateScrollUI = () => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
+        progress.style.width = `${Math.min(1, Math.max(0, ratio)) * 100}%`;
+        backToTop.classList.toggle('show', window.scrollY > 720);
+      };
+
+      const setActive = (id) => {
+        links.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === `#${id}`));
+        if (select && select.value !== id) select.value = id;
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      }, { rootMargin: '-18% 0px -60% 0px', threshold: [0, .1, .25] });
+
+      sections.forEach((section) => observer.observe(section));
+      window.addEventListener('scroll', updateScrollUI, { passive: true });
+      window.addEventListener('resize', updateScrollUI);
+      backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      select.addEventListener('change', () => document.getElementById(select.value)?.scrollIntoView({ behavior: 'smooth' }));
+      updateScrollUI();
+      setActive('01');
+    })();
+  </script>
+</body>
+</html>
