@@ -8948,6 +8948,10 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     + '.ci-ax{font-size:10px;fill:var(--muted);}'
     + '.ci-sowhat{grid-column:1/-1;display:flex;gap:10px;align-items:baseline;margin:6px 0 2px;padding:10px 14px;border-left:3px solid var(--amber);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--amber) 8%,var(--surface));font-size:12.5px;line-height:1.65;color:var(--text-strong);}'
     + '.ci-sowhat>b{flex:none;color:var(--amber);font-size:11px;font-weight:700;letter-spacing:.06em;}'
+    + '.ci-note-c{display:block;font-size:12px;font-weight:600;line-height:1.55;color:var(--text-strong);}'
+    + '.ci-note-s{display:block;margin-top:5px;}'
+    + '.ci-note-i{display:block;position:relative;padding-left:12px;font-size:11px;line-height:1.65;color:var(--muted);}'
+    + '.ci-note-i::before{content:"·";position:absolute;left:2px;}'
     + '.ci-sowhat:where([data-theme="dark"] *){background:rgba(251,191,36,.09);}'
     + '.ci-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;white-space:nowrap;}'
     + '.ci-status i{width:8px;height:8px;border-radius:50%;flex:none;}'
@@ -9505,6 +9509,15 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
   }
 
   // C7 靶点热度表
+  /* ---------- 解读版式：结论加粗一行 + 淡色补充分条 ---------- */
+  function note2(concl, supps) {
+    var h = '<p class="lp-note"><strong class="ci-note-c">' + concl + '</strong>';
+    if (supps && supps.length) {
+      h += '<span class="ci-note-s">' + supps.map(function (x) { return '<span class="ci-note-i">' + x + '</span>'; }).join('') + '</span>';
+    }
+    return h + '</p>';
+  }
+
   /* ---------- 交易节奏：98 笔按季度聚合（笔数堆叠柱 + 总额线） ---------- */
   function chartTempo() {
     var MW = window.ConvergenceMarketWide;
@@ -9618,7 +9631,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       }).join('')
       + '<div class="ci-conf"><span>置信度</span><div class="lp-track"><div class="lp-fill" style="width:' + t.conf + '%;background:var(--violet)"></div></div>'
       + '<strong style="color:var(--violet)">' + t.conf + '%</strong></div>'
-      + '<p class="lp-note">语料来源：' + esc(t.src) + '。AI 产出为汇编层分析演示，不构成投资建议。</p>'
+      + note2('AI 产出为汇编层分析演示，不构成投资建议', ['语料来源：' + esc(t.src)])
       + '</div></div>';
     return h;
   }
@@ -9790,8 +9803,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     return '<section class="lp-panel lp-wide">' + panelHead('疾病领域', total + ' 笔汇编 · 人工归类', 'BD 交易的疾病领域分布：占比与年度构成')
       + '<div class="ci-two"><div><div class="ci-sub-h">领域占比（按交易笔数，n=' + total + '）</div><div class="ci-share-list">' + shareRows + '</div></div>'
       + '<div><div class="ci-sub-h">年度构成（100% 堆叠 · 柱顶数字 = 当年笔数）</div><div style="max-width:520px;margin:0 auto">' + svg + '</div>' + legend + '</div></div>'
-      + '<p class="lp-note">口径诚实边界：领域为基于公开报道的人工归类（多适应症资产按主导领域归并），n=98 为代表性汇编样本而非市场普查，占比仅作结构示意。'
-      + '肿瘤仍是绝对主轴（' + oncoPct + '%），但 2025–2026 代谢领域（GLP-1 系）已贡献 ' + metabN + ' 笔，与下方「靶点热度」表互为印证。</p></section>';
+      + note2('肿瘤仍是绝对主轴（' + oncoPct + '%），代谢（GLP-1 系）已成第二增长极', ['2025–2026 代谢领域已贡献 ' + metabN + ' 笔，与下方「靶点热度」表互为印证', '口径诚实边界：领域为基于公开报道的人工归类（多适应症资产按主导领域归并）', 'n=98 为代表性汇编样本而非市场普查，占比仅作结构示意'])
+      + '</section>';
   }
 
   function stagePanel() {
@@ -9824,9 +9837,8 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     return '<section class="lp-panel lp-wide">' + panelHead('开发阶段', total + ' 笔汇编 · 人工归类（公告时点）', 'BD 资产的开发阶段结构：License 买早期，M&A 买确定')
       + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>中国 License-out（' + licRows.length + ' 笔）</span><span><i style="background:#60A5FA"></i>全球 M&amp;A（' + mnaRows.length + ' 笔）</span></div>'
       + '<div class="ci-share-list" style="max-width:720px">' + rowsHtml + '</div>'
-      + '<p class="lp-note">口径诚实边界：阶段取交易公告时点的公开口径，人工归类；平台 / 批量授权（多资产组合）单列「平台合作」，不强行归入单一阶段。'
-      + '结构性结论：中国 License-out 中 ' + licEarlyPct + '% 集中在平台合作 + 临床前 + 1 期——买方以期权式结构锁定早期资产（「摘青苗」）；'
-      + '全球 M&A 中 ' + mnaCommPct + '% 为临床 2 期及以后的成熟资产——买的是临近兑现的确定性（其中商业化资产约占三分之一）。两类交易处于风险曲线的两端，定价逻辑（首付占比、里程碑结构）因此截然不同，与「交易结构」面板互相解释。</p></section>';
+      + note2('License 买早（' + licEarlyPct + '% 平台合作 + 临床前 + 1 期）、M&A 买熟（' + mnaCommPct + '% 临床 2 期及以后）——两类交易处于风险曲线的两端', ['买方以期权式结构锁定早期资产（「摘青苗」）；M&A 买临近兑现的确定性（商业化资产约占三分之一）——定价逻辑因此截然不同，与「交易结构」面板互相解释', '口径诚实边界：阶段取交易公告时点的公开口径，人工归类', '平台 / 批量授权（多资产组合）单列「平台合作」，不强行归入单一阶段'])
+      + '</section>';
   }
 
   /* ---------- 代表性交易汇编 TOP DEALS（自原「市场全景」页迁入，数据 = window.ConvergenceMarketWide） ---------- */
@@ -9851,7 +9863,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="lp-scroll"><table class="lp-tbl"><thead><tr>'
       + '<th>时间</th><th>卖方 → 买方</th><th>靶点 / 模态</th><th>类型</th><th style="text-align:right">首付</th><th style="text-align:right">总额</th><th>来源</th>'
       + '</tr></thead><tbody>' + rows + '</tbody></table></div>'
-      + '<p class="lp-note">共汇编 ' + MW.deals.length + ' 笔代表性交易，此处显示总额 TOP 16；其中 38 笔的三层公开市场逻辑拆解见下方「交易解剖室」。汇编口径未逐笔回一手核实（逐笔核实版见「自建管线分析」页）。</p></section>';
+      + note2('共汇编 ' + MW.deals.length + ' 笔代表性交易，此处显示总额 TOP 16', ['其中 38 笔的三层公开市场逻辑拆解见下方「交易解剖室」', '汇编口径未逐笔回一手核实（逐笔核实版见「自建管线分析」页）']) + '</section>';
   }
 
   /* ---------- TSR 对比条（Bain 2026） ---------- */
@@ -9925,30 +9937,29 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="lp-panel lp-wide">' + panelHead('宏观剪刀差', 'DealForma · IQVIA 合成', '量减价增：买方更少、更贵、更挑剔')
       + '<div class="lp-legend"><span><i style="background:var(--blue)"></i>交易数量（左轴，笔）</span><span><i style="background:var(--amber)"></i>平均单笔价值（右轴）</span></div>'
       + '<div style="max-width:880px;margin:0 auto">' + chartScissors() + '</div>'
-      + '<p class="lp-note">2026H1▲ 为半年数据。交易数量连续第 4 年收缩，平均单笔价值五年近翻倍——买方策略从「铺量」转向「重仓确定性」。'
-      + '另据医药魔方：2026Q1 中国出海交易 $59.6B，单季已超 2024 全年。</p></section>'
+      + note2('买方策略从「铺量」转向「重仓确定性」——交易数量连续第 4 年收缩，平均单笔价值五年近翻倍', ['2026H1▲ 为半年数据', '另据医药魔方：2026Q1 中国出海交易 $59.6B，单季已超 2024 全年']) + '</section>'
 
       + '<section class="lp-panel lp-wide">' + panelHead('交易节奏', '98 笔汇编按季度聚合', '2023Q4 单点爆发 → 2025 起持续高位平台')
       + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>License（笔数）</span><span><i style="background:#60A5FA"></i>M&A（笔数）</span><span><i style="background:var(--amber)"></i>季度总额（右轴）</span></div>'
       + '<div style="max-width:880px;margin:0 auto">' + chartTempo() + '</div>'
-      + '<p class="lp-note">2023Q4 为百利天恒 × BMS 等集中签约的单点爆发；2025 起进入持续高位平台期——连续 5 个季度 ≥5 笔，2025Q4–2026Q1 连续两季总额 $56B+ 创样本纪录。节奏本身即信号：买方已从「择机捡漏」转为「排队锁定」。末季标 * 为不完整季度。</p></section>'
+      + note2('买方已从「择机捡漏」转为「排队锁定」——2025 起连续 5 个季度 ≥5 笔，2025Q4–2026Q1 连续两季总额 $56B+ 创样本纪录', ['2023Q4 为百利天恒 × BMS 等集中签约的单点爆发', '末季标 * 为不完整季度']) + '</section>'
       + '<div class="ci-sowhat"><b>这意味着</b><span>量的熊市 + 价的牛市同时成立——卖方窗口比账面数字更窄，确定性资产的议价权在卖方手里；观望的成本是一年比一年贵的入场价。</span></div>'
       + '<div class="ci-zone"><span class="ci-zone-tag">② 热点 · 钱往哪流</span><span class="ci-zone-q">钱在往哪个领域、模态、靶点流——你的组合在主航道上吗</span></div>'
       // C5 模态斜坡 + C2 中国占比
       + '<section class="lp-panel">' + panelHead('模态流向', 'DealForma 合成', '交易价值份额：2021 → 2025')
       + '<div style="max-width:440px;margin:0 auto">' + chartSlope() + '</div>'
-      + '<p class="lp-note">ADC + 双抗合计份额 12% → 34%；ADC+双抗占肿瘤领域交易价值份额 14% → 39%。</p></section>'
+      + note2('ADC + 双抗合计份额 12% → 34%——新模态已从补充变主角', ['ADC+双抗占肿瘤领域交易价值份额 14% → 39%']) + '</section>'
 
       + '<section class="lp-panel">' + panelHead('地域崛起', 'IQVIA · 医药魔方', '中国资产占大药企引进比例')
       + '<div style="max-width:440px;margin:0 auto">' + chartChina() + '</div>'
-      + '<p class="lp-note">TOP20 MNC 引进中国资产金额占其交易总额约 40%（2025 前三季 $39.4B）；摩根士丹利：中美研发差距缩至 3.7 年，III 期单受试者成本仅为美国 36–40%，ADC 入组速度 1.5–2.5×。</p></section>'
+      + note2('TOP20 MNC 引进中国资产金额占其交易总额约 40%（2025 前三季 $39.4B）', ['摩根士丹利：中美研发差距缩至 3.7 年，III 期单受试者成本仅为美国 36–40%，ADC 入组速度 1.5–2.5×']) + '</section>'
 
       // 疾病领域 × 开发阶段（98 笔汇编下钻）
       + areaPanel()
       // C7 靶点热度
       + '<section class="lp-panel lp-wide">' + panelHead('靶点热度', 'DealForma · 公司公告', '八大竞价赛道：热度、趋势与关键信号')
       + targetsTable()
-      + '<p class="lp-note">琥珀色 = 热度 ≥80 的白热化赛道。热度指数综合交易密度、首付溢价与买方竞价家数（汇编层测算）；拥挤度按样本内同靶点交易笔数分档（≥12 拥挤 / 6–11 升温 / ≤5 早期）。</p></section>'
+      + note2('GLP-1/代谢、PD-1/VEGF、TROP2 为白热化赛道（热度 ≥80）', ['热度指数综合交易密度、首付溢价与买方竞价家数（汇编层测算）', '拥挤度按样本内同靶点交易笔数分档（≥12 拥挤 / 6–11 升温 / ≤5 早期）']) + '</section>'
 
       + '<div class="ci-sowhat"><b>这意味着</b><span>主航道高度收敛——「肿瘤 × ADC/双抗 × 临床前至 1 期」是拥挤区、也是流动性最好的退出区；冷门领域资产想成交，需要自带「下一个共识」的叙事能力。</span></div>'
       + '<div class="ci-zone"><span class="ci-zone-tag">③ 定价 · 交易怎么算钱</span><span class="ci-zone-q">首付、结构、阶段——谈判桌上的定价锚</span></div>'
@@ -9962,8 +9973,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<div class="ci-gloss">统一按公告口径拆分——仅 SSGJ-707 有里程碑细分的公开拆分，其余按「首付 / 里程碑」两段呈现，不为整齐而编造细分。首付占比越低，风险越往后端移（期权式锁定）</div>'
       + dealStructRows()
       + '<div class="ci-gloss" style="margin:8px 2px 0">如何与中位趋势并读：4 笔均为当年规模最大的头部交易，其中 3 笔首付占比低于当年中位；辉瑞 SSGJ-707 为竞价溢价的极端值。中位交易风险后移与头部资产首付溢价同时为真——K 型分化正是 2025 年的市场特征。</div>'
-      + '<p class="lp-note">「摘青苗」结构：2025 年临床前至 I 期资产占中国出海交易 68–70%；NewCo（为交易新设海外公司、以股权 + 里程碑锁定资产）模式累计 14 起（2025H1 5 起）——买方用期权式结构锁定早期资产。'
-      + '中国出海口径首付占比中位数同样逐年走低（约 14% → 6.5%，公开盘点 62 笔可比交易、中位首付 $1.6 亿），下行斜率较全球口径更陡。</p></section>'
+      + note2('「摘青苗」结构：2025 年临床前至 I 期资产占中国出海交易 68–70%——买方用期权式结构锁定早期资产', ['NewCo（为交易新设海外公司、以股权 + 里程碑锁定资产）模式累计 14 起（2025H1 5 起）', '中国出海口径首付占比中位数同样逐年走低（约 14% → 6.5%，公开盘点 62 笔可比交易、中位首付 $1.6 亿），下行斜率较全球口径更陡']) + '</section>'
 
       + stagePanel()
 
@@ -9976,20 +9986,18 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="lp-panel lp-wide">' + panelHead('买方画像', 'DealForma · 公司公告', '四象限：谁在买、怎么买——气泡大小 = 平均首付占比')
       + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>高频扫货型</span><span><i style="background:#60A5FA"></i>均衡型</span><span><i style="background:#FBBF24"></i>孤注一掷型</span><span style="color:var(--muted)">悬停（手机点按）气泡查看明细</span></div>'
       + '<div style="max-width:760px;margin:0 auto">' + chartQuadrant() + '<div class="ci-sk-readout" id="ciQbReadout">悬停（手机点按）气泡，此处显示该买方明细</div>' + tsrStrip() + '</div>'
-      + '<p class="lp-note">Bain M&A Report 2026：连续小额并购者年均 TSR 24%，是孤注一掷型（6%）的 4 倍——「程序化并购」是过去五年唯一被验证的超额收益策略。'
-      + '典型连续收购者：礼来、诺华、强生（年均多笔中小型 BD，围绕核心治疗领域补管线）；超大并购型：辉瑞（Seagen $43B）、安进（Horizon $27.8B）、AZ（Alexion $39B）——SVB Leerink 口径下超大并购后 3 年 TSR 中位数为负。</p></section>'
+      + note2('「程序化并购」是过去五年唯一被验证的超额收益策略——连续小额并购者年均 TSR 24%，是孤注一掷型（6%）的 4 倍（Bain M&A Report 2026）', ['典型连续收购者：礼来、诺华、强生（年均多笔中小型 BD，围绕核心治疗领域补管线）', '超大并购型：辉瑞（Seagen $43B）、安进（Horizon $27.8B）、AZ（Alexion $39B）——SVB Leerink 口径下超大并购后 3 年 TSR 中位数为负']) + '</section>'
 
       // C6 桑基
       + '<section class="lp-panel lp-wide">' + panelHead('地域流向', 'DealForma 合成 · 2024–2025 聚合', '桑基图：中国资产，全球买单')
       + '<div class="lp-legend"><span><i style="background:#2DD4BF"></i>高亮流 = 中国来源资产（$147B，81% 流向美欧买方）</span></div>'
       + '<div style="max-width:700px;margin:0 auto">' + chartSankey() + '</div>'
       + '<div class="ci-sk-readout" id="ciSkReadout">悬停（手机点按）流带，此处显示该走廊的分项金额</div>'
-      + '<p class="lp-note">悬停或点按流带可查看各走廊的分项金额。'
-      + '另据 Clarivate：China-out 占全球 out-licensing 比例从 2020 年约 5% 升至 2025H1 约 32%；中国 → 美国为最大走廊。</p></section>'
+      + note2('中国 → 美国为最大走廊；China-out 占全球 out-licensing 从 2020 年约 5% 升至 2025H1 约 32%（Clarivate）', ['悬停或点按流带可查看各走廊的分项金额']) + '</section>'
 
       + '<section class="lp-panel lp-wide">' + panelHead('潜在买家扫描', 'LOE 悬崖 × 在华动作', '谁还没出手？——未来 12–24 个月的新增需求方')
       + buyerScan()
-      + '<p class="lp-note">供给端看卖方管线、需求端看买方悬崖：悬崖最深且尚未重仓的买家（罗氏、礼来、强生），是未来 12–24 个月最可能的新增需求方。状态为基于本页 98 笔汇编 + 公开报道的定性判断（汇编层人工归类，非实时扫描）。</p></section>'
+      + note2('悬崖最深且尚未重仓的买家（罗氏、礼来、强生），是未来 12–24 个月最可能的新增需求方', ['供给端看卖方管线、需求端看买方悬崖', '状态为基于本页 98 笔汇编 + 公开报道的定性判断（汇编层人工归类，非实时扫描）']) + '</section>'
       + '<div class="ci-sowhat"><b>这意味着</b><span>程序化买家（默沙东、AZ、诺华）竞价纪律最强、复购概率最高，是卖方首选接触对象；观望中的 LOE 重压买家则是下一波行情的增量——跟踪他们的出手信号比跟踪卖方管线更有前瞻性。</span></div>'
       + '<div class="ci-zone"><span class="ci-zone-tag">⑤ 启示 · 市场含义</span><span class="ci-zone-q">98 笔汇编背后的公开市场逻辑与启示</span></div>'
       // 交易解剖室（自原「市场全景」页迁入，38 笔逐笔公开市场逻辑）
@@ -10008,7 +10016,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       // 双层互证
       + '<section class="lp-panel lp-wide">' + panelHead('双层互证', 'Cross-Validation', '研报说的，实时数据认不认？')
       + xrefTable()
-      + '<p class="lp-note">互证方法：同一维度下，汇编层给「交易端结果」，实时层给「研发端先行指标」；方向一致则结论加强，背离则标注预警。实时层数值快照 2026-07-17，最新值见下篇对应面板。</p></section>'
+      + note2('互证方法：方向一致则结论加强，背离则标注预警', ['同一维度下，汇编层给「交易端结果」，实时层给「研发端先行指标」', '实时层数值快照 2026-07-17，最新值见下篇对应面板']) + '</section>'
       + '</div>'
 
       + '<div class="ci-sowhat"><b>这意味着</b><span>中国资产的定价权正在从「成本优势」转向「临床数据话语权」——能讲清全球 III 期故事的资产拿溢价，其余按期权价成交；对投资机构的含义是：押注点应放在数据读出前夜，而非交易官宣之后。</span></div>'
@@ -10916,7 +10924,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
             + '<div class="lp-fill" style="width:' + (r.v.p2 / max * 100).toFixed(1) + '%;background:var(--blue)"></div>'
             + '<div class="lp-fill" style="width:' + (r.v.p1 / max * 100).toFixed(1) + '%;background:var(--cyan)"></div></div>'
             + '<span class="val">' + r.v.n + ' 项' + (late ? ' <span style="color:var(--muted);font-weight:400">· 临床 2 期+ ' + late + '</span>' : '') + '</span></div>';
-        }).join('') + '<p class="lp-note"><b>读法：</b>条带按临床 3 期（紫）/ 2 期（蓝）/ 1 期（青）分段——右端越偏紫，管线越接近交易兑现期。基于 ' + fmt(studies.length) + ' 项 ADC/双抗试验（2023 至今）申办方聚合。</p>';
+        }).join('') + '<p class="lp-note"><strong class="ci-note-c">右端越偏紫，管线越接近交易兑现期</strong><span class="ci-note-s"><span class="ci-note-i">条带按临床 3 期（紫）/ 2 期（蓝）/ 1 期（青）分段</span><span class="ci-note-i">基于 ' + fmt(studies.length) + ' 项 ADC/双抗试验（2023 至今）申办方聚合</span></span></p>';
       }
     });
   }
@@ -11013,7 +11021,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<h2>研发供给双引擎：全球行业试验启动 × FDA 批准节奏</h2></div></div>'
       + '<div class="lp-legend"><span><i style="background:var(--blue)"></i>全球行业申办试验启动（左轴 · 项/年）</span><span><i style="background:var(--amber)"></i>FDA 原始申请批准（右轴 · 件/年 · ORIG 口径）</span></div>'
       + '<div id="lpChartMacro" style="max-width:760px;margin:0 auto">' + skeleton(250) + '</div>'
-      + '<p class="lp-note">2026▲ = 截至 2026-07-17 的年内数据（半透明柱）。试验启动衡量「管线供给」，批准数衡量「兑现出口」——两者的剪刀差即 BD 买方市场的资产库存。</p></section>'
+      + '<p class="lp-note"><strong class="ci-note-c">试验启动与批准数的剪刀差 = BD 买方市场的资产库存</strong><span class="ci-note-s"><span class="ci-note-i">试验启动衡量「管线供给」，批准数衡量「兑现出口」</span><span class="ci-note-i">2026▲ = 截至 2026-07-17 的年内数据（半透明柱）</span></span></p></section>'
 
       + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">模态流向</span><span class="lp-src">CT.gov · 6 模态 × 6 年</span></div>'
       + '<h2>资金尚未投票，管线已经投票：六类模态的试验启动曲线</h2></div></div>'
@@ -11029,7 +11037,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="lp-panel"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">靶点热度</span><span class="lp-src">CT.gov · 近 24 月 vs 前 24 月</span></div>'
       + '<h2>靶点竞价热力图</h2></div></div>'
       + '<div id="lpTargets">' + skeleton(280) + '</div>'
-      + '<p class="lp-note"><b>读法：</b>琥珀色 = 环比增长 ≥30% 的「升温靶点」。试验启动密度领先交易热度——靶点拥挤度是未来交易溢价的先行信号。</p></section>'
+      + '<p class="lp-note"><strong class="ci-note-c">靶点拥挤度是未来交易溢价的先行信号——试验启动密度领先交易热度</strong><span class="ci-note-s"><span class="ci-note-i">琥珀色 = 环比增长 ≥30% 的「升温靶点」</span></span></p></section>'
 
       + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">研发火力</span><span class="lp-src">CT.gov · 客户端聚合</span></div>'
       + '<h2>谁在重仓 ADC / 双抗：申办方战力榜（2023 至今）</h2></div></div>'
@@ -11038,7 +11046,7 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       + '<section class="lp-panel lp-wide"><div class="lp-head"><div><div class="lp-kicker"><span class="lp-badge">交易标的雷达</span><span class="lp-src">CT.gov · 近 12 月新进后期</span></div>'
       + '<h2>明日的交易管线：新进入临床 2/3 期（Ph2/3）的热模态资产</h2></div></div>'
       + '<div id="lpWatchlist">' + skeleton(300) + '</div>'
-      + '<p class="lp-note">筛选：ADC / 双抗 / GLP-1 · 行业申办 · 启动于近 12 个月 · 按启动日期倒序。NCT 号可点击直达注册页——每一条都是可核验的一手证据。</p></section>'
+      + '<p class="lp-note"><strong class="ci-note-c">每一条都是可核验的一手证据——NCT 号点击直达注册页</strong><span class="ci-note-s"><span class="ci-note-i">筛选：ADC / 双抗 / GLP-1 · 行业申办 · 启动于近 12 个月 · 按启动日期倒序</span></span></p></section>'
       + '</div>'
 
       + '<div class="lp-foot"><strong>口径与限制（诚实边界）：</strong>① 数据为 ClinicalTrials.gov 注册信息与 openFDA 申报记录的原始计数，未做公司名归一化、适应症去重或人工核验；'
