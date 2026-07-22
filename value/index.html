@@ -14,7 +14,6 @@
       --blue: #0875c1;
       --blue-deep: #0b3658;
       --blue-pale: #eaf4fa;
-      --sky: #cfe9f7;
       --paper: #ffffff;
       --canvas: #eef2f4;
       --mist: #f5f7f8;
@@ -50,11 +49,6 @@
       color: inherit;
     }
 
-    button,
-    select {
-      font: inherit;
-    }
-
     .reading-progress {
       position: fixed;
       inset: 0 auto auto 0;
@@ -65,31 +59,6 @@
       transition: width 80ms linear;
     }
 
-    .hero-shell {
-      width: min(var(--max), 100%);
-      margin: 0 auto;
-      padding: 28px 34px 0;
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-    }
-
-    .hero {
-      display: grid;
-      min-height: calc(100vh - 92px);
-      grid-template-columns: minmax(0, 1.48fr) minmax(340px, .62fr);
-      overflow: hidden;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-copy {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: clamp(48px, 5vw, 78px) clamp(42px, 5.4vw, 86px) 42px;
-    }
-
-    .eyebrow,
     .chapter-kicker,
     .card-kicker {
       color: var(--blue);
@@ -99,209 +68,85 @@
       text-transform: uppercase;
     }
 
-    .hero h1 {
-      max-width: 890px;
-      margin: 20px 0 26px;
-      color: var(--ink-strong);
-      font-size: clamp(48px, 5.4vw, 82px);
-      font-weight: 700;
-      letter-spacing: -.055em;
-      line-height: 1.03;
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
-    .hero h1 span {
-      color: var(--blue);
-    }
-
-    .hero-lede {
-      max-width: 780px;
-      margin: 0;
-      color: var(--muted);
-      font-size: clamp(18px, 1.55vw, 24px);
-      line-height: 1.55;
-    }
-
-    .process-line {
+    .deck-breadcrumb {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      margin-top: 54px;
-      border-top: 1px solid var(--line-strong);
+      grid-template-columns: minmax(140px, .68fr) repeat(4, minmax(0, 1fr));
+      margin-bottom: 36px;
+      border: 1px solid var(--line);
+      background: white;
     }
 
-    .process-step {
-      position: relative;
-      padding: 18px 20px 0 0;
-      color: var(--ink-strong);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .process-step::before {
-      position: absolute;
-      top: -4px;
-      left: 0;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--blue);
-      content: "";
-    }
-
-    .process-step:not(:last-child)::after {
-      position: absolute;
-      top: 22px;
-      right: 10px;
-      color: var(--line-strong);
-      content: "→";
-      font-weight: 400;
-    }
-
-    .process-step small {
-      display: block;
-      margin-bottom: 4px;
-      color: var(--quiet);
+    .deck-label {
+      display: flex;
+      align-items: center;
+      padding: 11px 14px;
+      background: var(--ink-strong);
+      color: white;
       font-size: 9px;
-      letter-spacing: .08em;
+      font-weight: 820;
+      letter-spacing: .12em;
+      line-height: 1.3;
+      text-transform: uppercase;
     }
 
-    .chapter-tabs {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      margin-top: 30px;
-      border-top: 1px solid var(--line-strong);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .chapter-tabs a {
-      display: grid;
+    .deck-breadcrumb a {
+      display: flex;
       min-width: 0;
-      grid-template-columns: 24px minmax(0, 1fr);
-      gap: 7px;
-      padding: 13px 12px 13px 0;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.35;
-      text-decoration: none;
-      transition: color 160ms ease, background 160ms ease, padding 160ms ease;
-    }
-
-    .chapter-tabs a + a {
-      padding-left: 12px;
+      min-height: 42px;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
       border-left: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.25;
+      text-decoration: none;
+      transition: color 160ms ease, background 160ms ease;
     }
 
-    .chapter-tabs a:hover,
-    .chapter-tabs a:focus-visible {
-      padding-right: 8px;
+    .deck-breadcrumb a:hover,
+    .deck-breadcrumb a:focus-visible {
       color: var(--blue);
       background: var(--blue-pale);
     }
 
-    .chapter-tabs span {
-      color: var(--blue);
-      font-size: 9px;
-      font-weight: 850;
-      letter-spacing: .08em;
+    .deck-breadcrumb a[aria-current="page"] {
+      background: var(--blue);
+      color: white;
     }
 
-    .chapter-tabs strong {
-      overflow: hidden;
-      color: inherit;
-      font-weight: 700;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .hero-thesis {
-      position: relative;
-      display: flex;
-      min-height: 100%;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
-      padding: 46px 40px 42px;
+    .deck-breadcrumb a[aria-current="page"]:hover,
+    .deck-breadcrumb a[aria-current="page"]:focus-visible {
       background: var(--blue-deep);
       color: white;
     }
 
-    .hero-thesis::before,
-    .hero-thesis::after {
-      position: absolute;
-      border: 1px solid rgba(255, 255, 255, .16);
-      border-radius: 50%;
-      content: "";
+    .deck-breadcrumb a span {
+      color: var(--blue);
+      font-size: 8px;
+      font-weight: 850;
+      letter-spacing: .08em;
     }
 
-    .hero-thesis::before {
-      top: -90px;
-      right: -78px;
-      width: 270px;
-      height: 270px;
-    }
-
-    .hero-thesis::after {
-      right: 34px;
-      bottom: 104px;
-      width: 96px;
-      height: 96px;
-    }
-
-    .thesis-index {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      justify-content: space-between;
-      color: var(--sky);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    .hero-thesis blockquote {
-      position: relative;
-      z-index: 1;
-      margin: 40px 0;
-      font-size: clamp(24px, 2vw, 32px);
-      font-weight: 620;
-      letter-spacing: -.025em;
-      line-height: 1.44;
-    }
-
-    .hero-thesis blockquote strong {
-      color: #7fd1ff;
-    }
-
-    .thesis-foot {
-      position: relative;
-      z-index: 1;
-      margin: 0;
-      padding-top: 18px;
-      border-top: 1px solid rgba(255, 255, 255, .32);
-      color: rgba(255, 255, 255, .76);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-
-    .disclaimer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      padding: 15px 2px 18px;
-      color: var(--quiet);
-      font-size: 11px;
-      line-height: 1.5;
-    }
-
-    .disclaimer b {
-      color: var(--ink);
+    .deck-breadcrumb a[aria-current="page"] span {
+      color: white;
     }
 
     .report-shell {
       width: min(var(--max), 100%);
       margin: 0 auto 70px;
-      padding: 0 34px;
+      padding: 28px 34px 0;
     }
 
     .report {
@@ -314,7 +159,7 @@
       display: flex;
       min-height: calc(100vh - 56px);
       flex-direction: column;
-      padding: clamp(54px, 5vw, 78px) clamp(38px, 5vw, 72px);
+      padding: clamp(34px, 3.3vw, 50px) clamp(38px, 5vw, 72px) clamp(48px, 4vw, 64px);
       background: var(--paper);
       box-shadow: var(--shadow);
       scroll-margin-top: 28px;
@@ -860,56 +705,6 @@
       letter-spacing: .08em;
     }
 
-    .slide-nav {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-      align-items: center;
-      gap: 22px;
-      margin-top: auto;
-      padding-top: 28px;
-      border-top: 1px solid var(--line);
-    }
-
-    .slide-nav a {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 720;
-      letter-spacing: .03em;
-      text-decoration: none;
-      transition: color 160ms ease, transform 160ms ease;
-    }
-
-    .slide-nav a:hover,
-    .slide-nav a:focus-visible {
-      color: var(--blue);
-    }
-
-    .slide-nav .previous:hover,
-    .slide-nav .previous:focus-visible {
-      transform: translateX(-3px);
-    }
-
-    .slide-nav .next {
-      justify-self: end;
-      text-align: right;
-    }
-
-    .slide-nav .next:hover,
-    .slide-nav .next:focus-visible {
-      transform: translateX(3px);
-    }
-
-    .slide-nav .overview {
-      color: var(--quiet);
-      font-size: 9px;
-      font-weight: 820;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
     @media (max-width: 1100px) {
       .four-up {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -929,7 +724,6 @@
         border-top: 1px solid var(--line);
       }
 
-      .hero-copy,
       .chapter {
         padding-right: 42px;
         padding-left: 42px;
@@ -942,38 +736,9 @@
         scroll-snap-type: none;
       }
 
-      .hero-shell,
       .report-shell {
         padding-right: 18px;
         padding-left: 18px;
-      }
-
-      .hero {
-        min-height: 0;
-        grid-template-columns: 1fr;
-      }
-
-      .hero-copy {
-        min-height: 500px;
-        padding: 46px 34px 34px;
-      }
-
-      .hero-thesis {
-        min-height: 340px;
-      }
-
-      .chapter-tabs {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .chapter-tabs a:nth-child(3) {
-        padding-left: 0;
-        border-top: 1px solid var(--line);
-        border-left: 0;
-      }
-
-      .chapter-tabs a:nth-child(4) {
-        border-top: 1px solid var(--line);
       }
 
       .report-shell {
@@ -1007,54 +772,8 @@
     }
 
     @media (max-width: 640px) {
-      .hero-shell {
-        padding-top: 18px;
-      }
-
-      .hero-copy {
-        min-height: 500px;
-        padding: 38px 24px 28px;
-      }
-
-      .hero h1 {
-        font-size: clamp(43px, 14vw, 63px);
-      }
-
-      .hero-lede {
-        font-size: 17px;
-      }
-
-      .process-line {
-        grid-template-columns: repeat(2, 1fr);
-        margin-top: 34px;
-      }
-
-      .process-step:nth-child(3),
-      .process-step:nth-child(4) {
-        margin-top: 20px;
-      }
-
-      .process-step:nth-child(2)::after {
-        display: none;
-      }
-
-      .hero-thesis {
-        min-height: 330px;
-        padding: 34px 24px;
-      }
-
-      .hero-thesis blockquote {
-        font-size: 24px;
-      }
-
-      .disclaimer {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 4px;
-      }
-
       .report-shell {
-        padding: 0;
+        padding: 10px;
       }
 
       .report {
@@ -1062,8 +781,33 @@
       }
 
       .chapter {
-        padding: 44px 22px;
+        padding: 24px 18px 38px;
         scroll-margin-top: 0;
+      }
+
+      .deck-breadcrumb {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-bottom: 28px;
+      }
+
+      .deck-label {
+        grid-column: 1 / -1;
+        min-height: 32px;
+        justify-content: center;
+        padding: 8px 10px;
+      }
+
+      .deck-breadcrumb a {
+        min-height: 50px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        padding: 7px 4px;
+        text-align: center;
+      }
+
+      .deck-breadcrumb a:first-of-type {
+        border-left: 0;
       }
 
       .chapter-head {
@@ -1136,14 +880,6 @@
         flex-direction: column;
         padding: 22px;
       }
-
-      .slide-nav {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .slide-nav .overview {
-        display: none;
-      }
     }
 
     @media print {
@@ -1157,44 +893,18 @@
         background: white;
       }
 
-      .reading-progress,
-      .chapter-tabs,
-      .slide-nav {
+      .reading-progress {
         display: none !important;
       }
 
-      .hero-shell,
       .report-shell {
         width: 100%;
         margin: 0;
         padding: 0;
       }
 
-      .hero,
       .report {
         box-shadow: none;
-      }
-
-      .hero {
-        min-height: 0;
-        grid-template-columns: 1.45fr .55fr;
-      }
-
-      .hero-copy,
-      .hero-thesis {
-        padding: 28px;
-      }
-
-      .hero h1 {
-        font-size: 42px;
-      }
-
-      .hero-lede {
-        font-size: 15px;
-      }
-
-      .disclaimer {
-        padding: 10px 0;
       }
 
       .report-shell {
@@ -1351,45 +1061,19 @@
 <body>
   <div class="reading-progress" id="reading-progress" aria-hidden="true"></div>
 
-  <div id="top" class="hero-shell">
-    <section class="hero" aria-labelledby="page-title">
-      <div class="hero-copy">
-        <div>
-          <div class="eyebrow">Institutional cognition infrastructure</div>
-          <h1 id="page-title">AI 在 VC/PE<br>机构中的<span>价值</span></h1>
-          <p class="hero-lede">从效率工具，走向机构级认知基础设施</p>
-        </div>
-        <div>
-          <div class="process-line" aria-label="投资核心生产过程">
-            <div class="process-step"><small>01 / INPUT</small>获取信息</div>
-            <div class="process-step"><small>02 / SYNTHESIS</small>形成判断</div>
-            <div class="process-step"><small>03 / DECISION</small>做出决策</div>
-            <div class="process-step"><small>04 / OWNERSHIP</small>管理资产</div>
-          </div>
-          <nav class="chapter-tabs" aria-label="选择章节">
-            <a href="#01"><span>01</span><strong>核心价值</strong></a>
-            <a href="#02"><span>02</span><strong>募投管退全景</strong></a>
-            <a href="#03"><span>03</span><strong>探索与验证闭环</strong></a>
-            <a href="#04"><span>04</span><strong>动态人机边界</strong></a>
-          </nav>
-        </div>
-      </div>
-      <aside class="hero-thesis" aria-label="核心判断">
-        <div class="thesis-index"><span>核心判断</span><span>01 / 01</span></div>
-        <blockquote>AI 先带来效率提升，最终放大的是机构的<strong>认知生产能力</strong>。</blockquote>
-        <p class="thesis-foot">真正的差异不在于使用了多少工具，而在于能否持续把业务问题、数据、判断标准和反馈连接起来。</p>
-      </aside>
-    </section>
-
-    <div class="disclaimer">
-      <span><b>阅读说明</b>　文中的公司情境和财务数字均为示意案例，不代表真实项目数据。</span>
-      <span>4 CHAPTERS · 5-MINUTE EXECUTIVE BRIEF</span>
-    </div>
-  </div>
-
   <div class="report-shell">
     <main class="report">
+      <h1 class="visually-hidden">AI 在 VC/PE 机构中的价值</h1>
+
       <section class="chapter" id="01" aria-labelledby="chapter-01-title">
+        <nav class="deck-breadcrumb" aria-label="报告章节">
+          <span class="deck-label">AI × VC/PE · Executive Brief</span>
+          <a href="#01" aria-current="page"><span>01</span>核心价值</a>
+          <a href="#02"><span>02</span>募投管退全景</a>
+          <a href="#03"><span>03</span>探索与验证闭环</a>
+          <a href="#04"><span>04</span>动态人机边界</a>
+        </nav>
+
         <header class="chapter-head">
           <div class="chapter-number">01</div>
           <div>
@@ -1423,15 +1107,17 @@
             <p>通过证据追溯、跨文件验证、情景推演和反方论证减少遗漏与逻辑跳跃。</p>
           </article>
         </div>
-
-        <nav class="slide-nav" aria-label="第 1 页导航">
-          <a class="previous" href="#top">← 封面</a>
-          <a class="overview" href="#top">01 / 04</a>
-          <a class="next" href="#02">募投管退全景 →</a>
-        </nav>
       </section>
 
       <section class="chapter scenario-chapter" id="02" aria-labelledby="chapter-02-title">
+        <nav class="deck-breadcrumb" aria-label="报告章节">
+          <span class="deck-label">AI × VC/PE · Executive Brief</span>
+          <a href="#01"><span>01</span>核心价值</a>
+          <a href="#02" aria-current="page"><span>02</span>募投管退全景</a>
+          <a href="#03"><span>03</span>探索与验证闭环</a>
+          <a href="#04"><span>04</span>动态人机边界</a>
+        </nav>
+
         <header class="chapter-head">
           <div class="chapter-number">02</div>
           <div>
@@ -1511,15 +1197,17 @@
 
         <p class="source-note">注：公开机构实践仅用于说明能力边界和组织方式，均来自机构官网或正式公开材料，并不代表对其完整内部流程的判断。</p>
         <p class="chapter-close">真正的机构级能力，不是让某一个环节多一个工具，而是让募投管退共享数据、知识、工作流与反馈。</p>
-
-        <nav class="slide-nav" aria-label="第 2 页导航">
-          <a class="previous" href="#01">← 核心价值</a>
-          <a class="overview" href="#top">02 / 04</a>
-          <a class="next" href="#03">探索与验证闭环 →</a>
-        </nav>
       </section>
 
       <section class="chapter" id="03" aria-labelledby="chapter-03-title">
+        <nav class="deck-breadcrumb" aria-label="报告章节">
+          <span class="deck-label">AI × VC/PE · Executive Brief</span>
+          <a href="#01"><span>01</span>核心价值</a>
+          <a href="#02"><span>02</span>募投管退全景</a>
+          <a href="#03" aria-current="page"><span>03</span>探索与验证闭环</a>
+          <a href="#04"><span>04</span>动态人机边界</a>
+        </nav>
+
         <header class="chapter-head">
           <div class="chapter-number">03</div>
           <div>
@@ -1544,15 +1232,17 @@
           <article class="info-card compact accent"><span class="card-index">04</span><h3>可复用工作流</h3><p>把有效方法沉淀为机构能力。</p></article>
         </div>
         <p class="chapter-close">当这些工作被持续完成，AI 才会从若干单点工具，逐步成为可复用、可验证、可迭代的机构能力。</p>
-
-        <nav class="slide-nav" aria-label="第 3 页导航">
-          <a class="previous" href="#02">← 募投管退全景</a>
-          <a class="overview" href="#top">03 / 04</a>
-          <a class="next" href="#04">动态人机边界 →</a>
-        </nav>
       </section>
 
       <section class="chapter boundary-chapter" id="04" aria-labelledby="chapter-04-title">
+        <nav class="deck-breadcrumb" aria-label="报告章节">
+          <span class="deck-label">AI × VC/PE · Executive Brief</span>
+          <a href="#01"><span>01</span>核心价值</a>
+          <a href="#02"><span>02</span>募投管退全景</a>
+          <a href="#03"><span>03</span>探索与验证闭环</a>
+          <a href="#04" aria-current="page"><span>04</span>动态人机边界</a>
+        </nav>
+
         <header class="chapter-head">
           <div class="chapter-number">04</div>
           <div>
@@ -1612,17 +1302,11 @@
         </div>
 
         <blockquote class="final-word">目标不是尽可能多地使用 AI，而是随着能力演进，持续找到最适合本机构的人机分工、工具组合与运行状态。</blockquote>
-
-        <nav class="slide-nav" aria-label="第 4 页导航">
-          <a class="previous" href="#03">← 探索与验证闭环</a>
-          <a class="overview" href="#top">04 / 04</a>
-          <a class="next" href="#top">返回封面 ↑</a>
-        </nav>
       </section>
 
       <footer class="report-footer">
         <strong>CAPITAL INTELLIGENCE · EXECUTIVE BRIEF</strong>
-        <span>内容来源：AI在VC_PE机构中的价值.md · 管理层精简版</span>
+        <span>内容来源：AI在VC_PE机构中的价值.md · 文中情境与数字均为示意，不代表真实项目数据</span>
       </footer>
     </main>
   </div>
@@ -1630,7 +1314,7 @@
   <script>
     (() => {
       const progress = document.getElementById('reading-progress');
-      const slides = [document.getElementById('top'), ...document.querySelectorAll('.chapter')];
+      const slides = [...document.querySelectorAll('.chapter')];
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
       let activeIndex = 0;
       let ticking = false;
