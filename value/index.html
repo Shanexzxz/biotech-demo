@@ -19,8 +19,8 @@
       --mist: #f5f7f8;
       --muted: #5d6b75;
       --quiet: #7f8a92;
-      --line: #d8e0e5;
-      --line-strong: #aebcc6;
+      --line: #e5eaed;
+      --line-strong: #c8d1d7;
       --max: 1480px;
       --shadow: 0 18px 50px rgba(16, 35, 52, .09);
     }
@@ -82,8 +82,7 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-bottom: 36px;
-      border: 1px solid var(--line);
-      background: white;
+      background: var(--mist);
     }
 
     .deck-breadcrumb a {
@@ -93,17 +92,12 @@
       align-items: center;
       gap: 8px;
       padding: 10px 14px;
-      border-left: 1px solid var(--line);
       color: var(--muted);
       font-size: 10px;
       font-weight: 700;
       line-height: 1.25;
       text-decoration: none;
       transition: color 160ms ease, background 160ms ease;
-    }
-
-    .deck-breadcrumb a:first-child {
-      border-left: 0;
     }
 
     .deck-breadcrumb a:hover,
@@ -222,12 +216,10 @@
     .info-card {
       min-width: 0;
       padding: 22px;
-      border-top: 2px solid var(--ink-strong);
       background: var(--mist);
     }
 
     .info-card.accent {
-      border-top-color: var(--blue);
       background: var(--blue-pale);
     }
 
@@ -296,16 +288,15 @@
     .lifecycle-map {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1px;
-      border: 1px solid var(--line);
-      background: var(--line);
+      gap: 6px;
+      background: transparent;
     }
 
     .lifecycle-stage {
       display: flex;
       min-width: 0;
       flex-direction: column;
-      background: white;
+      background: var(--mist);
     }
 
     .stage-head {
@@ -347,16 +338,11 @@
       display: grid;
       gap: 10px;
       padding: 15px 16px 13px;
+      background: #fafbfc;
     }
 
     .stage-block {
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .stage-block:last-child {
       padding-bottom: 0;
-      border-bottom: 0;
     }
 
     .stage-block b {
@@ -387,7 +373,6 @@
     .practice-note {
       margin: auto 0 0;
       padding: 10px 16px 12px;
-      border-top: 1px solid var(--line);
       background: var(--mist);
       color: var(--muted);
       font-size: 8px;
@@ -406,8 +391,7 @@
 
     .architecture-base {
       margin-top: 9px;
-      border: 1px solid var(--line-strong);
-      background: white;
+      background: transparent;
     }
 
     .base-heading {
@@ -435,14 +419,12 @@
     .base-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
     }
 
     .base-card {
       padding: 13px 15px;
-    }
-
-    .base-card + .base-card {
-      border-left: 1px solid var(--line);
+      background: var(--mist);
     }
 
     .base-card b {
@@ -469,17 +451,13 @@
     .foundation-row {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
       margin-top: 22px;
-      border-top: 1px solid var(--line-strong);
-      border-bottom: 1px solid var(--line-strong);
     }
 
     .foundation-item {
       padding: 18px 20px;
-    }
-
-    .foundation-item + .foundation-item {
-      border-left: 1px solid var(--line);
+      background: var(--mist);
     }
 
     .foundation-item b {
@@ -508,7 +486,6 @@
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       border-top: 2px solid var(--ink-strong);
-      border-bottom: 1px solid var(--line-strong);
     }
 
     .loop-step {
@@ -519,7 +496,6 @@
 
     .loop-step + .loop-step {
       padding-left: 22px;
-      border-left: 1px solid var(--line);
     }
 
     .loop-step:not(:last-child)::after {
@@ -573,9 +549,8 @@
     .boundary-spectrum {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1px;
-      border-top: 2px solid var(--ink-strong);
-      background: var(--line);
+      gap: 6px;
+      background: transparent;
     }
 
     .boundary-zone {
@@ -809,12 +784,12 @@
       }
 
       .stage-body {
-        gap: 0;
+        gap: 6px;
         padding: 7px 11px 5px;
       }
 
       .stage-block {
-        padding: 6px 0 7px;
+        padding: 0;
       }
 
       .stage-block b {
@@ -997,12 +972,11 @@
       }
 
       .base-card:nth-child(3) {
-        border-top: 1px solid var(--line);
-        border-left: 0;
+        border: 0;
       }
 
       .base-card:nth-child(4) {
-        border-top: 1px solid var(--line);
+        border: 0;
       }
 
       .chapter {
@@ -1109,13 +1083,7 @@
 
       .base-card + .base-card,
       .base-card:nth-child(3) {
-        border-top: 1px solid var(--line);
-        border-left: 0;
-      }
-
-      .foundation-item + .foundation-item {
-        border-top: 1px solid var(--line);
-        border-left: 0;
+        border: 0;
       }
 
       .loop-step,
@@ -1290,7 +1258,7 @@
       }
 
       .base-card + .base-card {
-        border-left: 1px solid var(--line);
+        border-left: 0;
       }
 
       .base-card p {
