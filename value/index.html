@@ -141,17 +141,17 @@
     .article-shell {
       width: min(var(--measure), 100%);
       margin: 0 auto;
-      padding: 72px 34px 90px;
+      padding: 54px 34px 70px;
     }
 
     .article-head {
-      margin-bottom: 46px;
-      padding-bottom: 34px;
+      margin-bottom: 32px;
+      padding-bottom: 26px;
       border-bottom: 2px solid var(--ink-strong);
     }
 
     .eyebrow {
-      margin: 0 0 16px;
+      margin: 0 0 12px;
       color: var(--blue);
       font-size: 11px;
       font-weight: 800;
@@ -160,20 +160,40 @@
     }
 
     .article-head h1 {
-      margin: 0 0 14px;
+      margin: 0 0 18px;
       color: var(--ink-strong);
-      font-size: clamp(36px, 6vw, 56px);
+      font-size: clamp(34px, 6vw, 50px);
       font-weight: 780;
       letter-spacing: -.02em;
       line-height: 1.18;
     }
 
-    .tagline {
-      margin: 0 0 20px;
-      color: var(--quiet);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .1em;
+    .concepts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin: 0 0 16px;
+    }
+
+    .concept {
+      padding-top: 10px;
+      border-top: 2px solid var(--blue);
+    }
+
+    .concept b {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--ink-strong);
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: .05em;
+      line-height: 1.4;
+    }
+
+    .concept span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .article-meta {
@@ -183,10 +203,10 @@
     }
 
     .prose p {
-      margin: 0 0 16px;
+      margin: 0 0 13px;
       color: #2c3a45;
       font-size: 16px;
-      line-height: 1.85;
+      line-height: 1.8;
     }
 
     .prose p strong,
@@ -195,8 +215,8 @@
     }
 
     .prose h2 {
-      margin: 42px 0 16px;
-      padding-top: 20px;
+      margin: 34px 0 12px;
+      padding-top: 16px;
       border-top: 1px solid var(--line-strong);
       color: var(--ink-strong);
       font-size: 23px;
@@ -217,7 +237,7 @@
     }
 
     .prose h3 {
-      margin: 24px 0 8px;
+      margin: 20px 0 6px;
       color: var(--ink-strong);
       font-size: 16.5px;
       font-weight: 730;
@@ -234,7 +254,7 @@
     .point-list li {
       position: relative;
       margin: 0;
-      padding: 7px 0 7px 30px;
+      padding: 5px 0 5px 28px;
       color: #2c3a45;
       font-size: 15px;
       line-height: 1.8;
@@ -243,7 +263,7 @@
 
     .point-list li::before {
       position: absolute;
-      top: 11px;
+      top: 9px;
       left: 0;
       color: var(--blue);
       content: counter(point, decimal-leading-zero);
@@ -254,7 +274,7 @@
 
     .breakout {
       width: min(var(--wide), calc(100vw - 48px));
-      margin: 8px 0 28px;
+      margin: 6px 0 20px;
       margin-left: 50%;
       transform: translateX(-50%);
     }
@@ -310,15 +330,15 @@
     }
 
     .note {
-      margin: -14px 0 28px;
+      margin: -8px 0 20px;
       color: var(--quiet);
       font-size: 12px;
       line-height: 1.7;
     }
 
     .conclusion {
-      margin-top: 60px;
-      padding: 46px 50px;
+      margin-top: 44px;
+      padding: 38px 44px;
       background: var(--ink-strong);
     }
 
@@ -379,8 +399,8 @@
 
     .deck-cta {
       display: flex;
-      margin-top: 34px;
-      padding: 30px 34px;
+      margin-top: 24px;
+      padding: 24px 28px;
       align-items: center;
       justify-content: space-between;
       gap: 22px;
@@ -470,7 +490,23 @@
       }
 
       .article-shell {
-        padding: 46px 22px 64px;
+        padding: 40px 22px 54px;
+      }
+
+      .concepts {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .concept {
+        display: flex;
+        padding-top: 8px;
+        align-items: baseline;
+        gap: 10px;
+      }
+
+      .concept b {
+        flex: none;
       }
 
       .prose p {
@@ -606,7 +642,11 @@
     <header class="article-head">
       <p class="eyebrow">Institutional Cognition Infrastructure · Full Text</p>
       <h1>AI 能为机构带来什么</h1>
-      <p class="tagline">REPLACEABLE MODELS. PROPRIETARY CONTEXT. PERSISTENT LEARNING LOOP.</p>
+      <div class="concepts" aria-label="三个核心概念">
+        <div class="concept"><b>REPLACEABLE MODELS</b><span>模型可以替换，不构成壁垒</span></div>
+        <div class="concept"><b>PROPRIETARY CONTEXT</b><span>专有的语境积累才是资产</span></div>
+        <div class="concept"><b>PERSISTENT LEARNING LOOP</b><span>评测与反馈驱动持续进化</span></div>
+      </div>
       <p class="article-meta">文字阅读版 · 约 8 分钟 · 配套演示版共 7 页</p>
     </header>
 
