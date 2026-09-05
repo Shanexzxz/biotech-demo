@@ -183,10 +183,10 @@
     }
 
     .prose p {
-      margin: 0 0 20px;
+      margin: 0 0 16px;
       color: #2c3a45;
       font-size: 16px;
-      line-height: 1.9;
+      line-height: 1.85;
     }
 
     .prose p strong,
@@ -195,36 +195,37 @@
     }
 
     .prose h2 {
-      margin: 56px 0 22px;
-      padding-top: 26px;
-      border-top: 2px solid var(--ink-strong);
+      margin: 42px 0 16px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line-strong);
       color: var(--ink-strong);
-      font-size: 26px;
+      font-size: 23px;
       font-weight: 760;
       letter-spacing: -.01em;
       line-height: 1.4;
     }
 
     .prose h2 small {
-      display: block;
-      margin-bottom: 8px;
+      display: inline;
+      margin-right: 10px;
       border: 0;
       color: var(--blue);
       font-size: 11px;
       font-weight: 850;
       letter-spacing: .12em;
+      vertical-align: 3px;
     }
 
     .prose h3 {
-      margin: 34px 0 14px;
+      margin: 24px 0 8px;
       color: var(--ink-strong);
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 730;
       line-height: 1.45;
     }
 
     .point-list {
-      margin: 0 0 24px;
+      margin: 0 0 16px;
       padding: 0;
       list-style: none;
       counter-reset: point;
@@ -233,23 +234,22 @@
     .point-list li {
       position: relative;
       margin: 0;
-      padding: 16px 0 16px 46px;
-      border-top: 1px solid var(--line);
+      padding: 7px 0 7px 30px;
       color: #2c3a45;
       font-size: 15px;
-      line-height: 1.85;
+      line-height: 1.8;
       counter-increment: point;
     }
 
     .point-list li::before {
       position: absolute;
-      top: 20px;
-      left: 2px;
+      top: 11px;
+      left: 0;
       color: var(--blue);
       content: counter(point, decimal-leading-zero);
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 850;
-      letter-spacing: .06em;
+      letter-spacing: .04em;
     }
 
     .breakout {
