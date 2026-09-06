@@ -16,7 +16,9 @@
       --blue-pale: #eaf4fa;
       --sky: #cfe9f7;
       --paper: #ffffff;
-      --canvas: #eef2f4;
+      --canvas: #ffffff;
+      --teal: #2b8a8c;
+      --leaf: #8aa653;
       --mist: #f5f7f8;
       --muted: #5d6b75;
       --quiet: #7f8a92;
@@ -58,7 +60,7 @@
       z-index: 100;
       width: 0;
       height: 3px;
-      background: var(--blue);
+      background: linear-gradient(90deg, var(--blue), var(--teal), var(--leaf));
       transition: width 80ms linear;
     }
 
@@ -144,10 +146,35 @@
       padding: 54px 34px 70px;
     }
 
+    .flow-lines {
+      position: absolute;
+      top: -20px;
+      right: -34px;
+      z-index: 0;
+      width: 340px;
+      height: 260px;
+      pointer-events: none;
+    }
+
+    .flow-lines-dark {
+      top: auto;
+      right: -10px;
+      bottom: -30px;
+      width: 420px;
+      height: 300px;
+    }
+
     .article-head {
+      position: relative;
+      overflow: hidden;
       margin-bottom: 32px;
       padding-bottom: 26px;
       border-bottom: 2px solid var(--ink-strong);
+    }
+
+    .article-head > *:not(.flow-lines) {
+      position: relative;
+      z-index: 1;
     }
 
     .eyebrow {
@@ -176,8 +203,26 @@
     }
 
     .concept {
-      padding-top: 10px;
-      border-top: 2px solid var(--blue);
+      position: relative;
+      padding-top: 12px;
+    }
+
+    .concept::before {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--teal));
+      content: "";
+    }
+
+    .concept:nth-child(2)::before {
+      background: linear-gradient(90deg, var(--teal), var(--leaf));
+    }
+
+    .concept:nth-child(3)::before {
+      background: linear-gradient(90deg, var(--leaf), #b7c46a);
     }
 
     .concept b {
@@ -355,9 +400,16 @@
     }
 
     .conclusion {
+      position: relative;
+      overflow: hidden;
       margin-top: 44px;
       padding: 38px 44px;
       background: var(--ink-strong);
+    }
+
+    .conclusion > *:not(.flow-lines) {
+      position: relative;
+      z-index: 1;
     }
 
     .conclusion-kicker {
@@ -498,6 +550,10 @@
     }
 
     @media (max-width: 640px) {
+      .article-head > .flow-lines {
+        display: none;
+      }
+
       .topbar-inner {
         height: 58px;
         padding: 0 18px;
@@ -651,6 +707,7 @@
 
   <main id="top" class="article-shell">
     <header class="article-head">
+      <svg class="flow-lines" viewBox="0 0 640 420" fill="none" aria-hidden="true" preserveAspectRatio="xMaxYMin slice" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke-width="1"><path d="M 150,-12 C 160,120 470,-50 652,30" stroke="#0b3658" stroke-opacity="0.85"/><path d="M 182,-12 C 192,128 478,-30 652,54" stroke="#0f415f" stroke-opacity="0.85"/><path d="M 214,-12 C 224,136 486,-10 652,78" stroke="#144c66" stroke-opacity="0.85"/><path d="M 246,-12 C 256,144 494,10 652,102" stroke="#18586d" stroke-opacity="0.85"/><path d="M 278,-12 C 288,152 502,30 652,126" stroke="#1c6374" stroke-opacity="0.85"/><path d="M 310,-12 C 320,160 510,50 652,150" stroke="#206e7b" stroke-opacity="0.85"/><path d="M 342,-12 C 352,168 518,70 652,174" stroke="#257982" stroke-opacity="0.85"/><path d="M 374,-12 C 384,176 526,90 652,198" stroke="#298489" stroke-opacity="0.85"/><path d="M 406,-12 C 416,184 534,110 652,222" stroke="#318c88" stroke-opacity="0.85"/><path d="M 438,-12 C 448,192 542,130 652,246" stroke="#3e9081" stroke-opacity="0.85"/><path d="M 470,-12 C 480,200 550,150 652,270" stroke="#4b9379" stroke-opacity="0.85"/><path d="M 502,-12 C 512,208 558,170 652,294" stroke="#579771" stroke-opacity="0.85"/><path d="M 534,-12 C 544,216 566,190 652,318" stroke="#649b6a" stroke-opacity="0.85"/><path d="M 566,-12 C 576,224 574,210 652,342" stroke="#719f62" stroke-opacity="0.85"/><path d="M 598,-12 C 608,232 582,230 652,366" stroke="#7da25b" stroke-opacity="0.85"/><path d="M 630,-12 C 640,240 590,250 652,390" stroke="#8aa653" stroke-opacity="0.85"/></g></svg>
       <p class="eyebrow">Institutional Cognition Infrastructure · Full Text</p>
       <h1>AI 能为机构带来什么</h1>
       <div class="concepts" aria-label="三个核心支柱">
@@ -849,6 +906,7 @@
     </div>
 
     <section class="conclusion" aria-labelledby="conclusion-title">
+      <svg class="flow-lines flow-lines-dark" viewBox="0 0 640 420" fill="none" aria-hidden="true" preserveAspectRatio="xMaxYMin slice" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke-width="1"><path d="M 150,-12 C 160,120 470,-50 652,30" stroke="#0b3658" stroke-opacity="0.3"/><path d="M 182,-12 C 192,128 478,-30 652,54" stroke="#0f415f" stroke-opacity="0.3"/><path d="M 214,-12 C 224,136 486,-10 652,78" stroke="#144c66" stroke-opacity="0.3"/><path d="M 246,-12 C 256,144 494,10 652,102" stroke="#18586d" stroke-opacity="0.3"/><path d="M 278,-12 C 288,152 502,30 652,126" stroke="#1c6374" stroke-opacity="0.3"/><path d="M 310,-12 C 320,160 510,50 652,150" stroke="#206e7b" stroke-opacity="0.3"/><path d="M 342,-12 C 352,168 518,70 652,174" stroke="#257982" stroke-opacity="0.3"/><path d="M 374,-12 C 384,176 526,90 652,198" stroke="#298489" stroke-opacity="0.3"/><path d="M 406,-12 C 416,184 534,110 652,222" stroke="#318c88" stroke-opacity="0.3"/><path d="M 438,-12 C 448,192 542,130 652,246" stroke="#3e9081" stroke-opacity="0.3"/><path d="M 470,-12 C 480,200 550,150 652,270" stroke="#4b9379" stroke-opacity="0.3"/><path d="M 502,-12 C 512,208 558,170 652,294" stroke="#579771" stroke-opacity="0.3"/><path d="M 534,-12 C 544,216 566,190 652,318" stroke="#649b6a" stroke-opacity="0.3"/><path d="M 566,-12 C 576,224 574,210 652,342" stroke="#719f62" stroke-opacity="0.3"/><path d="M 598,-12 C 608,232 582,230 652,366" stroke="#7da25b" stroke-opacity="0.3"/><path d="M 630,-12 C 640,240 590,250 652,390" stroke="#8aa653" stroke-opacity="0.3"/></g></svg>
       <p class="conclusion-kicker">Conclusion / 结论</p>
       <h2 id="conclusion-title">AI 能为机构带来的提升，与模型先进程度弱相关，与机构化整合能力强相关</h2>
       <ol>
