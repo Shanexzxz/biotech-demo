@@ -6425,6 +6425,26 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
       });
     }
     movable.forEach(clamp);
+    // 未披露标签防重叠：标签宽度随语言变化（中≈33px / 英≈70px），把过近的标签沿 X 轴散开
+    try {
+      var _enLbl = false;
+      try { _enLbl = (localStorage.getItem('bd-lang') || 'en') === 'en'; } catch (e0) { _enLbl = true; }
+      var _lw = 0;
+      var _s0 = _enLbl ? 'Undisclosed' : '未披露';
+      for (var _ci = 0; _ci < _s0.length; _ci++) { var _c0 = _s0.codePointAt(_ci); _lw += (_c0 > 0x2E7F && _c0 < 0xA000) ? 11 : 6.2; }
+      var _und = nodes.filter(function (n) { return !n.disclosedCash; }).sort(function (a, b) { return a.cx - b.cx; });
+      for (var _p = 0; _p < 60; _p++) {
+        var _mv = false;
+        for (var _i = 0; _i + 1 < _und.length; _i++) {
+          var _a = _und[_i], _b = _und[_i + 1];
+          var _need = _lw + 8;
+          var _dx = _b.cx - _a.cx;
+          if (_dx < _need) { var _sh = (_need - _dx) / 2; _a.cx -= _sh; _b.cx += _sh; _mv = true; }
+        }
+        _und.forEach(function (n) { n.cx = Math.max(PLOT.left + 5, Math.min(PLOT.right - 5, n.cx)); });
+        if (!_mv) break;
+      }
+    } catch (e) {}
     const posByIndex = new Map(nodes.map(node => [node.index, node]));
 
     const marks = ordered.map(({ row, index }) => {
@@ -11242,7 +11262,9 @@ window.CONVERGENCE_DATA={"manifest":{"dataset_version":"real_seed_2026-07-15_v5.
     'html[lang="en"] .filter-intro{min-width:240px}',
     'html[lang="en"] .odag-table{font-size:10px}',
     /* 术语气泡靠右时改为向左展开，避免把页面撑出横向滚动条（中英双语通用） */
-    '.glossary-term.bd-tip-left::after{left:auto;right:0}'
+    '.glossary-term.bd-tip-left::after{left:auto;right:0}',
+    /* 未披露标签加描边光晕，重叠时也清晰可读 */
+    '.buyer-mark .unknown-label{paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}'
   ].join('\n');
   function tipFlip(e) {
     var t = e.target && e.target.closest ? e.target.closest('.glossary-term') : null;
