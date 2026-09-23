@@ -2847,7 +2847,9 @@
     'html[lang="en"] .filter-intro{min-width:240px}',
     'html[lang="en"] .odag-table{font-size:10px}',
     /* 术语气泡靠右时改为向左展开，避免把页面撑出横向滚动条（中英双语通用） */
-    '.glossary-term.bd-tip-left::after{left:auto;right:0}'
+    '.glossary-term.bd-tip-left::after{left:auto;right:0}',
+    /* 未披露标签加描边光晕，重叠时也清晰可读 */
+    '.buyer-mark .unknown-label{paint-order:stroke;stroke:var(--surface);stroke-width:3px;stroke-linejoin:round}'
   ].join('\n');
   function tipFlip(e) {
     var t = e.target && e.target.closest ? e.target.closest('.glossary-term') : null;
